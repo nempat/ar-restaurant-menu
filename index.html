@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>AR Menu</title>
 
@@ -12,45 +17,54 @@
 <body>
 
   <header class="hero">
-    <div class="restaurant-name">NEMPAT</div>
-    <p class="tagline">Experience your food in 3D</p>
+
+    <div class="restaurant-name" id="restaurantName">
+      NEMPAT
+    </div>
+
+    <p class="tagline" id="restaurantTagline">
+      Experience your food in 3D
+    </p>
+
   </header>
+
 
   <main class="menu">
 
-    <h1>Our Menu</h1>
+    <div class="menu-heading">
 
-    <div class="food-card">
-
-      <img src="assets/images/pizza.jpg" alt="Pizza">
-
-      <div class="food-info">
-        <h2>Classic Pizza</h2>
-
-        <p class="description">
-          Golden crust, mozzarella, fresh vegetables and our signature sauce.
-        </p>
-
-        <div class="bottom-row">
-          <span class="price">₹299</span>
-
-          <button onclick="openAR('pizza')">
-            View in AR ✨
-          </button>
-        </div>
+      <div>
+        <span class="eyebrow">EXPLORE</span>
+        <h1>Our Menu</h1>
       </div>
 
     </div>
 
+
+    <div
+      id="categories"
+      class="categories">
+    </div>
+
   </main>
 
-  <script>
-    function openAR(food) {
-      if (food === "pizza") {
-        window.location.href = "ar.html";
-      }
-    }
-  </script>
+
+  <div
+    id="loading"
+    class="loading">
+    Loading menu...
+  </div>
+
+
+  <div
+    id="error"
+    class="error hidden">
+    Unable to load menu.
+  </div>
+
+
+  <script src="app.js"></script>
 
 </body>
+
 </html>
