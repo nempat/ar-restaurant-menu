@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
   >
 
-  <title>Pizza AR</title>
+  <title>AR Menu</title>
 
   <script
     type="module"
@@ -15,182 +18,368 @@
   </script>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
 
     html,
     body {
-      margin: 0;
       width: 100%;
       height: 100%;
+
+      margin: 0;
+
       overflow: hidden;
+
       background: #050505;
-      font-family: Arial, Helvetica, sans-serif;
+
       color: white;
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
     }
+
 
     model-viewer {
+
       width: 100%;
       height: 100%;
+
       background: #050505;
+
     }
 
+
+    /* TOP BAR */
+
     .top-bar {
+
       position: fixed;
+
       top: 0;
       left: 0;
       right: 0;
-      z-index: 10;
 
-      padding: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      background: linear-gradient(
-        rgba(0,0,0,0.75),
-        rgba(0,0,0,0)
-      );
-    }
-
-    .back {
-      border: 0;
-      border-radius: 50%;
-      width: 42px;
-      height: 42px;
-
-      background: rgba(255,255,255,0.12);
-      color: white;
-
-      font-size: 20px;
-      cursor: pointer;
-      backdrop-filter: blur(10px);
-    }
-
-    .title {
-      font-size: 15px;
-      font-weight: 700;
-    }
-
-    .info {
-      position: fixed;
-      left: 18px;
-      right: 18px;
-      bottom: 24px;
       z-index: 10;
 
       padding: 18px;
 
-      border-radius: 20px;
+      display: flex;
 
-      background: rgba(15,15,15,0.82);
-      backdrop-filter: blur(18px);
+      align-items: center;
 
-      border: 1px solid rgba(255,255,255,0.1);
+      justify-content: space-between;
+
+      background:
+        linear-gradient(
+          rgba(0,0,0,.85),
+          rgba(0,0,0,0)
+        );
+
     }
 
-    .food-name {
-      font-size: 22px;
+
+    .back {
+
+      width: 44px;
+      height: 44px;
+
+      border-radius: 50%;
+
+      border:
+        1px solid
+        rgba(255,255,255,.12);
+
+      background:
+        rgba(255,255,255,.1);
+
+      color: white;
+
+      font-size: 24px;
+
+      backdrop-filter: blur(15px);
+
+      cursor: pointer;
+
+    }
+
+
+    .title {
+
+      font-size: 14px;
+
       font-weight: 800;
+
+      letter-spacing: 1px;
+
     }
 
-    .price {
-      margin-top: 5px;
-      font-size: 16px;
-      color: #d8d8d8;
-    }
 
-    .hint {
-      margin-top: 12px;
-      font-size: 13px;
-      color: #999;
-    }
+    /* AR BUTTON */
 
     #ar-button {
+
       position: fixed;
+
       left: 50%;
-      bottom: 150px;
-      transform: translateX(-50%);
+
+      bottom: 155px;
+
+      transform:
+        translateX(-50%);
 
       z-index: 20;
 
+      padding:
+        15px 25px;
+
       border: 0;
+
       border-radius: 999px;
 
-      padding: 15px 25px;
-
       background: white;
+
       color: black;
 
       font-size: 15px;
+
       font-weight: 800;
 
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      box-shadow:
+        0 12px 40px
+        rgba(0,0,0,.45);
 
       cursor: pointer;
+
     }
 
+
     #ar-button:active {
-      transform: translateX(-50%) scale(0.96);
+
+      transform:
+        translateX(-50%)
+        scale(.96);
+
     }
+
+
+    /* INFO */
+
+    .info {
+
+      position: fixed;
+
+      left: 16px;
+      right: 16px;
+
+      bottom: 20px;
+
+      z-index: 10;
+
+      padding: 19px;
+
+      border-radius: 23px;
+
+      background:
+        rgba(12,12,12,.84);
+
+      border:
+        1px solid
+        rgba(255,255,255,.1);
+
+      backdrop-filter:
+        blur(20px);
+
+      box-shadow:
+        0 15px 50px
+        rgba(0,0,0,.4);
+
+    }
+
+
+    .food-name {
+
+      font-size: 23px;
+
+      font-weight: 800;
+
+    }
+
+
+    .price {
+
+      margin-top: 5px;
+
+      font-size: 17px;
+
+      color: #d0d0d0;
+
+    }
+
+
+    .hint {
+
+      margin-top: 11px;
+
+      font-size: 12px;
+
+      color: #888;
+
+    }
+
+
+    /* LOADING */
+
+    .loading {
+
+      position: fixed;
+
+      inset: 0;
+
+      z-index: 30;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      background: #050505;
+
+      font-size: 14px;
+
+      color: #999;
+
+    }
+
   </style>
+
 </head>
+
 
 <body>
 
-  <div class="top-bar">
-    <button class="back" onclick="history.back()">‹</button>
 
-    <div class="title">
-      NEMPAT AR
-    </div>
+  <div class="loading" id="loading">
+
+    Loading 3D experience...
+
   </div>
 
+
+  <div class="top-bar">
+
+    <button
+      class="back"
+      onclick="history.back()">
+
+      ‹
+
+    </button>
+
+
+    <div
+      class="title"
+      id="restaurantTitle">
+
+      AR MENU
+
+    </div>
+
+  </div>
+
+
   <model-viewer
-    src="assets/models/pizza.glb"
+
+    id="viewer"
 
     ar
-    ar-modes="webxr scene-viewer quick-look"
+
+    ar-modes="
+      webxr
+      scene-viewer
+      quick-look
+    "
 
     camera-controls
+
     touch-action="pan-y"
 
     shadow-intensity="1"
+
     exposure="1.1"
 
     auto-rotate
+
     rotation-per-second="20deg"
 
-    camera-orbit="0deg 65deg 2.5m"
-    min-camera-orbit="auto auto 0.8m"
-    max-camera-orbit="auto auto 5m"
+    camera-orbit="
+      0deg
+      65deg
+      2.5m
+    "
 
-    scale="1 1 1"
+    min-camera-orbit="
+      auto
+      auto
+      0.8m
+    "
 
-    alt="3D pizza">
+    max-camera-orbit="
+      auto
+      auto
+      5m
+    "
+
+    alt="3D food model">
+
 
     <button
       id="ar-button"
       slot="ar-button">
+
       ✨ View in AR
+
     </button>
+
 
   </model-viewer>
 
+
   <div class="info">
-    <div class="food-name">
-      Classic Pizza
+
+    <div
+      class="food-name"
+      id="foodName">
+
+      Loading...
+
     </div>
 
-    <div class="price">
-      ₹299
+
+    <div
+      class="price"
+      id="foodPrice">
+
+      --
+
     </div>
+
 
     <div class="hint">
+
       Drag to rotate • Pinch to zoom • Tap View in AR
+
     </div>
+
   </div>
 
+
+  <script src="ar.js"></script>
+
 </body>
+
 </html>
