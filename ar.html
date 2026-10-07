@@ -16,7 +16,7 @@
 
   <link
     rel="stylesheet"
-    href="ar.css?v=40"
+    href="ar.css?v=50"
   >
 
 </head>
@@ -70,7 +70,7 @@
 
       <div class="icon">⚠️</div>
 
-      <h1>AR could not start</h1>
+      <h1>AR couldn't start</h1>
 
       <p id="errorText">
         Something went wrong.
@@ -159,18 +159,24 @@
   </div>
 
 
-  <!-- NORMAL SCRIPTS — NOT ES MODULES -->
+  <!-- THREE.JS -->
 
   <script
-    src="https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.min.js"
+    src="https://unpkg.com/three@0.169.0/build/three.min.js"
   ></script>
 
-  <script
-    src="https://cdn.jsdelivr.net/npm/three@0.169.0/examples/js/loaders/GLTFLoader.js"
-  ></script>
+
+  <!-- GLTF LOADER -->
 
   <script
-    src="ar.js?v=40"
+    src="https://unpkg.com/three@0.169.0/examples/js/loaders/GLTFLoader.js"
+  ></script>
+
+
+  <!-- OUR AR CODE -->
+
+  <script
+    src="ar.js?v=50"
   ></script>
 
 </body>
