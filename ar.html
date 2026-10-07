@@ -1,7 +1,9 @@
 ```html
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -9,64 +11,133 @@
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
   >
 
-  <meta name="theme-color" content="#000000">
+  <meta
+    name="theme-color"
+    content="#000000"
+  >
 
-  <title>AR Menu</title>
+  <title>NEMPAT AR</title>
 
-  <link rel="stylesheet" href="ar.css?v=10">
+  <!-- AR styling -->
+  <link
+    rel="stylesheet"
+    href="ar.css?v=20"
+  >
+
 </head>
+
 
 <body>
 
-  <!-- Loading -->
-  <div id="loading" class="loading">
+  <!-- =========================================
+       LOADING
+  ========================================== -->
+
+  <div
+    id="loading"
+    class="loading"
+  >
+
     <div>
+
       <div class="loader"></div>
-      <p>Preparing AR...</p>
+
+      <p>
+        Preparing AR...
+      </p>
+
     </div>
+
   </div>
 
-  <!-- Unsupported -->
-  <div id="unsupported" class="message hidden">
-    <div>
-      <div class="big-icon">📱</div>
 
-      <h1>AR isn't supported</h1>
+  <!-- =========================================
+       UNSUPPORTED / ERROR
+  ========================================== -->
+
+  <div
+    id="unsupported"
+    class="message hidden"
+  >
+
+    <div>
+
+      <div class="big-icon">
+        📱
+      </div>
+
+      <h1>
+        AR isn't supported
+      </h1>
 
       <p>
         This device or browser does not support
         markerless browser AR.
       </p>
 
-      <button id="backUnsupported">
+      <button
+        id="backUnsupported"
+      >
         Go Back
       </button>
+
     </div>
+
   </div>
 
-  <!-- Ready -->
-  <div id="permission" class="message hidden">
-    <div>
-      <div class="big-icon">✨</div>
 
-      <h1>Ready for AR</h1>
+  <!-- =========================================
+       READY SCREEN
+  ========================================== -->
+
+  <div
+    id="permission"
+    class="message hidden"
+  >
+
+    <div>
+
+      <div class="big-icon">
+        ✨
+      </div>
+
+      <h1>
+        Ready for AR
+      </h1>
 
       <p>
-        Point your phone at a table or other flat
-        surface and move slowly.
+        Point your phone at a table or other
+        flat surface and move slowly.
       </p>
 
-      <button id="startAR">
+      <button
+        id="startAR"
+      >
         Start AR
       </button>
+
     </div>
+
   </div>
 
-  <!-- Three.js AR canvas -->
-  <canvas id="arCanvas"></canvas>
 
-  <!-- Top bar -->
-  <div id="topbar" class="topbar hidden">
+  <!-- =========================================
+       THREE.JS CANVAS
+  ========================================== -->
+
+  <canvas
+    id="arCanvas"
+  ></canvas>
+
+
+  <!-- =========================================
+       TOP BAR
+  ========================================== -->
+
+  <div
+    id="topbar"
+    class="topbar hidden"
+  >
 
     <button
       id="exitButton"
@@ -76,19 +147,38 @@
       ‹
     </button>
 
-    <div id="foodTitle" class="title">
+    <div
+      id="foodTitle"
+      class="title"
+    >
       AR FOOD
     </div>
 
   </div>
 
-  <!-- Surface detection -->
-  <div id="instructions" class="instructions hidden">
-    <div class="instruction-dot"></div>
+
+  <!-- =========================================
+       SURFACE INSTRUCTIONS
+  ========================================== -->
+
+  <div
+    id="instructions"
+    class="instructions hidden"
+  >
+
+    <div
+      class="instruction-dot"
+    ></div>
+
     Move your phone slowly
+
   </div>
 
-  <!-- Place -->
+
+  <!-- =========================================
+       PLACE BUTTON
+  ========================================== -->
+
   <button
     id="placeButton"
     class="place-button hidden"
@@ -96,24 +186,39 @@
     Tap to place 🍕
   </button>
 
-  <!-- After placement -->
+
+  <!-- =========================================
+       PLACED CONTROLS
+  ========================================== -->
+
   <div
     id="placedControls"
     class="placed-controls hidden"
   >
 
-    <button id="removeButton">
+    <button
+      id="removeButton"
+    >
       Remove
     </button>
 
-    <button id="doneButton">
+    <button
+      id="doneButton"
+    >
       Done
     </button>
 
   </div>
 
-  <!-- Food information -->
-  <div id="info" class="info hidden">
+
+  <!-- =========================================
+       FOOD INFORMATION
+  ========================================== -->
+
+  <div
+    id="info"
+    class="info hidden"
+  >
 
     <div
       id="foodName"
@@ -131,12 +236,19 @@
 
   </div>
 
-  <!-- Cache-busted JS -->
+
+  <!-- =========================================
+       IMPORTANT:
+       v=20 forces a fresh ar.js request
+  ========================================== -->
+
   <script
     type="module"
-    src="ar.js?v=10"
+    src="ar.js?v=20"
   ></script>
 
+
 </body>
+
 </html>
 ```
