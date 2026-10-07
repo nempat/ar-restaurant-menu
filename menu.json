@@ -1,23 +1,31 @@
 {
-  "restaurant": {
-    "name": "NEMPAT",
-    "tagline": "Experience your food in 3D",
-    "currency": "₹"
-  },
-  "categories": [
+  "restaurant": "Green Table",
+  "currency": "$",
+  "categories": ["Starters", "Mains", "Desserts"],
+  "items": [
     {
-      "name": "Popular",
-      "items": [
-        {
-          "id": "pizza",
-          "name": "Classic Pizza",
-          "description": "Golden crust, mozzarella, fresh vegetables and our signature sauce.",
-          "price": 299,
-          "image": "assets/images/pizza.jpg",
-          "model": "assets/models/pizza.glb",
-          "ar": true
-        }
-      ]
+      "id": "avocado-bowl",
+      "name": "Avocado Bowl",
+      "category": "Starters",
+      "price": 6.5,
+      "desc": "Ripe avocado, lime, chilli flakes, toasted seeds.",
+      "model": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/Avocado/glTF-Binary/Avocado.glb"
+    },
+    {
+      "id": "garden-plate",
+      "name": "Garden Plate",
+      "category": "Mains",
+      "price": 12,
+      "desc": "Seasonal vegetables, herb oil, warm flatbread.",
+      "model": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/Avocado/glTF-Binary/Avocado.glb"
+    },
+    {
+      "id": "lime-tart",
+      "name": "Lime Tart",
+      "category": "Desserts",
+      "price": 5,
+      "desc": "Crisp shell, lime curd, whipped cream.",
+      "model": "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/main/2.0/Avocado/glTF-Binary/Avocado.glb"
     }
   ]
 }
