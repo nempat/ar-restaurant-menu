@@ -1,1009 +1,1077 @@
-console.log("NEMPAT AR.JS v40 STARTED");
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
+// ============================================================
+// NEMPAT AR
+// Markerless WebXR + Three.js + GLTF
+// ============================================================
 
-const loading =
-  document.getElementById("loading");
+// -----------------------------
+// DOM
+// -----------------------------
 
-const loadingTitle =
-  document.getElementById("loadingTitle");
+const loadingScreen = document.getElementById("loading");
+const readyScreen = document.getElementById("ready");
+const errorScreen = document.getElementById("error");
 
-const loadingText =
-  document.getElementById("loadingText");
+const loadingTitle = document.getElementById("loadingTitle");
+const loadingText = document.getElementById("loadingText");
 
-const ready =
-  document.getElementById("ready");
+const errorText = document.getElementById("errorText");
 
-const errorScreen =
-  document.getElementById("error");
+const startButton = document.getElementById("startAR");
+const backButton = document.getElementById("backButton");
 
-const errorText =
-  document.getElementById("errorText");
+const canvas = document.getElementById("arCanvas");
 
-const startAR =
-  document.getElementById("startAR");
+const topbar = document.getElementById("topbar");
+const exitButton = document.getElementById("exitButton");
 
-const backButton =
-  document.getElementById("backButton");
+const foodTitle = document.getElementById("foodTitle");
 
-const canvas =
-  document.getElementById("arCanvas");
+const instructions = document.getElementById("instructions");
 
-const topbar =
-  document.getElementById("topbar");
+const placeButton = document.getElementById("placeButton");
 
-const foodTitle =
-  document.getElementById("foodTitle");
+const placedControls = document.getElementById("placedControls");
 
-const instructions =
-  document.getElementById("instructions");
+const removeButton = document.getElementById("removeButton");
+const doneButton = document.getElementById("doneButton");
 
-const placeButton =
-  document.getElementById("placeButton");
+const info = document.getElementById("info");
 
-const placedControls =
-  document.getElementById("placedControls");
+const foodName = document.getElementById("foodName");
+const foodPrice = document.getElementById("foodPrice");
 
-const removeButton =
-  document.getElementById("removeButton");
+// -----------------------------
+// State
+// -----------------------------
 
-const doneButton =
-  document.getElementById("doneButton");
-
-const exitButton =
-  document.getElementById("exitButton");
-
-const info =
-  document.getElementById("info");
-
-const foodName =
-  document.getElementById("foodName");
-
-const foodPrice =
-  document.getElementById("foodPrice");
-
-
+let renderer = null;
 let scene = null;
 let camera = null;
-let renderer = null;
-
-let model = null;
-let reticle = null;
 
 let xrSession = null;
+
+let referenceSpace = null;
+let viewerSpace = null;
 let hitTestSource = null;
 
-let modelPlaced = false;
+let reticle = null;
 
-let item = {
-  name: "Classic Pizza",
-  price: 299,
-  model: "assets/models/pizza.glb"
+let pizzaModel = null;
+let placedPizza = null;
+
+let hitFound = false;
+let pizzaPlaced = false;
+
+let animationFrameHandle = null;
+
+// -----------------------------
+// Product data
+// -----------------------------
+
+const params = new URLSearchParams(window.location.search);
+
+const item = params.get("item") || "pizza";
+
+const products = {
+pizza: {
+name: "Classic Pizza",
+price: "₹299",
+model: "assets/models/pizza.glb"
+}
 };
 
+const product = products[item] || products.pizza;
 
-function setLoading(title, text) {
+foodName.textContent = product.name;
+foodPrice.textContent = product.price;
+foodTitle.textContent = "NEMPAT AR";
 
-  loading.classList.remove("hidden");
+// ============================================================
+// Utility
+// ============================================================
 
-  ready.classList.add("hidden");
+function showOnly(element) {
 
-  errorScreen.classList.add("hidden");
+loadingScreen.classList.add("hidden");
+readyScreen.classList.add("hidden");
+errorScreen.classList.add("hidden");
 
-  loadingTitle.textContent =
-    title;
-
-  loadingText.textContent =
-    text || "";
-
+element.classList.remove("hidden");
 }
-
-
-function showReady() {
-
-  loading.classList.add("hidden");
-
-  errorScreen.classList.add("hidden");
-
-  ready.classList.remove("hidden");
-
-}
-
 
 function showError(message) {
 
-  console.error(
-    "NEMPAT AR ERROR:",
-    message
+console.error("NEMPAT AR ERROR:", message);
+
+errorText.textContent = message;
+
+showOnly(errorScreen);
+}
+
+function setLoading(title, message) {
+
+loadingTitle.textContent = title;
+loadingText.textContent = message;
+}
+
+// ============================================================
+// Start-up
+// ============================================================
+
+async function init() {
+
+try {
+
+```
+setLoading(
+  "Preparing AR...",
+  "Loading 3D engine"
+);
+
+// Give the module system a moment to finish initialization.
+await new Promise(resolve => setTimeout(resolve, 100));
+
+
+// ----------------------------------------
+// Check WebXR
+// ----------------------------------------
+
+if (!navigator.xr) {
+
+  throw new Error(
+    "WebXR is not available in this browser. Try a supported Android Chrome device."
   );
-
-  loading.classList.add("hidden");
-
-  ready.classList.add("hidden");
-
-  errorScreen.classList.remove("hidden");
-
-  errorText.textContent =
-    message;
 
 }
 
 
-function setupThree() {
+// ----------------------------------------
+// Check immersive AR
+// ----------------------------------------
 
-  if (
-    typeof THREE === "undefined"
-  ) {
+let supported = false;
 
-    throw new Error(
-      "Three.js failed to load."
+try {
+
+  supported = await navigator.xr.isSessionSupported(
+    "immersive-ar"
+  );
+
+} catch (error) {
+
+  console.error(
+    "WebXR support check failed:",
+    error
+  );
+
+  throw new Error(
+    "This browser could not check WebXR AR support."
+  );
+
+}
+
+
+if (!supported) {
+
+  throw new Error(
+    "Markerless AR is not supported on this device/browser."
+  );
+
+}
+
+
+// ----------------------------------------
+// Load pizza
+// ----------------------------------------
+
+setLoading(
+  "Preparing AR...",
+  "Loading your food model"
+);
+
+
+const loader = new GLTFLoader();
+
+
+pizzaModel = await new Promise(
+  (resolve, reject) => {
+
+    loader.load(
+      product.model,
+
+      gltf => {
+
+        console.log(
+          "Pizza GLB loaded successfully."
+        );
+
+        resolve(gltf.scene);
+
+      },
+
+      progress => {
+
+        if (
+          progress.total &&
+          progress.total > 0
+        ) {
+
+          const percent =
+            Math.round(
+              (progress.loaded / progress.total) * 100
+            );
+
+          loadingText.textContent =
+            `Loading pizza model ${percent}%`;
+
+        }
+
+      },
+
+      error => {
+
+        console.error(
+          "GLB loading error:",
+          error
+        );
+
+        reject(
+          new Error(
+            "Could not load pizza.glb. Check assets/models/pizza.glb."
+          )
+        );
+
+      }
     );
 
   }
+);
 
 
-  if (
-    typeof THREE.GLTFLoader ===
-    "undefined"
-  ) {
+// ----------------------------------------
+// Prepare model
+// ----------------------------------------
 
-    throw new Error(
-      "GLTFLoader failed to load."
-    );
-
-  }
+pizzaModel.visible = false;
 
 
-  scene =
-    new THREE.Scene();
+// ----------------------------------------
+// Three.js scene
+// ----------------------------------------
+
+scene = new THREE.Scene();
 
 
-  camera =
-    new THREE.PerspectiveCamera(
-      70,
-      window.innerWidth /
-        window.innerHeight,
-      0.01,
-      100
-    );
+// ----------------------------------------
+// Camera
+// ----------------------------------------
+
+camera = new THREE.PerspectiveCamera(
+  70,
+  window.innerWidth / window.innerHeight,
+  0.01,
+  20
+);
 
 
-  renderer =
-    new THREE.WebGLRenderer({
+// ----------------------------------------
+// Renderer
+// ----------------------------------------
 
-      canvas: canvas,
+renderer = new THREE.WebGLRenderer({
 
-      alpha: true,
+  canvas: canvas,
 
-      antialias: true,
+  alpha: true,
 
-      powerPreference:
-        "high-performance"
+  antialias: true,
 
-    });
+  powerPreference: "high-performance"
+
+});
 
 
-  renderer.setPixelRatio(
-    Math.min(
-      window.devicePixelRatio || 1,
-      2
-    )
+renderer.setPixelRatio(
+  Math.min(window.devicePixelRatio, 2)
+);
+
+renderer.setSize(
+  window.innerWidth,
+  window.innerHeight
+);
+
+
+renderer.xr.enabled = true;
+
+
+// Transparent AR background.
+renderer.setClearColor(
+  0x000000,
+  0
+);
+
+
+// ----------------------------------------
+// Lighting
+// ----------------------------------------
+
+const ambientLight =
+  new THREE.HemisphereLight(
+    0xffffff,
+    0x444444,
+    2.5
   );
 
-
-  renderer.setSize(
-    window.innerWidth,
-    window.innerHeight
-  );
+scene.add(ambientLight);
 
 
-  renderer.xr.enabled =
-    true;
-
-
-  const hemisphere =
-    new THREE.HemisphereLight(
-      0xffffff,
-      0x555555,
-      2.5
-    );
-
-
-  scene.add(
-    hemisphere
-  );
-
-
-  const directional =
-    new THREE.DirectionalLight(
-      0xffffff,
-      2
-    );
-
-
-  directional.position.set(
-    2,
-    4,
+const directionalLight =
+  new THREE.DirectionalLight(
+    0xffffff,
     2
   );
 
+directionalLight.position.set(
+  2,
+  4,
+  2
+);
 
-  scene.add(
-    directional
-  );
-
-
-  const geometry =
-    new THREE.RingGeometry(
-      0.07,
-      0.085,
-      32
-    );
+scene.add(directionalLight);
 
 
-  const material =
-    new THREE.MeshBasicMaterial({
+// ----------------------------------------
+// Reticle
+// ----------------------------------------
 
-      color: 0xffffff,
+reticle = createReticle();
 
-      transparent: true,
+reticle.visible = false;
 
-      opacity: 0.9,
-
-      side:
-        THREE.DoubleSide
-
-    });
+scene.add(reticle);
 
 
-  reticle =
-    new THREE.Mesh(
-      geometry,
-      material
-    );
+// ----------------------------------------
+// Resize
+// ----------------------------------------
+
+window.addEventListener(
+  "resize",
+  onResize
+);
 
 
-  reticle.rotation.x =
-    -Math.PI / 2;
+// ----------------------------------------
+// Ready
+// ----------------------------------------
 
+setLoading(
+  "Ready",
+  "Your AR experience is ready."
+);
 
-  reticle.matrixAutoUpdate =
-    false;
+showOnly(readyScreen);
 
+console.log(
+  "NEMPAT AR initialized successfully."
+);
+```
 
-  reticle.visible =
-    false;
+} catch (error) {
 
+```
+console.error(
+  "NEMPAT AR initialization failed:",
+  error
+);
 
-  scene.add(
-    reticle
-  );
+showError(
+  error.message ||
+  "Unable to initialize AR."
+);
+```
 
+}
 
-  renderer.setAnimationLoop(
-    render
-  );
+}
 
+// ============================================================
+// Reticle
+// ============================================================
 
-  window.addEventListener(
-    "resize",
-    resize
+function createReticle() {
+
+const group = new THREE.Group();
+
+const ringGeometry =
+new THREE.RingGeometry(
+0.08,
+0.095,
+48
+);
+
+const ringMaterial =
+new THREE.MeshBasicMaterial({
+
+```
+  color: 0xffffff,
+
+  transparent: true,
+
+  opacity: 0.9,
+
+  side: THREE.DoubleSide
+
+});
+```
+
+const ring =
+new THREE.Mesh(
+ringGeometry,
+ringMaterial
+);
+
+ring.rotation.x =
+-Math.PI / 2;
+
+group.add(ring);
+
+const centerGeometry =
+new THREE.CircleGeometry(
+0.015,
+32
+);
+
+const centerMaterial =
+new THREE.MeshBasicMaterial({
+
+```
+  color: 0xffffff,
+
+  transparent: true,
+
+  opacity: 0.7,
+
+  side: THREE.DoubleSide
+
+});
+```
+
+const center =
+new THREE.Mesh(
+centerGeometry,
+centerMaterial
+);
+
+center.rotation.x =
+-Math.PI / 2;
+
+center.position.y =
+0.001;
+
+group.add(center);
+
+return group;
+
+}
+
+// ============================================================
+// Start AR
+// ============================================================
+
+startButton.addEventListener(
+"click",
+startAR
+);
+
+async function startAR() {
+
+try {
+
+```
+if (!renderer) {
+
+  throw new Error(
+    "AR renderer is not ready."
   );
 
 }
 
 
-function loadModel() {
+setLoading(
+  "Starting AR...",
+  "Opening your camera"
+);
 
-  return new Promise(
-    function(resolve, reject) {
-
-      const loader =
-        new THREE.GLTFLoader();
-
-
-      loader.load(
-
-        item.model,
-
-        function(gltf) {
-
-          console.log(
-            "PIZZA GLB LOADED"
-          );
+showOnly(loadingScreen);
 
 
-          model =
-            gltf.scene;
+// ----------------------------------------
+// Request immersive AR
+// ----------------------------------------
 
+xrSession =
+  await navigator.xr.requestSession(
+    "immersive-ar",
+    {
 
-          model.visible =
-            false;
+      requiredFeatures: [
+        "hit-test"
+      ],
 
+      optionalFeatures: [
+        "local-floor",
+        "dom-overlay"
+      ],
 
-          model.traverse(
-            function(object) {
-
-              if (
-                object.isMesh
-              ) {
-
-                object.castShadow =
-                  true;
-
-                object.receiveShadow =
-                  true;
-
-              }
-
-            }
-          );
-
-
-          const box =
-            new THREE.Box3()
-              .setFromObject(
-                model
-              );
-
-
-          const size =
-            box.getSize(
-              new THREE.Vector3()
-            );
-
-
-          const largest =
-            Math.max(
-              size.x,
-              size.y,
-              size.z
-            );
-
-
-          if (
-            largest > 0
-          ) {
-
-            const scale =
-              0.35 / largest;
-
-            model.scale.setScalar(
-              scale
-            );
-
-          }
-
-
-          const scaledBox =
-            new THREE.Box3()
-              .setFromObject(
-                model
-              );
-
-
-          model.position.y =
-            -scaledBox.min.y;
-
-
-          scene.add(
-            model
-          );
-
-
-          resolve();
-
-        },
-
-
-        function(progress) {
-
-          if (
-            progress.total
-          ) {
-
-            const percent =
-              Math.round(
-                progress.loaded /
-                progress.total *
-                100
-              );
-
-            loadingText.textContent =
-              "Loading pizza " +
-              percent +
-              "%";
-
-          }
-
-        },
-
-
-        function(error) {
-
-          console.error(
-            "GLB ERROR:",
-            error
-          );
-
-
-          reject(
-            new Error(
-              "Could not load pizza.glb. Check the model file path."
-            )
-          );
-
-        }
-
-      );
+      domOverlay: {
+        root: document.body
+      }
 
     }
   );
 
-}
+
+// ----------------------------------------
+// Connect Three.js to WebXR
+// ----------------------------------------
+
+renderer.xr.setReferenceSpaceType(
+  "local-floor"
+);
 
 
-async function checkARSupport() {
-
-  if (
-    !window.isSecureContext
-  ) {
-
-    throw new Error(
-      "AR requires HTTPS."
-    );
-
-  }
+await renderer.xr.setSession(
+  xrSession
+);
 
 
-  if (
-    !navigator.xr
-  ) {
+// ----------------------------------------
+// Reference spaces
+// ----------------------------------------
 
-    throw new Error(
-      "WebXR is not available in this browser."
-    );
+viewerSpace =
+  await xrSession.requestReferenceSpace(
+    "viewer"
+  );
 
-  }
+
+referenceSpace =
+  await xrSession.requestReferenceSpace(
+    "local-floor"
+  );
 
 
-  let supported =
-    false;
+// ----------------------------------------
+// Hit-test source
+// ----------------------------------------
 
+hitTestSource =
+  await xrSession.requestHitTestSource({
+
+    space: viewerSpace
+
+  });
+
+
+// ----------------------------------------
+// Session ended
+// ----------------------------------------
+
+xrSession.addEventListener(
+  "end",
+  onSessionEnd
+);
+
+
+// ----------------------------------------
+// UI
+// ----------------------------------------
+
+loadingScreen.classList.add(
+  "hidden"
+);
+
+topbar.classList.remove(
+  "hidden"
+);
+
+instructions.classList.remove(
+  "hidden"
+);
+
+info.classList.remove(
+  "hidden"
+);
+
+
+// ----------------------------------------
+// XR render loop
+// ----------------------------------------
+
+renderer.setAnimationLoop(
+  renderXR
+);
+
+
+console.log(
+  "NEMPAT immersive AR session started."
+);
+```
+
+} catch (error) {
+
+```
+console.error(
+  "Could not start AR:",
+  error
+);
+
+
+if (
+  xrSession
+) {
 
   try {
 
-    supported =
-      await navigator.xr
-        .isSessionSupported(
-          "immersive-ar"
-        );
+    await xrSession.end();
 
-  } catch(error) {
-
-    console.error(
-      error
-    );
-
-    throw new Error(
-      "The browser could not check AR support."
-    );
-
-  }
-
-
-  if (!supported) {
-
-    throw new Error(
-      "This phone/browser does not support markerless browser AR."
-    );
-
-  }
+  } catch (_) {}
 
 }
 
 
-async function startARSession() {
-
-  setLoading(
-    "Starting AR...",
-    "Opening camera AR"
-  );
+xrSession = null;
 
 
-  xrSession =
-    await navigator.xr.requestSession(
-      "immersive-ar",
-      {
-        requiredFeatures: [
-          "hit-test"
-        ],
-
-        optionalFeatures: [
-          "local-floor"
-        ]
-      }
-    );
-
-
-  xrSession.addEventListener(
-    "end",
-    sessionEnded
-  );
-
-
-  await renderer.xr.setSession(
-    xrSession
-  );
-
-
-  const viewerSpace =
-    await xrSession.requestReferenceSpace(
-      "viewer"
-    );
-
-
-  hitTestSource =
-    await xrSession.requestHitTestSource({
-      space: viewerSpace
-    });
-
-
-  loading.classList.add(
-    "hidden"
-  );
-
-
-  topbar.classList.remove(
-    "hidden"
-  );
-
-
-  instructions.classList.remove(
-    "hidden"
-  );
-
-
-  info.classList.remove(
-    "hidden"
-  );
-
-
-  console.log(
-    "NEMPAT REAL AR ACTIVE"
-  );
+showError(
+  error.message ||
+  "AR could not start on this device."
+);
+```
 
 }
 
+}
 
-function render(
-  timestamp,
-  frame
+// ============================================================
+// XR render loop
+// ============================================================
+
+function renderXR(
+timestamp,
+frame
 ) {
 
-  if (
-    frame &&
-    xrSession &&
+if (
+!frame ||
+!xrSession ||
+!referenceSpace
+) {
+
+```
+return;
+```
+
+}
+
+// ----------------------------------------
+// Hit testing
+// ----------------------------------------
+
+if (hitTestSource) {
+
+```
+const hitTestResults =
+  frame.getHitTestResults(
     hitTestSource
-  ) {
-
-    const referenceSpace =
-      renderer.xr.getReferenceSpace();
+  );
 
 
-    if (
+if (
+  hitTestResults.length > 0
+) {
+
+  const hit =
+    hitTestResults[0];
+
+
+  const pose =
+    hit.getPose(
       referenceSpace
-    ) {
-
-      const results =
-        frame.getHitTestResults(
-          hitTestSource
-        );
+    );
 
 
-      if (
-        results.length > 0
-      ) {
+  if (pose) {
 
-        const pose =
-          results[0].getPose(
-            referenceSpace
-          );
+    reticle.visible = true;
 
+    reticle.matrix.fromArray(
+      pose.transform.matrix
+    );
 
-        if (
-          pose
-        ) {
-
-          reticle.visible =
-            true;
+    reticle.matrix.decompose(
+      reticle.position,
+      reticle.quaternion,
+      reticle.scale
+    );
 
 
-          reticle.matrix.fromArray(
-            pose.transform.matrix
-          );
+    hitFound = true;
 
 
-          if (
-            !modelPlaced
-          ) {
+    if (!pizzaPlaced) {
 
-            placeButton.classList.remove(
-              "hidden"
-            );
+      placeButton.classList.remove(
+        "hidden"
+      );
 
-          }
-
-        }
-
-      } else {
-
-        reticle.visible =
-          false;
-
-
-        if (
-          !modelPlaced
-        ) {
-
-          placeButton.classList.add(
-            "hidden"
-          );
-
-        }
-
-      }
+      instructions.classList.add(
+        "hidden"
+      );
 
     }
 
   }
 
+} else {
 
-  renderer.render(
-    scene,
-    camera
-  );
+  reticle.visible = false;
+
+  hitFound = false;
+
+
+  if (!pizzaPlaced) {
+
+    placeButton.classList.add(
+      "hidden"
+    );
+
+  }
+
+}
+```
 
 }
 
+// ----------------------------------------
+// Render
+// ----------------------------------------
+
+renderer.render(
+scene,
+camera
+);
+
+}
+
+// ============================================================
+// Place pizza
+// ============================================================
+
+placeButton.addEventListener(
+"click",
+placePizza
+);
 
 function placePizza() {
 
-  if (
-    !reticle ||
-    !reticle.visible ||
-    !model
-  ) {
+if (
+!hitFound ||
+!reticle.visible ||
+!pizzaModel
+) {
 
-    return;
-
-  }
-
-
-  const position =
-    new THREE.Vector3();
-
-
-  position.setFromMatrixPosition(
-    reticle.matrix
-  );
-
-
-  model.position.copy(
-    position
-  );
-
-
-  model.rotation.set(
-    0,
-    0,
-    0
-  );
-
-
-  model.visible =
-    true;
-
-
-  modelPlaced =
-    true;
-
-
-  placeButton.classList.add(
-    "hidden"
-  );
-
-
-  instructions.classList.add(
-    "hidden"
-  );
-
-
-  placedControls.classList.remove(
-    "hidden"
-  );
+```
+return;
+```
 
 }
 
+// Remove previous placement.
+if (placedPizza) {
+
+```
+scene.remove(
+  placedPizza
+);
+```
+
+}
+
+// Clone the loaded model.
+placedPizza =
+pizzaModel.clone(
+true
+);
+
+// ----------------------------------------
+// Scale
+// ----------------------------------------
+
+placedPizza.scale.set(
+0.35,
+0.35,
+0.35
+);
+
+// ----------------------------------------
+// Place exactly at reticle
+// ----------------------------------------
+
+placedPizza.position.copy(
+reticle.position
+);
+
+placedPizza.quaternion.copy(
+reticle.quaternion
+);
+
+// ----------------------------------------
+// Make visible
+// ----------------------------------------
+
+placedPizza.visible = true;
+
+scene.add(
+placedPizza
+);
+
+pizzaPlaced = true;
+
+// ----------------------------------------
+// UI
+// ----------------------------------------
+
+reticle.visible = false;
+
+placeButton.classList.add(
+"hidden"
+);
+
+instructions.classList.add(
+"hidden"
+);
+
+placedControls.classList.remove(
+"hidden"
+);
+
+console.log(
+"Pizza placed."
+);
+
+}
+
+// ============================================================
+// Remove pizza
+// ============================================================
+
+removeButton.addEventListener(
+"click",
+removePizza
+);
 
 function removePizza() {
 
-  if (
-    !model
-  ) {
+if (placedPizza) {
 
-    return;
+```
+scene.remove(
+  placedPizza
+);
 
-  }
-
-
-  model.visible =
-    false;
-
-
-  modelPlaced =
-    false;
-
-
-  placedControls.classList.add(
-    "hidden"
-  );
-
-
-  instructions.classList.remove(
-    "hidden"
-  );
+placedPizza = null;
+```
 
 }
 
+pizzaPlaced = false;
+
+placedControls.classList.add(
+"hidden"
+);
+
+info.classList.add(
+"hidden"
+);
+
+instructions.classList.remove(
+"hidden"
+);
+
+if (hitFound) {
+
+```
+placeButton.classList.remove(
+  "hidden"
+);
+```
+
+}
+
+}
+
+// ============================================================
+// Done
+// ============================================================
+
+doneButton.addEventListener(
+"click",
+() => {
+
+```
+placedControls.classList.add(
+  "hidden"
+);
+
+info.classList.remove(
+  "hidden"
+);
+```
+
+}
+);
+
+// ============================================================
+// Exit
+// ============================================================
+
+exitButton.addEventListener(
+"click",
+exitAR
+);
+
+backButton.addEventListener(
+"click",
+() => {
+
+```
+window.history.back();
+```
+
+}
+);
 
 async function exitAR() {
 
-  if (
-    xrSession
-  ) {
+if (xrSession) {
 
-    try {
+```
+try {
 
-      await xrSession.end();
+  await xrSession.end();
 
-    } catch(error) {
+} catch (error) {
 
-      console.error(
-        error
-      );
-
-    }
-
-  } else {
-
-    history.back();
-
-  }
-
-}
-
-
-function sessionEnded() {
-
-  xrSession =
-    null;
-
-  hitTestSource =
-    null;
-
-  modelPlaced =
-    false;
-
-
-  if (
-    model
-  ) {
-
-    model.visible =
-      false;
-
-  }
-
-
-  if (
-    reticle
-  ) {
-
-    reticle.visible =
-      false;
-
-  }
-
-
-  placeButton.classList.add(
-    "hidden"
-  );
-
-  placedControls.classList.add(
-    "hidden"
-  );
-
-  instructions.classList.add(
-    "hidden"
-  );
-
-  topbar.classList.add(
-    "hidden"
-  );
-
-  info.classList.add(
-    "hidden"
-  );
-
-
-  showReady();
-
-}
-
-
-function resize() {
-
-  if (
-    !renderer ||
-    !camera
-  ) {
-
-    return;
-
-  }
-
-
-  camera.aspect =
-    window.innerWidth /
-    window.innerHeight;
-
-
-  camera.updateProjectionMatrix();
-
-
-  renderer.setSize(
-    window.innerWidth,
-    window.innerHeight
+  console.error(
+    "AR session end error:",
+    error
   );
 
 }
+```
 
+} else {
 
-startAR.addEventListener(
-  "click",
-  async function() {
-
-    try {
-
-      setLoading(
-        "Checking AR...",
-        "Checking this phone"
-      );
-
-
-      await checkARSupport();
-
-
-      setLoading(
-        "Loading pizza...",
-        "Preparing 3D model"
-      );
-
-
-      await loadModel();
-
-
-      await startARSession();
-
-    } catch(error) {
-
-      console.error(
-        "START ERROR:",
-        error
-      );
-
-
-      showError(
-        error.message ||
-        "Unable to start AR."
-      );
-
-    }
-
-  }
-);
-
-
-placeButton.addEventListener(
-  "click",
-  placePizza
-);
-
-
-removeButton.addEventListener(
-  "click",
-  removePizza
-);
-
-
-doneButton.addEventListener(
-  "click",
-  exitAR
-);
-
-
-exitButton.addEventListener(
-  "click",
-  exitAR
-);
-
-
-backButton.addEventListener(
-  "click",
-  function() {
-
-    history.back();
-
-  }
-);
-
-
-function initialize() {
-
-  try {
-
-    console.log(
-      "NEMPAT AR v40 INITIALIZING"
-    );
-
-
-    setLoading(
-      "Loading NEMPAT AR...",
-      "Starting"
-    );
-
-
-    setupThree();
-
-
-    foodName.textContent =
-      item.name;
-
-
-    foodPrice.textContent =
-      "₹" + item.price;
-
-
-    foodTitle.textContent =
-      "NEMPAT AR";
-
-
-    setTimeout(
-      function() {
-
-        showReady();
-
-      },
-      300
-    );
-
-
-  } catch(error) {
-
-    console.error(
-      "INITIALIZATION ERROR:",
-      error
-    );
-
-
-    showError(
-      error.message ||
-      "AR initialization failed."
-    );
-
-  }
+```
+window.history.back();
+```
 
 }
 
+}
 
-initialize();
+// ============================================================
+// Session ended
+// ============================================================
+
+function onSessionEnd() {
+
+console.log(
+"NEMPAT AR session ended."
+);
+
+xrSession = null;
+
+hitTestSource = null;
+
+hitFound = false;
+
+pizzaPlaced = false;
+
+renderer.setAnimationLoop(
+null
+);
+
+topbar.classList.add(
+"hidden"
+);
+
+instructions.classList.add(
+"hidden"
+);
+
+placeButton.classList.add(
+"hidden"
+);
+
+placedControls.classList.add(
+"hidden"
+);
+
+info.classList.add(
+"hidden"
+);
+
+if (placedPizza) {
+
+```
+scene.remove(
+  placedPizza
+);
+
+placedPizza = null;
+```
+
+}
+
+showOnly(readyScreen);
+
+}
+
+// ============================================================
+// Resize
+// ============================================================
+
+function onResize() {
+
+if (!camera || !renderer) {
+
+```
+return;
+```
+
+}
+
+camera.aspect =
+window.innerWidth /
+window.innerHeight;
+
+camera.updateProjectionMatrix();
+
+renderer.setSize(
+window.innerWidth,
+window.innerHeight
+);
+
+}
+
+// ============================================================
+// Start
+// ============================================================
+
+init();
