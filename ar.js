@@ -1,12 +1,14 @@
-import * as THREE from
-  "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js";
-
-import { GLTFLoader } from
-  "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/loaders/GLTFLoader.js";
+console.log("NEMPAT AR.JS v40 STARTED");
 
 
 const loading =
   document.getElementById("loading");
+
+const loadingTitle =
+  document.getElementById("loadingTitle");
+
+const loadingText =
+  document.getElementById("loadingText");
 
 const ready =
   document.getElementById("ready");
@@ -19,6 +21,9 @@ const errorText =
 
 const startAR =
   document.getElementById("startAR");
+
+const backButton =
+  document.getElementById("backButton");
 
 const canvas =
   document.getElementById("arCanvas");
@@ -57,9 +62,9 @@ const foodPrice =
   document.getElementById("foodPrice");
 
 
-let scene;
-let camera;
-let renderer;
+let scene = null;
+let camera = null;
+let renderer = null;
 
 let model = null;
 let reticle = null;
@@ -67,19 +72,16 @@ let reticle = null;
 let xrSession = null;
 let hitTestSource = null;
 
-let hitTestSourceRequested = false;
-
 let modelPlaced = false;
 
 let item = {
-  id: "pizza",
   name: "Classic Pizza",
   price: 299,
   model: "assets/models/pizza.glb"
 };
 
 
-function showLoading(text) {
+function setLoading(title, text) {
 
   loading.classList.remove("hidden");
 
@@ -87,8 +89,11 @@ function showLoading(text) {
 
   errorScreen.classList.add("hidden");
 
-  loading.querySelector("h2").textContent =
-    text;
+  loadingTitle.textContent =
+    title;
+
+  loadingText.textContent =
+    text || "";
 
 }
 
@@ -119,10 +124,34 @@ function showError(message) {
 
   errorText.textContent =
     message;
+
 }
 
 
-function setupScene() {
+function setupThree() {
+
+  if (
+    typeof THREE === "undefined"
+  ) {
+
+    throw new Error(
+      "Three.js failed to load."
+    );
+
+  }
+
+
+  if (
+    typeof THREE.GLTFLoader ===
+    "undefined"
+  ) {
+
+    throw new Error(
+      "GLTFLoader failed to load."
+    );
+
+  }
+
 
   scene =
     new THREE.Scene();
@@ -140,11 +169,16 @@ function setupScene() {
 
   renderer =
     new THREE.WebGLRenderer({
+
       canvas: canvas,
+
       alpha: true,
+
       antialias: true,
+
       powerPreference:
         "high-performance"
+
     });
 
 
@@ -162,14 +196,11 @@ function setupScene() {
   );
 
 
-  renderer.xr.enabled = true;
+  renderer.xr.enabled =
+    true;
 
 
-  renderer.outputColorSpace =
-    THREE.SRGBColorSpace;
-
-
-  const light =
+  const hemisphere =
     new THREE.HemisphereLight(
       0xffffff,
       0x555555,
@@ -177,7 +208,9 @@ function setupScene() {
     );
 
 
-  scene.add(light);
+  scene.add(
+    hemisphere
+  );
 
 
   const directional =
@@ -199,24 +232,6 @@ function setupScene() {
   );
 
 
-  createReticle();
-
-
-  renderer.setAnimationLoop(
-    render
-  );
-
-
-  window.addEventListener(
-    "resize",
-    resize
-  );
-
-}
-
-
-function createReticle() {
-
   const geometry =
     new THREE.RingGeometry(
       0.07,
@@ -227,10 +242,16 @@ function createReticle() {
 
   const material =
     new THREE.MeshBasicMaterial({
+
       color: 0xffffff,
+
       transparent: true,
+
       opacity: 0.9,
-      side: THREE.DoubleSide
+
+      side:
+        THREE.DoubleSide
+
     });
 
 
@@ -257,23 +278,39 @@ function createReticle() {
     reticle
   );
 
+
+  renderer.setAnimationLoop(
+    render
+  );
+
+
+  window.addEventListener(
+    "resize",
+    resize
+  );
+
 }
 
 
-async function loadModel() {
+function loadModel() {
 
   return new Promise(
-    (resolve, reject) => {
+    function(resolve, reject) {
 
       const loader =
-        new GLTFLoader();
+        new THREE.GLTFLoader();
 
 
       loader.load(
 
         item.model,
 
-        (gltf) => {
+        function(gltf) {
+
+          console.log(
+            "PIZZA GLB LOADED"
+          );
+
 
           model =
             gltf.scene;
@@ -284,7 +321,7 @@ async function loadModel() {
 
 
           model.traverse(
-            (object) => {
+            function(object) {
 
               if (
                 object.isMesh
@@ -323,17 +360,12 @@ async function loadModel() {
             );
 
 
-          const desired =
-            0.35;
-
-
           if (
             largest > 0
           ) {
 
             const scale =
-              desired /
-              largest;
+              0.35 / largest;
 
             model.scale.setScalar(
               scale
@@ -362,18 +394,41 @@ async function loadModel() {
 
         },
 
-        undefined,
 
-        (error) => {
+        function(progress) {
+
+          if (
+            progress.total
+          ) {
+
+            const percent =
+              Math.round(
+                progress.loaded /
+                progress.total *
+                100
+              );
+
+            loadingText.textContent =
+              "Loading pizza " +
+              percent +
+              "%";
+
+          }
+
+        },
+
+
+        function(error) {
 
           console.error(
-            "MODEL ERROR:",
+            "GLB ERROR:",
             error
           );
 
+
           reject(
             new Error(
-              "Pizza 3D model could not be loaded."
+              "Could not load pizza.glb. Check the model file path."
             )
           );
 
@@ -387,14 +442,14 @@ async function loadModel() {
 }
 
 
-async function checkAR() {
+async function checkARSupport() {
 
   if (
     !window.isSecureContext
   ) {
 
     throw new Error(
-      "AR requires a secure HTTPS connection."
+      "AR requires HTTPS."
     );
 
   }
@@ -405,13 +460,14 @@ async function checkAR() {
   ) {
 
     throw new Error(
-      "WebXR is not available in this browser. Use a supported Android browser."
+      "WebXR is not available in this browser."
     );
 
   }
 
 
-  let supported;
+  let supported =
+    false;
 
 
   try {
@@ -422,14 +478,14 @@ async function checkAR() {
           "immersive-ar"
         );
 
-  } catch (error) {
+  } catch(error) {
 
     console.error(
       error
     );
 
     throw new Error(
-      "This browser could not check AR support."
+      "The browser could not check AR support."
     );
 
   }
@@ -438,7 +494,7 @@ async function checkAR() {
   if (!supported) {
 
     throw new Error(
-      "Markerless browser AR is not supported on this device/browser."
+      "This phone/browser does not support markerless browser AR."
     );
 
   }
@@ -446,10 +502,11 @@ async function checkAR() {
 }
 
 
-async function startXR() {
+async function startARSession() {
 
-  showLoading(
-    "Starting camera AR..."
+  setLoading(
+    "Starting AR...",
+    "Opening camera AR"
   );
 
 
@@ -491,21 +548,7 @@ async function startXR() {
     });
 
 
-  hitTestSourceRequested =
-    true;
-
-
   loading.classList.add(
-    "hidden"
-  );
-
-
-  ready.classList.add(
-    "hidden"
-  );
-
-
-  errorScreen.classList.add(
     "hidden"
   );
 
@@ -525,20 +568,8 @@ async function startXR() {
   );
 
 
-  foodName.textContent =
-    item.name;
-
-
-  foodPrice.textContent =
-    "₹" + item.price;
-
-
-  foodTitle.textContent =
-    "NEMPAT AR";
-
-
   console.log(
-    "NEMPAT AR SESSION STARTED"
+    "NEMPAT REAL AR ACTIVE"
   );
 
 }
@@ -550,95 +581,77 @@ function render(
 ) {
 
   if (
-    !frame ||
-    !xrSession
+    frame &&
+    xrSession &&
+    hitTestSource
   ) {
 
-    renderer.render(
-      scene,
-      camera
-    );
-
-    return;
-
-  }
-
-
-  const referenceSpace =
-    renderer.xr.getReferenceSpace();
-
-
-  if (
-    !referenceSpace ||
-    !hitTestSource
-  ) {
-
-    renderer.render(
-      scene,
-      camera
-    );
-
-    return;
-
-  }
-
-
-  const results =
-    frame.getHitTestResults(
-      hitTestSource
-    );
-
-
-  if (
-    results.length > 0
-  ) {
-
-    const hit =
-      results[0];
-
-
-    const pose =
-      hit.getPose(
-        referenceSpace
-      );
-
-
-    if (pose) {
-
-      reticle.visible =
-        true;
-
-
-      reticle.matrix.fromArray(
-        pose.transform.matrix
-      );
-
-
-      if (
-        !modelPlaced
-      ) {
-
-        placeButton.classList.remove(
-          "hidden"
-        );
-
-      }
-
-    }
-
-  } else {
-
-    reticle.visible =
-      false;
+    const referenceSpace =
+      renderer.xr.getReferenceSpace();
 
 
     if (
-      !modelPlaced
+      referenceSpace
     ) {
 
-      placeButton.classList.add(
-        "hidden"
-      );
+      const results =
+        frame.getHitTestResults(
+          hitTestSource
+        );
+
+
+      if (
+        results.length > 0
+      ) {
+
+        const pose =
+          results[0].getPose(
+            referenceSpace
+          );
+
+
+        if (
+          pose
+        ) {
+
+          reticle.visible =
+            true;
+
+
+          reticle.matrix.fromArray(
+            pose.transform.matrix
+          );
+
+
+          if (
+            !modelPlaced
+          ) {
+
+            placeButton.classList.remove(
+              "hidden"
+            );
+
+          }
+
+        }
+
+      } else {
+
+        reticle.visible =
+          false;
+
+
+        if (
+          !modelPlaced
+        ) {
+
+          placeButton.classList.add(
+            "hidden"
+          );
+
+        }
+
+      }
 
     }
 
@@ -653,9 +666,10 @@ function render(
 }
 
 
-function placeModel() {
+function placePizza() {
 
   if (
+    !reticle ||
     !reticle.visible ||
     !model
   ) {
@@ -708,15 +722,10 @@ function placeModel() {
     "hidden"
   );
 
-
-  console.log(
-    "PIZZA PLACED"
-  );
-
 }
 
 
-function removeModel() {
+function removePizza() {
 
   if (
     !model
@@ -744,17 +753,6 @@ function removeModel() {
     "hidden"
   );
 
-
-  if (
-    reticle.visible
-  ) {
-
-    placeButton.classList.remove(
-      "hidden"
-    );
-
-  }
-
 }
 
 
@@ -768,7 +766,7 @@ async function exitAR() {
 
       await xrSession.end();
 
-    } catch (error) {
+    } catch(error) {
 
       console.error(
         error
@@ -790,14 +788,8 @@ function sessionEnded() {
   xrSession =
     null;
 
-
   hitTestSource =
     null;
-
-
-  hitTestSourceRequested =
-    false;
-
 
   modelPlaced =
     false;
@@ -827,21 +819,17 @@ function sessionEnded() {
     "hidden"
   );
 
-
   placedControls.classList.add(
     "hidden"
   );
-
 
   instructions.classList.add(
     "hidden"
   );
 
-
   topbar.classList.add(
     "hidden"
   );
-
 
   info.classList.add(
     "hidden"
@@ -883,32 +871,34 @@ function resize() {
 
 startAR.addEventListener(
   "click",
-  async () => {
+  async function() {
 
     try {
 
-      showLoading(
-        "Checking AR support..."
+      setLoading(
+        "Checking AR...",
+        "Checking this phone"
       );
 
 
-      await checkAR();
+      await checkARSupport();
 
 
-      showLoading(
-        "Loading pizza..."
+      setLoading(
+        "Loading pizza...",
+        "Preparing 3D model"
       );
 
 
       await loadModel();
 
 
-      await startXR();
+      await startARSession();
 
-    } catch (error) {
+    } catch(error) {
 
       console.error(
-        "AR START ERROR:",
+        "START ERROR:",
         error
       );
 
@@ -926,13 +916,13 @@ startAR.addEventListener(
 
 placeButton.addEventListener(
   "click",
-  placeModel
+  placePizza
 );
 
 
 removeButton.addEventListener(
   "click",
-  removeModel
+  removePizza
 );
 
 
@@ -948,34 +938,57 @@ exitButton.addEventListener(
 );
 
 
-async function initialize() {
+backButton.addEventListener(
+  "click",
+  function() {
+
+    history.back();
+
+  }
+);
+
+
+function initialize() {
 
   try {
 
     console.log(
-      "NEMPAT AR v30 LOADING"
+      "NEMPAT AR v40 INITIALIZING"
     );
 
 
-    setupScene();
-
-
-    showLoading(
-      "Loading NEMPAT AR..."
+    setLoading(
+      "Loading NEMPAT AR...",
+      "Starting"
     );
 
 
-    await loadModel();
+    setupThree();
 
 
-    showReady();
+    foodName.textContent =
+      item.name;
 
 
-    console.log(
-      "NEMPAT AR v30 READY"
+    foodPrice.textContent =
+      "₹" + item.price;
+
+
+    foodTitle.textContent =
+      "NEMPAT AR";
+
+
+    setTimeout(
+      function() {
+
+        showReady();
+
+      },
+      300
     );
 
-  } catch (error) {
+
+  } catch(error) {
 
     console.error(
       "INITIALIZATION ERROR:",
