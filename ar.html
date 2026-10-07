@@ -1,8 +1,7 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8">
 
   <meta
@@ -10,159 +9,98 @@
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
   >
 
-  <meta
-    name="theme-color"
-    content="#000000"
-  >
+  <meta name="theme-color" content="#000000">
 
   <title>AR Menu</title>
 
-  <link
-    rel="stylesheet"
-    href="ar.css"
-  >
-
+  <link rel="stylesheet" href="ar.css?v=10">
 </head>
 
 <body>
 
-  <div
-    id="loading"
-    class="loading">
-
+  <!-- Loading -->
+  <div id="loading" class="loading">
     <div>
-
       <div class="loader"></div>
-
-      <p>
-        Preparing AR...
-      </p>
-
+      <p>Preparing AR...</p>
     </div>
-
   </div>
 
-
-  <div
-    id="unsupported"
-    class="message hidden">
-
+  <!-- Unsupported -->
+  <div id="unsupported" class="message hidden">
     <div>
+      <div class="big-icon">📱</div>
 
-      <div class="big-icon">
-        📱
-      </div>
-
-      <h1>
-        AR isn't supported
-      </h1>
+      <h1>AR isn't supported</h1>
 
       <p>
-        Your current browser or device
-        doesn't support browser-based
-        camera AR.
+        This device or browser does not support
+        markerless browser AR.
       </p>
 
-      <button
-        onclick="history.back()">
-
+      <button id="backUnsupported">
         Go Back
-
       </button>
-
     </div>
-
   </div>
 
-
-  <div
-    id="permission"
-    class="message hidden">
-
+  <!-- Ready -->
+  <div id="permission" class="message hidden">
     <div>
+      <div class="big-icon">✨</div>
 
-      <div class="big-icon">
-        ✨
-      </div>
-
-      <h1>
-        Ready for AR
-      </h1>
+      <h1>Ready for AR</h1>
 
       <p>
-        Move your phone slowly until
-        a surface is detected.
+        Point your phone at a table or other flat
+        surface and move slowly.
       </p>
 
       <button id="startAR">
-
         Start AR
-
       </button>
-
     </div>
-
   </div>
 
+  <!-- Three.js AR canvas -->
+  <canvas id="arCanvas"></canvas>
 
-  <video
-    id="camera"
-    autoplay
-    playsinline>
-  </video>
-
-
-  <canvas
-    id="arCanvas">
-  </canvas>
-
-
-  <div
-    id="topbar"
-    class="topbar hidden">
+  <!-- Top bar -->
+  <div id="topbar" class="topbar hidden">
 
     <button
       id="exitButton"
-      class="round-button">
-
+      class="round-button"
+      aria-label="Exit AR"
+    >
       ‹
-
     </button>
 
-    <div
-      id="foodTitle"
-      class="title">
-
+    <div id="foodTitle" class="title">
       AR FOOD
-
     </div>
 
   </div>
 
-
-  <div
-    id="instructions"
-    class="instructions hidden">
-
+  <!-- Surface detection -->
+  <div id="instructions" class="instructions hidden">
     <div class="instruction-dot"></div>
-
     Move your phone slowly
-
   </div>
 
-
-  <div
+  <!-- Place -->
+  <button
     id="placeButton"
-    class="place-button hidden">
-
+    class="place-button hidden"
+  >
     Tap to place 🍕
+  </button>
 
-  </div>
-
-
+  <!-- After placement -->
   <div
     id="placedControls"
-    class="placed-controls hidden">
+    class="placed-controls hidden"
+  >
 
     <button id="removeButton">
       Remove
@@ -174,35 +112,31 @@
 
   </div>
 
-
-  <div
-    id="info"
-    class="info hidden">
+  <!-- Food information -->
+  <div id="info" class="info hidden">
 
     <div
       id="foodName"
-      class="food-name">
-
+      class="food-name"
+    >
       Pizza
-
     </div>
 
     <div
       id="foodPrice"
-      class="food-price">
-
+      class="food-price"
+    >
       ₹299
-
     </div>
 
   </div>
 
-
+  <!-- Cache-busted JS -->
   <script
     type="module"
-    src="ar.js">
-  </script>
+    src="ar.js?v=10"
+  ></script>
 
 </body>
-
 </html>
+```
