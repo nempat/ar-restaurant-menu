@@ -1,80 +1,44 @@
 async function loadMenu() {
 
-  const loading =
-    document.getElementById("loading");
-
-  const error =
-    document.getElementById("error");
-
-  const categoriesContainer =
-    document.getElementById("categories");
+  const loading = document.getElementById("loading");
+  const error = document.getElementById("error");
+  const container = document.getElementById("categories");
 
   try {
 
-    const response =
-      await fetch("menu.json");
+    const response = await fetch("menu.json");
 
     if (!response.ok) {
-      throw new Error(
-        "menu.json could not be loaded"
-      );
+      throw new Error("menu.json failed");
     }
 
-    const data =
-      await response.json();
+    const data = await response.json();
 
-
-    /* RESTAURANT */
-
-    document.getElementById(
-      "restaurantName"
-    ).textContent =
+    document.getElementById("restaurantName").textContent =
       data.restaurant.name;
 
-    document.getElementById(
-      "restaurantTagline"
-    ).textContent =
+    document.getElementById("restaurantTagline").textContent =
       data.restaurant.tagline;
 
-
-    /* CATEGORIES */
-
-    categoriesContainer.innerHTML = "";
-
+    container.innerHTML = "";
 
     data.categories.forEach(category => {
 
-      const categoryElement =
-        document.createElement("section");
+      const section = document.createElement("section");
+      section.className = "category";
 
-      categoryElement.className =
-        "category";
+      const title = document.createElement("h2");
+      title.className = "category-title";
+      title.textContent = category.name;
 
-
-      const title =
-        document.createElement("h2");
-
-      title.className =
-        "category-title";
-
-      title.textContent =
-        category.name;
-
-
-      categoryElement.appendChild(title);
-
+      section.appendChild(title);
 
       category.items.forEach(item => {
 
-        const card =
-          document.createElement("article");
-
-        card.className =
-          "food-card";
-
+        const card = document.createElement("article");
+        card.className = "food-card";
 
         card.innerHTML = `
-
           <img
             class="food-image"
             src="${item.image}"
@@ -100,15 +64,14 @@ async function loadMenu() {
 
               ${
                 item.ar
-                ? `
-                  <button
-                    class="ar-button"
-                    onclick="openAR('${item.id}')"
-                  >
-                    ✨ View in AR
-                  </button>
-                `
-                : ""
+                  ? `
+                    <button
+                      class="ar-button"
+                      onclick="openAR('${item.id}')">
+                      ✨ View in AR
+                    </button>
+                  `
+                  : ""
               }
 
             </div>
@@ -116,44 +79,28 @@ async function loadMenu() {
           </div>
         `;
 
-
-        categoryElement.appendChild(card);
-
+        section.appendChild(card);
       });
 
-
-      categoriesContainer.appendChild(
-        categoryElement
-      );
-
+      container.appendChild(section);
     });
 
-
     loading.classList.add("hidden");
-
 
   } catch (err) {
 
     console.error(err);
 
     loading.classList.add("hidden");
-
     error.classList.remove("hidden");
-
   }
-
 }
 
-
-/* =========================
-   OPEN AR
-========================= */
 
 function openAR(itemId) {
 
   window.location.href =
     `ar.html?item=${encodeURIComponent(itemId)}`;
-
 }
 
 
