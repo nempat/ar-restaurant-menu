@@ -7,51 +7,34 @@
 
   <meta
     name="viewport"
-    content="
-      width=device-width,
-      initial-scale=1.0,
-      maximum-scale=1.0,
-      user-scalable=no
-    "
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
   >
 
-  <meta
-    name="theme-color"
-    content="#000000"
-  >
-
-  <meta
-    http-equiv="Permissions-Policy"
-    content="xr-spatial-tracking=(self)"
-  >
+  <meta name="theme-color" content="#000000">
 
   <title>NEMPAT AR</title>
 
   <link
     rel="stylesheet"
-    href="ar.css?v=30"
+    href="ar.css?v=40"
   >
 
 </head>
 
-
 <body>
 
-  <div
-    id="loading"
-    class="screen"
-  >
+  <div id="loading" class="screen">
 
-    <div class="loader-box">
+    <div class="box">
 
       <div class="loader"></div>
 
-      <h2>
+      <h2 id="loadingTitle">
         Preparing AR...
       </h2>
 
-      <p>
-        Loading the AR experience
+      <p id="loadingText">
+        Loading AR experience
       </p>
 
     </div>
@@ -59,20 +42,13 @@
   </div>
 
 
-  <div
-    id="ready"
-    class="screen hidden"
-  >
+  <div id="ready" class="screen hidden">
 
-    <div class="ready-box">
+    <div class="box">
 
-      <div class="icon">
-        ✨
-      </div>
+      <div class="icon">✨</div>
 
-      <h1>
-        Ready for AR
-      </h1>
+      <h1>Ready for AR</h1>
 
       <p>
         Point your phone at a table
@@ -88,28 +64,19 @@
   </div>
 
 
-  <div
-    id="error"
-    class="screen hidden"
-  >
+  <div id="error" class="screen hidden">
 
-    <div class="error-box">
+    <div class="box">
 
-      <div class="icon">
-        ⚠️
-      </div>
+      <div class="icon">⚠️</div>
 
-      <h1>
-        AR could not start
-      </h1>
+      <h1>AR could not start</h1>
 
       <p id="errorText">
         Something went wrong.
       </p>
 
-      <button
-        onclick="history.back()"
-      >
+      <button id="backButton">
         Go Back
       </button>
 
@@ -118,15 +85,10 @@
   </div>
 
 
-  <canvas
-    id="arCanvas"
-  ></canvas>
+  <canvas id="arCanvas"></canvas>
 
 
-  <div
-    id="topbar"
-    class="topbar hidden"
-  >
+  <div id="topbar" class="topbar hidden">
 
     <button
       id="exitButton"
@@ -149,11 +111,8 @@
     id="instructions"
     class="instructions hidden"
   >
-
     <span class="dot"></span>
-
     Move your phone slowly over the table
-
   </div>
 
 
@@ -174,20 +133,14 @@
       Remove
     </button>
 
-    <button
-      id="doneButton"
-      class="done"
-    >
+    <button id="doneButton">
       Done
     </button>
 
   </div>
 
 
-  <div
-    id="info"
-    class="info hidden"
-  >
+  <div id="info" class="info hidden">
 
     <div
       id="foodName"
@@ -206,9 +159,18 @@
   </div>
 
 
+  <!-- NORMAL SCRIPTS — NOT ES MODULES -->
+
   <script
-    type="module"
-    src="ar.js?v=30"
+    src="https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.min.js"
+  ></script>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/three@0.169.0/examples/js/loaders/GLTFLoader.js"
+  ></script>
+
+  <script
+    src="ar.js?v=40"
   ></script>
 
 </body>
