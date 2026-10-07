@@ -7,8 +7,10 @@
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
   >
+
+  <meta name="theme-color" content="#000000">
 
   <title>AR Menu</title>
 
@@ -27,358 +29,254 @@
     body {
       width: 100%;
       height: 100%;
-
       margin: 0;
-
       overflow: hidden;
-
       background: #050505;
-
       color: white;
-
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
     }
-
 
     model-viewer {
-
       width: 100%;
       height: 100%;
-
       background: #050505;
-
     }
 
-
-    /* TOP BAR */
-
-    .top-bar {
-
+    .topbar {
       position: fixed;
-
       top: 0;
       left: 0;
       right: 0;
+      z-index: 20;
 
-      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
 
       padding: 18px;
 
-      display: flex;
-
-      align-items: center;
-
-      justify-content: space-between;
-
       background:
         linear-gradient(
-          rgba(0,0,0,.85),
+          rgba(0,0,0,.9),
           rgba(0,0,0,0)
         );
-
     }
 
-
     .back {
-
       width: 44px;
       height: 44px;
 
+      border: 1px solid rgba(255,255,255,.12);
       border-radius: 50%;
 
-      border:
-        1px solid
-        rgba(255,255,255,.12);
-
-      background:
-        rgba(255,255,255,.1);
-
+      background: rgba(255,255,255,.1);
       color: white;
 
-      font-size: 24px;
-
-      backdrop-filter: blur(15px);
-
+      font-size: 25px;
       cursor: pointer;
 
+      backdrop-filter: blur(15px);
     }
-
 
     .title {
-
-      font-size: 14px;
-
+      font-size: 13px;
       font-weight: 800;
-
-      letter-spacing: 1px;
-
+      letter-spacing: 2px;
     }
 
-
-    /* AR BUTTON */
-
     #ar-button {
-
-      position: fixed;
+      position: absolute;
 
       left: 50%;
-
       bottom: 155px;
 
-      transform:
-        translateX(-50%);
+      transform: translateX(-50%);
 
-      z-index: 20;
+      min-width: 190px;
 
-      padding:
-        15px 25px;
+      padding: 16px 25px;
 
       border: 0;
-
       border-radius: 999px;
 
       background: white;
-
       color: black;
 
       font-size: 15px;
-
-      font-weight: 800;
+      font-weight: 900;
 
       box-shadow:
-        0 12px 40px
-        rgba(0,0,0,.45);
+        0 15px 45px rgba(0,0,0,.5);
 
       cursor: pointer;
-
     }
 
-
     #ar-button:active {
-
       transform:
         translateX(-50%)
         scale(.96);
-
     }
 
-
-    /* INFO */
-
     .info {
-
       position: fixed;
-
       left: 16px;
       right: 16px;
-
       bottom: 20px;
 
-      z-index: 10;
+      z-index: 15;
 
       padding: 19px;
+
+      border:
+        1px solid
+        rgba(255,255,255,.1);
 
       border-radius: 23px;
 
       background:
-        rgba(12,12,12,.84);
+        rgba(10,10,10,.82);
 
-      border:
-        1px solid
-        rgba(255,255,255,.1);
-
-      backdrop-filter:
-        blur(20px);
+      backdrop-filter: blur(20px);
 
       box-shadow:
-        0 15px 50px
-        rgba(0,0,0,.4);
-
+        0 15px 50px rgba(0,0,0,.5);
     }
-
 
     .food-name {
-
       font-size: 23px;
-
-      font-weight: 800;
-
+      font-weight: 850;
     }
-
 
     .price {
-
       margin-top: 5px;
-
+      color: #ccc;
       font-size: 17px;
-
-      color: #d0d0d0;
-
     }
-
 
     .hint {
-
-      margin-top: 11px;
-
+      margin-top: 10px;
+      color: #777;
       font-size: 12px;
-
-      color: #888;
-
     }
 
-
-    /* LOADING */
-
     .loading {
-
       position: fixed;
-
       inset: 0;
 
-      z-index: 30;
+      z-index: 100;
 
       display: flex;
-
       align-items: center;
-
       justify-content: center;
 
       background: #050505;
 
-      font-size: 14px;
-
       color: #999;
-
+      font-size: 14px;
     }
 
   </style>
 
 </head>
 
-
 <body>
 
+<div
+  id="loading"
+  class="loading">
 
-  <div class="loading" id="loading">
+  Loading 3D experience...
 
-    Loading 3D experience...
-
-  </div>
-
-
-  <div class="top-bar">
-
-    <button
-      class="back"
-      onclick="history.back()">
-
-      ‹
-
-    </button>
+</div>
 
 
-    <div
-      class="title"
-      id="restaurantTitle">
+<div class="topbar">
 
-      AR MENU
+  <button
+    class="back"
+    onclick="history.back()">
 
-    </div>
+    ‹
+
+  </button>
+
+  <div
+    id="restaurantTitle"
+    class="title">
+
+    AR MENU
 
   </div>
 
-
-  <model-viewer
-
-    id="viewer"
-
-    ar
-
-    ar-modes="
-      webxr
-      scene-viewer
-      quick-look
-    "
-
-    camera-controls
-
-    touch-action="pan-y"
-
-    shadow-intensity="1"
-
-    exposure="1.1"
-
-    auto-rotate
-
-    rotation-per-second="20deg"
-
-    camera-orbit="
-      0deg
-      65deg
-      2.5m
-    "
-
-    min-camera-orbit="
-      auto
-      auto
-      0.8m
-    "
-
-    max-camera-orbit="
-      auto
-      auto
-      5m
-    "
-
-    alt="3D food model">
+</div>
 
 
-    <button
-      id="ar-button"
-      slot="ar-button">
+<model-viewer
+  id="viewer"
 
-      ✨ View in AR
+  ar
 
-    </button>
+  ar-modes="webxr"
+
+  camera-controls
+
+  touch-action="pan-y"
+
+  shadow-intensity="1"
+
+  exposure="1.1"
+
+  auto-rotate
+
+  rotation-per-second="20deg"
+
+  camera-orbit="0deg 65deg 2.5m"
+
+  min-camera-orbit="auto auto 0.8m"
+
+  max-camera-orbit="auto auto 5m"
+
+  alt="3D food model">
+
+  <button
+    id="ar-button"
+    slot="ar-button">
+
+    ✨ View in AR
+
+  </button>
+
+</model-viewer>
 
 
-  </model-viewer>
+<div class="info">
 
+  <div
+    id="foodName"
+    class="food-name">
 
-  <div class="info">
-
-    <div
-      class="food-name"
-      id="foodName">
-
-      Loading...
-
-    </div>
-
-
-    <div
-      class="price"
-      id="foodPrice">
-
-      --
-
-    </div>
-
-
-    <div class="hint">
-
-      Drag to rotate • Pinch to zoom • Tap View in AR
-
-    </div>
+    Loading...
 
   </div>
 
+  <div
+    id="foodPrice"
+    class="price">
 
-  <script src="ar.js"></script>
+    --
+
+  </div>
+
+  <div class="hint">
+
+    Drag to rotate • Pinch to zoom • View in AR to place it
+
+  </div>
+
+</div>
+
+
+<script src="ar.js"></script>
 
 </body>
 
