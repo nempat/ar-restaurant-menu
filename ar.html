@@ -1,184 +1,174 @@
 <!DOCTYPE html>
+
 <html lang="en">
-
 <head>
-
   <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  >
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+
+>
 
   <meta name="theme-color" content="#000000">
 
   <title>NEMPAT AR</title>
 
-  <link
-    rel="stylesheet"
-    href="ar.css?v=50"
-  >
+  <link rel="stylesheet" href="ar.css?v=60">
+
+  <!-- Three.js module mapping -->
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+    }
+  }
+  </script>
 
 </head>
 
 <body>
 
+  <!-- Loading -->
+
   <div id="loading" class="screen">
-
     <div class="box">
-
       <div class="loader"></div>
 
-      <h2 id="loadingTitle">
-        Preparing AR...
-      </h2>
+```
+  <h2 id="loadingTitle">
+    Preparing AR...
+  </h2>
 
-      <p id="loadingText">
-        Loading AR experience
-      </p>
-
-    </div>
+  <p id="loadingText">
+    Loading AR experience
+  </p>
+</div>
+```
 
   </div>
 
+  <!-- Ready -->
 
   <div id="ready" class="screen hidden">
-
     <div class="box">
 
-      <div class="icon">✨</div>
+```
+  <div class="icon">✨</div>
 
-      <h1>Ready for AR</h1>
+  <h1>Ready for AR</h1>
 
-      <p>
-        Point your phone at a table
-        and tap Start AR.
-      </p>
+  <p>
+    Point your phone at a table and tap Start AR.
+  </p>
 
-      <button id="startAR">
-        Start AR
-      </button>
+  <button id="startAR">
+    Start AR
+  </button>
 
-    </div>
+</div>
+```
 
   </div>
 
+  <!-- Error -->
 
   <div id="error" class="screen hidden">
-
     <div class="box">
 
-      <div class="icon">⚠️</div>
+```
+  <div class="icon">⚠️</div>
 
-      <h1>AR couldn't start</h1>
+  <h1>AR couldn't start</h1>
 
-      <p id="errorText">
-        Something went wrong.
-      </p>
+  <p id="errorText">
+    Something went wrong.
+  </p>
 
-      <button id="backButton">
-        Go Back
-      </button>
+  <button id="backButton">
+    Go Back
+  </button>
 
-    </div>
+</div>
+```
 
   </div>
 
+  <!-- AR Canvas -->
 
-  <canvas id="arCanvas"></canvas>
+<canvas id="arCanvas"></canvas>
 
+  <!-- Top bar -->
 
   <div id="topbar" class="topbar hidden">
 
-    <button
-      id="exitButton"
-      class="round-button"
-    >
-      ‹
-    </button>
+```
+<button id="exitButton" class="round-button">
+  ‹
+</button>
 
-    <div
-      id="foodTitle"
-      class="title"
-    >
-      NEMPAT AR
-    </div>
+<div id="foodTitle" class="title">
+  NEMPAT AR
+</div>
+```
 
   </div>
 
+  <!-- Surface instructions -->
 
-  <div
-    id="instructions"
-    class="instructions hidden"
-  >
-    <span class="dot"></span>
-    Move your phone slowly over the table
+  <div id="instructions" class="instructions hidden">
+
+```
+<span class="dot"></span>
+
+Move your phone slowly over the table
+```
+
   </div>
 
+  <!-- Place button -->
 
-  <button
-    id="placeButton"
-    class="place-button hidden"
-  >
+  <button id="placeButton" class="place-button hidden">
     Tap to place 🍕
   </button>
 
+  <!-- Placed controls -->
 
-  <div
-    id="placedControls"
-    class="placed-controls hidden"
-  >
+  <div id="placedControls" class="placed-controls hidden">
 
-    <button id="removeButton">
-      Remove
-    </button>
+```
+<button id="removeButton">
+  Remove
+</button>
 
-    <button id="doneButton">
-      Done
-    </button>
+<button id="doneButton">
+  Done
+</button>
+```
 
   </div>
 
+  <!-- Food information -->
 
   <div id="info" class="info hidden">
 
-    <div
-      id="foodName"
-      class="food-name"
-    >
-      Classic Pizza
-    </div>
+```
+<div id="foodName" class="food-name">
+  Classic Pizza
+</div>
 
-    <div
-      id="foodPrice"
-      class="food-price"
-    >
-      ₹299
-    </div>
+<div id="foodPrice" class="food-price">
+  ₹299
+</div>
+```
 
   </div>
 
+  <!-- Main AR application -->
 
-  <!-- THREE.JS -->
-
-  <script
-    src="https://unpkg.com/three@0.169.0/build/three.min.js"
-  ></script>
-
-
-  <!-- GLTF LOADER -->
-
-  <script
-    src="https://unpkg.com/three@0.169.0/examples/js/loaders/GLTFLoader.js"
-  ></script>
-
-
-  <!-- OUR AR CODE -->
-
-  <script
-    src="ar.js?v=50"
-  ></script>
+  <script type="module" src="ar.js?v=60"></script>
 
 </body>
-
 </html>
