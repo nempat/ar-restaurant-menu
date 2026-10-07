@@ -1,9 +1,7 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-
   <meta charset="UTF-8">
 
   <meta
@@ -11,33 +9,22 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <meta
-    name="theme-color"
-    content="#050505"
-  >
+  <meta name="theme-color" content="#050505">
 
   <title>NEMPAT AR Menu</title>
 
-  <link
-    rel="stylesheet"
-    href="style.css?v=20"
-  >
-
+  <link rel="stylesheet" href="style.css?v=30">
 </head>
-
 
 <body>
 
   <header class="hero">
 
-    <div
-      id="restaurantName"
-      class="brand"
-    >
+    <div class="brand">
       NEMPAT
     </div>
 
-    <p id="restaurantTagline">
+    <p>
       Experience your food in 3D
     </p>
 
@@ -54,269 +41,65 @@
 
     </div>
 
-    <div id="categories"></div>
+
+    <section class="category">
+
+      <h2 class="category-title">
+        Popular
+      </h2>
+
+
+      <article class="food-card">
+
+        <img
+          class="food-image"
+          src="assets/images/pizza.jpg"
+          alt="Classic Pizza"
+        >
+
+        <div class="food-info">
+
+          <h3 class="food-name">
+            Classic Pizza
+          </h3>
+
+          <p class="food-description">
+            Golden crust, mozzarella, fresh vegetables
+            and our signature sauce.
+          </p>
+
+
+          <div class="food-bottom">
+
+            <div class="food-price">
+              ₹299
+            </div>
+
+            <button
+              class="ar-button"
+              onclick="openAR()"
+            >
+              ✨ View in AR
+            </button>
+
+          </div>
+
+        </div>
+
+      </article>
+
+    </section>
 
   </main>
 
 
-  <div
-    id="loading"
-    class="screen-message"
-  >
-    Loading menu...
-  </div>
-
-
-  <div
-    id="error"
-    class="screen-message hidden"
-  >
-    Unable to load menu.
-  </div>
-
-
   <script>
-
-    /*
-     * NEMPAT MENU
-     * Everything is inside this file.
-     * No menu.json.
-     * No app.js.
-     */
-
-    const restaurant = {
-      name: "NEMPAT",
-      tagline: "Experience your food in 3D",
-      currency: "₹"
-    };
-
-
-    const menuItems = [
-      {
-        id: "pizza",
-
-        name: "Classic Pizza",
-
-        description:
-          "Golden crust, mozzarella, fresh vegetables and our signature sauce.",
-
-        price: 299,
-
-        image:
-          "assets/images/pizza.jpg",
-
-        ar: true
-      }
-    ];
-
-
-    function startMenu() {
-
-      try {
-
-        console.log(
-          "NEMPAT MENU STARTED"
-        );
-
-
-        /*
-         * Restaurant information
-         */
-
-        document.getElementById(
-          "restaurantName"
-        ).textContent =
-          restaurant.name;
-
-
-        document.getElementById(
-          "restaurantTagline"
-        ).textContent =
-          restaurant.tagline;
-
-
-        /*
-         * Menu container
-         */
-
-        const categories =
-          document.getElementById(
-            "categories"
-          );
-
-
-        categories.innerHTML = "";
-
-
-        /*
-         * Popular category
-         */
-
-        const section =
-          document.createElement(
-            "section"
-          );
-
-        section.className =
-          "category";
-
-
-        const title =
-          document.createElement(
-            "h2"
-          );
-
-        title.className =
-          "category-title";
-
-        title.textContent =
-          "Popular";
-
-
-        section.appendChild(
-          title
-        );
-
-
-        /*
-         * Food items
-         */
-
-        menuItems.forEach(
-          item => {
-
-            const card =
-              document.createElement(
-                "article"
-              );
-
-            card.className =
-              "food-card";
-
-
-            card.innerHTML = `
-
-              <img
-                class="food-image"
-                src="${item.image}"
-                alt="${item.name}"
-              >
-
-              <div class="food-info">
-
-                <h3 class="food-name">
-                  ${item.name}
-                </h3>
-
-                <p class="food-description">
-                  ${item.description}
-                </p>
-
-                <div class="food-bottom">
-
-                  <div class="food-price">
-                    ${restaurant.currency}${item.price}
-                  </div>
-
-                  <button
-                    class="ar-button"
-                    type="button"
-                    onclick="openAR('${item.id}')"
-                  >
-                    ✨ View in AR
-                  </button>
-
-                </div>
-
-              </div>
-
-            `;
-
-
-            section.appendChild(
-              card
-            );
-
-          }
-        );
-
-
-        categories.appendChild(
-          section
-        );
-
-
-        /*
-         * Hide loading
-         */
-
-        document
-          .getElementById("loading")
-          .classList.add("hidden");
-
-
-        console.log(
-          "NEMPAT MENU LOADED SUCCESSFULLY"
-        );
-
-      }
-
-      catch (error) {
-
-        console.error(
-          "MENU ERROR:",
-          error
-        );
-
-
-        document
-          .getElementById("loading")
-          .classList.add("hidden");
-
-
-        const errorBox =
-          document.getElementById(
-            "error"
-          );
-
-
-        errorBox.classList.remove(
-          "hidden"
-        );
-
-
-        errorBox.textContent =
-          "Menu error: " +
-          error.message;
-
-      }
-
-    }
-
-
-    /*
-     * Open markerless AR
-     */
-
-    function openAR(itemId) {
-
+    function openAR() {
       window.location.href =
-        "ar.html?item=" +
-        encodeURIComponent(itemId) +
-        "&v=20";
-
+        "ar.html?item=pizza&v=30";
     }
-
-
-    /*
-     * Start immediately
-     */
-
-    startMenu();
-
   </script>
 
 </body>
 
 </html>
-```
