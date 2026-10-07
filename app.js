@@ -1,5 +1,5 @@
+```javascript
 async function loadMenu() {
-
   const loading =
     document.getElementById("loading");
 
@@ -10,9 +10,8 @@ async function loadMenu() {
     document.getElementById("categories");
 
   try {
-
     const response =
-      await fetch("menu.json");
+      await fetch(`menu.json?v=10`);
 
     if (!response.ok) {
       throw new Error(
@@ -23,6 +22,9 @@ async function loadMenu() {
     const data =
       await response.json();
 
+    /*
+     * Restaurant information
+     */
     document.getElementById(
       "restaurantName"
     ).textContent =
@@ -33,8 +35,14 @@ async function loadMenu() {
     ).textContent =
       data.restaurant.tagline;
 
+    /*
+     * Clear existing menu
+     */
     container.innerHTML = "";
 
+    /*
+     * Build categories
+     */
     data.categories.forEach(
       category => {
 
@@ -46,6 +54,9 @@ async function loadMenu() {
         section.className =
           "category";
 
+        /*
+         * Category title
+         */
         const title =
           document.createElement(
             "h2"
@@ -57,8 +68,13 @@ async function loadMenu() {
         title.textContent =
           category.name;
 
-        section.appendChild(title);
+        section.appendChild(
+          title
+        );
 
+        /*
+         * Food items
+         */
         category.items.forEach(
           item => {
 
@@ -70,68 +86,164 @@ async function loadMenu() {
             card.className =
               "food-card";
 
-            card.innerHTML = `
+            /*
+             * Create image
+             */
+            const image =
+              document.createElement(
+                "img"
+              );
 
-              <img
-                class="food-image"
-                src="${item.image}"
-                alt="${item.name}"
-                loading="lazy"
-              >
+            image.className =
+              "food-image";
 
-              <div class="food-info">
+            image.src =
+              `${item.image}?v=10`;
 
-                <h3 class="food-name">
-                  ${item.name}
-                </h3>
+            image.alt =
+              item.name;
 
-                <p class="food-description">
-                  ${item.description}
-                </p>
+            image.loading =
+              "lazy";
 
-                <div class="food-bottom">
+            /*
+             * Food information
+             */
+            const info =
+              document.createElement(
+                "div"
+              );
 
-                  <div class="food-price">
-                    ${data.restaurant.currency}${item.price}
-                  </div>
+            info.className =
+              "food-info";
 
-                  ${
-                    item.ar
-                      ? `
-                        <button
-                          class="ar-button"
-                          onclick="openAR('${item.id}')">
+            const name =
+              document.createElement(
+                "h3"
+              );
 
-                          ✨ View in AR
+            name.className =
+              "food-name";
 
-                        </button>
-                      `
-                      : ""
-                  }
+            name.textContent =
+              item.name;
 
-                </div>
+            const description =
+              document.createElement(
+                "p"
+              );
 
-              </div>
+            description.className =
+              "food-description";
 
-            `;
+            description.textContent =
+              item.description;
 
-            section.appendChild(card);
+            /*
+             * Bottom section
+             */
+            const bottom =
+              document.createElement(
+                "div"
+              );
 
+            bottom.className =
+              "food-bottom";
+
+            /*
+             * Price
+             */
+            const price =
+              document.createElement(
+                "div"
+              );
+
+            price.className =
+              "food-price";
+
+            price.textContent =
+              `${data.restaurant.currency}${item.price}`;
+
+            bottom.appendChild(
+              price
+            );
+
+            /*
+             * AR button
+             */
+            if (item.ar) {
+
+              const arButton =
+                document.createElement(
+                  "button"
+                );
+
+              arButton.className =
+                "ar-button";
+
+              arButton.textContent =
+                "✨ View in AR";
+
+              arButton.addEventListener(
+                "click",
+                () => {
+                  openAR(item.id);
+                }
+              );
+
+              bottom.appendChild(
+                arButton
+              );
+            }
+
+            /*
+             * Assemble card
+             */
+            info.appendChild(
+              name
+            );
+
+            info.appendChild(
+              description
+            );
+
+            info.appendChild(
+              bottom
+            );
+
+            card.appendChild(
+              image
+            );
+
+            card.appendChild(
+              info
+            );
+
+            section.appendChild(
+              card
+            );
           }
         );
 
-        container.appendChild(section);
-
+        container.appendChild(
+          section
+        );
       }
     );
 
+    /*
+     * Hide loading
+     */
     loading.classList.add(
       "hidden"
     );
 
-  } catch (err) {
+  } catch (errorObject) {
 
-    console.error(err);
+    console.error(
+      "Menu loading error:",
+      errorObject
+    );
 
     loading.classList.add(
       "hidden"
@@ -140,18 +252,27 @@ async function loadMenu() {
     error.classList.remove(
       "hidden"
     );
-
   }
-
 }
 
 
+/*
+ * Open AR page
+ */
 function openAR(itemId) {
 
-  window.location.href =
-    `ar.html?item=${encodeURIComponent(itemId)}`;
+  const url =
+    `ar.html?item=${encodeURIComponent(
+      itemId
+    )}&v=10`;
 
+  window.location.href =
+    url;
 }
 
 
+/*
+ * Start menu
+ */
 loadMenu();
+```
