@@ -1,3 +1,12 @@
+```javascript
+/*
+=========================================================
+ NEMPAT AR MENU
+ Android Chrome + WebXR
+ Markerless surface detection
+=========================================================
+*/
+
 import * as THREE from
   "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js";
 
@@ -5,14 +14,9 @@ import { GLTFLoader } from
   "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/loaders/GLTFLoader.js";
 
 
-const params =
-  new URLSearchParams(
-    window.location.search
-  );
-
-const itemId =
-  params.get("item");
-
+// =======================================================
+// BASIC ELEMENTS
+// =======================================================
 
 const loading =
   document.getElementById("loading");
@@ -23,17 +27,17 @@ const unsupported =
 const permission =
   document.getElementById("permission");
 
-const startAR =
+const startARButton =
   document.getElementById("startAR");
-
-const camera =
-  document.getElementById("camera");
 
 const canvas =
   document.getElementById("arCanvas");
 
 const topbar =
   document.getElementById("topbar");
+
+const foodTitle =
+  document.getElementById("foodTitle");
 
 const instructions =
   document.getElementById("instructions");
@@ -59,148 +63,287 @@ const foodName =
 const foodPrice =
   document.getElementById("foodPrice");
 
-const foodTitle =
-  document.getElementById("foodTitle");
-
 const exitButton =
   document.getElementById("exitButton");
 
+const backUnsupported =
+  document.getElementById(
+    "backUnsupported"
+  );
+
+
+// =======================================================
+// URL
+// =======================================================
+
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const itemId =
+  params.get("item") || "pizza";
+
+
+// =======================================================
+// STATE
+// =======================================================
 
 let item = null;
 
-let cameraStream = null;
+let restaurant = null;
 
-let scene;
+let scene = null;
 
-let renderer;
+let renderer = null;
 
-let arCamera;
+let camera = null;
 
 let model = null;
 
 let reticle = null;
 
+let xrSession = null;
+
 let hitTestSource = null;
 
 let hitTestSourceRequested = false;
 
-let xrSession = null;
-
 let placed = false;
 
-let mixer = null;
+let clock =
+  new THREE.Clock();
 
-let clock = new THREE.Clock();
+
+// =======================================================
+// ERROR SCREEN
+// =======================================================
+
+function showError(message) {
+
+  console.error(
+    "NEMPAT AR ERROR:",
+    message
+  );
+
+  loading.classList.add(
+    "hidden"
+  );
+
+  permission.classList.add(
+    "hidden"
+  );
+
+  unsupported.classList.remove(
+    "hidden"
+  );
+
+  const paragraph =
+    unsupported.querySelector("p");
+
+  if (paragraph) {
+    paragraph.textContent =
+      message;
+  }
+}
 
 
-async function loadItem() {
+// =======================================================
+// TIMEOUT HELPER
+// =======================================================
+
+function withTimeout(
+  promise,
+  milliseconds,
+  message
+) {
+
+  return Promise.race([
+
+    promise,
+
+    new Promise(
+      (_, reject) => {
+
+        setTimeout(
+          () => {
+
+            reject(
+              new Error(message)
+            );
+
+          },
+          milliseconds
+        );
+
+      }
+    )
+
+  ]);
+
+}
+
+
+// =======================================================
+// LOAD FOOD DATA
+// =======================================================
+
+async function loadFood() {
+
+  /*
+   * We use menu.json here only to obtain
+   * the selected item's model path/name/price.
+   */
 
   const response =
-    await fetch("menu.json");
+    await fetch(
+      `./menu.json?v=20`,
+      {
+        cache: "no-store"
+      }
+    );
 
   if (!response.ok) {
+
     throw new Error(
-      "Unable to load menu"
+      `Unable to load menu.json (${response.status})`
     );
+
   }
 
   const data =
     await response.json();
 
+  restaurant =
+    data.restaurant;
+
+  let found = null;
+
   for (
     const category
-    of data.categories
+    of data.categories || []
   ) {
 
-    const found =
-      category.items.find(
-        x => x.id === itemId
-      );
+    const result =
+      (category.items || [])
+        .find(
+          food =>
+            food.id === itemId
+        );
 
-    if (found) {
+    if (result) {
 
-      item = found;
+      found = result;
 
       break;
 
     }
+
   }
 
-  if (!item) {
+  if (!found) {
 
     throw new Error(
-      "Food item not found"
+      "Food item was not found."
     );
 
   }
+
+  item = found;
 
   foodName.textContent =
     item.name;
 
   foodPrice.textContent =
-    `${data.restaurant.currency}${item.price}`;
+    `${restaurant.currency || "₹"}${item.price}`;
 
   foodTitle.textContent =
-    `${data.restaurant.name} AR`;
-
+    `${restaurant.name || "AR"} AR`;
 }
 
+
+// =======================================================
+// THREE.JS SETUP
+// =======================================================
 
 function setupThree() {
 
   scene =
     new THREE.Scene();
 
-  scene.background =
-    null;
 
+  /*
+   * Camera used by Three.js.
+   *
+   * WebXR supplies the real-world camera
+   * background when immersive AR starts.
+   */
 
-  arCamera =
+  camera =
     new THREE.PerspectiveCamera(
       70,
       window.innerWidth /
-      window.innerHeight,
+        window.innerHeight,
       0.01,
       20
     );
 
 
+  /*
+   * Renderer
+   */
+
   renderer =
     new THREE.WebGLRenderer({
-      canvas,
+
+      canvas: canvas,
+
       alpha: true,
-      antialias: true
+
+      antialias: true,
+
+      powerPreference: "high-performance"
+
     });
+
 
   renderer.setPixelRatio(
     Math.min(
-      window.devicePixelRatio,
+      window.devicePixelRatio || 1,
       2
     )
   );
+
 
   renderer.setSize(
     window.innerWidth,
     window.innerHeight
   );
 
+
   renderer.xr.enabled = true;
 
 
-  const ambient =
+  /*
+   * Lighting
+   */
+
+  const hemisphere =
     new THREE.HemisphereLight(
       0xffffff,
       0x444444,
-      2.2
+      2
     );
 
-  scene.add(ambient);
+  scene.add(
+    hemisphere
+  );
 
 
   const directional =
     new THREE.DirectionalLight(
       0xffffff,
-      2.5
+      2
     );
 
   directional.position.set(
@@ -209,51 +352,89 @@ function setupThree() {
     2
   );
 
-  scene.add(directional);
+  scene.add(
+    directional
+  );
+
+
+  /*
+   * Surface detection reticle
+   */
+
+  const ringGeometry =
+    new THREE.RingGeometry(
+      0.08,
+      0.10,
+      32
+    );
+
+
+  const ringMaterial =
+    new THREE.MeshBasicMaterial({
+
+      color: 0xffffff,
+
+      transparent: true,
+
+      opacity: 0.9,
+
+      side: THREE.DoubleSide
+
+    });
 
 
   reticle =
     new THREE.Mesh(
-
-      new THREE.RingGeometry(
-        0.08,
-        0.1,
-        32
-      ),
-
-      new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        transparent: true,
-        opacity: .9
-      })
-
+      ringGeometry,
+      ringMaterial
     );
+
 
   reticle.rotation.x =
     -Math.PI / 2;
 
+
   reticle.matrixAutoUpdate =
     false;
+
 
   reticle.visible =
     false;
 
-  scene.add(reticle);
 
+  scene.add(
+    reticle
+  );
+
+
+  /*
+   * Render loop
+   */
 
   renderer.setAnimationLoop(
     render
   );
 
+
+  window.addEventListener(
+    "resize",
+    resize
+  );
+
 }
 
+
+// =======================================================
+// LOAD GLB MODEL
+// =======================================================
 
 async function loadModel() {
 
   const loader =
     new GLTFLoader();
 
-  return new Promise(
+
+  await new Promise(
     (resolve, reject) => {
 
       loader.load(
@@ -265,8 +446,18 @@ async function loadModel() {
           model =
             gltf.scene;
 
+
+          /*
+           * Start hidden.
+           */
+
           model.visible =
             false;
+
+
+          /*
+           * Enable shadows.
+           */
 
           model.traverse(
             object => {
@@ -287,30 +478,48 @@ async function loadModel() {
           );
 
 
-          const box =
-            new THREE.Box3()
-              .setFromObject(model);
+          /*
+           * Find model size.
+           */
 
-          const size =
-            box.getSize(
+          const originalBox =
+            new THREE.Box3()
+              .setFromObject(
+                model
+              );
+
+
+          const originalSize =
+            originalBox.getSize(
               new THREE.Vector3()
             );
 
-          const maxSize =
+
+          const largestDimension =
             Math.max(
-              size.x,
-              size.y,
-              size.z
+              originalSize.x,
+              originalSize.y,
+              originalSize.z
             );
 
-          if (maxSize > 0) {
 
-            const desiredSize =
-              0.35;
+          /*
+           * Desired pizza size:
+           *
+           * approximately 35 cm
+           */
+
+          const desiredSize =
+            0.35;
+
+
+          if (
+            largestDimension > 0
+          ) {
 
             const scale =
               desiredSize /
-              maxSize;
+              largestDimension;
 
             model.scale.setScalar(
               scale
@@ -319,37 +528,26 @@ async function loadModel() {
           }
 
 
+          /*
+           * Put model's bottom
+           * approximately at Y = 0.
+           */
+
           const scaledBox =
             new THREE.Box3()
-              .setFromObject(model);
+              .setFromObject(
+                model
+              );
+
 
           model.position.y =
             -scaledBox.min.y;
 
 
-          scene.add(model);
+          scene.add(
+            model
+          );
 
-          if (
-            gltf.animations &&
-            gltf.animations.length
-          ) {
-
-            mixer =
-              new THREE.AnimationMixer(
-                model
-              );
-
-            gltf.animations.forEach(
-              animation => {
-
-                mixer
-                  .clipAction(animation)
-                  .play();
-
-              }
-            );
-
-          }
 
           resolve();
 
@@ -359,7 +557,16 @@ async function loadModel() {
 
         error => {
 
-          reject(error);
+          console.error(
+            "GLB LOAD ERROR:",
+            error
+          );
+
+          reject(
+            new Error(
+              "Pizza 3D model could not be loaded."
+            )
+          );
 
         }
 
@@ -371,104 +578,208 @@ async function loadModel() {
 }
 
 
-async function startCamera() {
+// =======================================================
+// CHECK WEBXR
+// =======================================================
 
-  cameraStream =
-    await navigator.mediaDevices
-      .getUserMedia({
-        video: {
-          facingMode: {
-            ideal: "environment"
-          },
+async function checkWebXR() {
 
-          width: {
-            ideal: 1920
-          },
+  /*
+   * Secure context is mandatory.
+   */
 
-          height: {
-            ideal: 1080
-          }
-        },
-
-        audio: false
-      });
-
-  camera.srcObject =
-    cameraStream;
-
-  camera.style.display =
-    "block";
-
-  await camera.play();
-
-}
-
-
-async function startWebXR() {
-
-  if (!navigator.xr) {
+  if (
+    !window.isSecureContext
+  ) {
 
     throw new Error(
-      "WebXR unavailable"
+      "AR requires HTTPS."
     );
 
   }
 
 
-  const supported =
-    await navigator.xr
-      .isSessionSupported(
-        "immersive-ar"
+  /*
+   * Android Chrome should expose
+   * navigator.xr.
+   */
+
+  if (
+    !("xr" in navigator)
+  ) {
+
+    throw new Error(
+      "WebXR is not available in this browser. Use the latest Android Chrome."
+    );
+
+  }
+
+
+  /*
+   * Give isSessionSupported a timeout.
+   *
+   * This prevents the screen from
+   * staying on Preparing AR forever.
+   */
+
+  let supported;
+
+  try {
+
+    supported =
+      await withTimeout(
+
+        navigator.xr
+          .isSessionSupported(
+            "immersive-ar"
+          ),
+
+        6000,
+
+        "The browser did not respond to the AR capability check."
+
       );
+
+  }
+
+  catch (error) {
+
+    throw new Error(
+      error.message
+    );
+
+  }
+
 
   if (!supported) {
 
     throw new Error(
-      "Immersive AR unsupported"
+      "This Android device/browser does not support immersive AR."
     );
 
   }
 
 
+  return true;
+
+}
+
+
+// =======================================================
+// START WEBXR
+// =======================================================
+
+async function startWebXR() {
+
+  console.log(
+    "Requesting immersive AR..."
+  );
+
+
+  /*
+   * Request actual AR session.
+   */
+
   xrSession =
-    await navigator.xr.requestSession(
-      "immersive-ar",
-      {
-        requiredFeatures: [
-          "hit-test"
-        ],
+    await withTimeout(
 
-        optionalFeatures: [
-          "dom-overlay"
-        ],
+      navigator.xr.requestSession(
+        "immersive-ar",
+        {
 
-        domOverlay: {
-          root: document.body
+          requiredFeatures: [
+            "hit-test"
+          ],
+
+          optionalFeatures: [
+            "dom-overlay",
+            "local-floor"
+          ],
+
+          domOverlay: {
+            root: document.body
+          }
+
         }
-      }
+      ),
+
+      10000,
+
+      "The AR session could not be started."
     );
 
+
+  console.log(
+    "AR session started."
+  );
+
+
+  /*
+   * Tell Three.js that
+   * this is an AR session.
+   */
 
   renderer.xr.setReferenceSpaceType(
     "local-floor"
   );
+
 
   await renderer.xr.setSession(
     xrSession
   );
 
 
+  /*
+   * Session ended.
+   */
+
   xrSession.addEventListener(
     "end",
-    () => {
-
-      xrSession = null;
-
-      resetAR();
-
-    }
+    onSessionEnded
   );
 
+
+  /*
+   * Get viewer reference space.
+   */
+
+  const viewerSpace =
+    await xrSession
+      .requestReferenceSpace(
+        "viewer"
+      );
+
+
+  /*
+   * Request hit testing.
+   */
+
+  hitTestSource =
+    await xrSession
+      .requestHitTestSource({
+        space: viewerSpace
+      });
+
+
+  hitTestSourceRequested =
+    true;
+
+
+  /*
+   * Show AR interface.
+   */
+
+  loading.classList.add(
+    "hidden"
+  );
+
+  permission.classList.add(
+    "hidden"
+  );
+
+  unsupported.classList.add(
+    "hidden"
+  );
 
   topbar.classList.remove(
     "hidden"
@@ -483,47 +794,73 @@ async function startWebXR() {
   );
 
 
-  xrSession.requestReferenceSpace(
-    "viewer"
-  ).then(
-    referenceSpace => {
+  console.log(
+    "NEMPAT AR READY"
+  );
 
-      xrSession
-        .requestHitTestSource({
-          space: referenceSpace
-        })
-        .then(
-          source => {
+}
 
-            hitTestSource =
-              source;
 
-          }
-        );
+// =======================================================
+// SESSION END
+// =======================================================
 
-    }
+function onSessionEnded() {
+
+  console.log(
+    "AR session ended."
   );
 
 
-  xrSession.addEventListener(
-    "end",
-    () => {
+  xrSession = null;
 
-      hitTestSource = null;
+  hitTestSource = null;
 
-      hitTestSourceRequested =
-        false;
+  hitTestSourceRequested =
+    false;
 
-    }
+  placed =
+    false;
+
+
+  if (model) {
+
+    model.visible =
+      false;
+
+  }
+
+
+  reticle.visible =
+    false;
+
+
+  placeButton.classList.add(
+    "hidden"
   );
 
+  placedControls.classList.add(
+    "hidden"
+  );
 
-  loading.classList.add(
+  instructions.classList.add(
+    "hidden"
+  );
+
+  topbar.classList.add(
+    "hidden"
+  );
+
+  info.classList.add(
     "hidden"
   );
 
 }
 
+
+// =======================================================
+// AR RENDER LOOP
+// =======================================================
 
 function render(
   timestamp,
@@ -540,61 +877,86 @@ function render(
   }
 
 
+  /*
+   * Get the XR reference space.
+   */
+
   const referenceSpace =
-    renderer.xr
-      .getReferenceSpace();
+    renderer.xr.getReferenceSpace();
 
 
-  const viewerPose =
-    frame.getViewerPose(
-      referenceSpace
-    );
-
-
-  if (!viewerPose) {
+  if (!referenceSpace) {
 
     return;
 
   }
 
 
-  if (!hitTestSource) {
-
-    return;
-
-  }
-
-
-  const hitTestResults =
-    frame.getHitTestResults(
-      hitTestSource
-    );
-
+  /*
+   * Hit-test the real world.
+   */
 
   if (
-    hitTestResults.length > 0
+    hitTestSource
   ) {
 
-    const hit =
-      hitTestResults[0];
-
-    const pose =
-      hit.getPose(
-        referenceSpace
+    const results =
+      frame.getHitTestResults(
+        hitTestSource
       );
 
-    if (pose) {
+
+    if (
+      results.length > 0
+    ) {
+
+      const hit =
+        results[0];
+
+
+      const pose =
+        hit.getPose(
+          referenceSpace
+        );
+
+
+      if (pose) {
+
+        reticle.visible =
+          true;
+
+
+        reticle.matrix.fromArray(
+          pose.transform.matrix
+        );
+
+
+        /*
+         * Show placement button
+         * when surface is detected.
+         */
+
+        if (!placed) {
+
+          placeButton.classList.remove(
+            "hidden"
+          );
+
+        }
+
+      }
+
+    }
+
+    else {
 
       reticle.visible =
-        true;
+        false;
 
-      reticle.matrix.fromArray(
-        pose.transform.matrix
-      );
 
       if (!placed) {
 
-        placeButton.classList.remove(
+        placeButton.classList.add(
           "hidden"
         );
 
@@ -602,38 +964,29 @@ function render(
 
     }
 
-  } else {
-
-    reticle.visible =
-      false;
-
-    placeButton.classList.add(
-      "hidden"
-    );
-
   }
 
 
-  if (mixer) {
-
-    mixer.update(
-      clock.getDelta()
-    );
-
-  }
-
+  /*
+   * Render.
+   */
 
   renderer.render(
     scene,
-    arCamera
+    camera
   );
 
 }
 
 
+// =======================================================
+// PLACE MODEL
+// =======================================================
+
 function placeModel() {
 
   if (
+    !reticle ||
     !reticle.visible ||
     !model
   ) {
@@ -643,17 +996,37 @@ function placeModel() {
   }
 
 
+  /*
+   * Copy detected surface position.
+   */
+
   model.position.setFromMatrixPosition(
     reticle.matrix
   );
 
-  model.quaternion.setFromRotationMatrix(
-    reticle.matrix
+
+  /*
+   * Keep pizza upright.
+   *
+   * We do NOT copy the reticle
+   * rotation because the pizza
+   * should remain level with the table.
+   */
+
+  model.rotation.set(
+    0,
+    0,
+    0
   );
 
 
+  /*
+   * Make visible.
+   */
+
   model.visible =
     true;
+
 
   placed =
     true;
@@ -671,106 +1044,209 @@ function placeModel() {
     "hidden"
   );
 
+
+  console.log(
+    "Pizza placed."
+  );
+
 }
 
+
+// =======================================================
+// REMOVE MODEL
+// =======================================================
 
 function removeModel() {
 
   if (!model) {
+
     return;
+
   }
+
 
   model.visible =
     false;
 
+
   placed =
     false;
+
 
   placedControls.classList.add(
     "hidden"
   );
 
+
   instructions.classList.remove(
     "hidden"
   );
 
-}
 
+  /*
+   * Allow another placement.
+   */
 
-function resetAR() {
+  if (
+    reticle.visible
+  ) {
 
-  if (cameraStream) {
-
-    cameraStream
-      .getTracks()
-      .forEach(
-        track =>
-          track.stop()
-      );
-
-    cameraStream = null;
+    placeButton.classList.remove(
+      "hidden"
+    );
 
   }
 
-  camera.style.display =
-    "none";
+}
 
-  loading.classList.remove(
-    "hidden"
+
+// =======================================================
+// EXIT AR
+// =======================================================
+
+async function exitAR() {
+
+  if (
+    xrSession
+  ) {
+
+    try {
+
+      await xrSession.end();
+
+    }
+
+    catch (error) {
+
+      console.error(
+        error
+      );
+
+    }
+
+    return;
+
+  }
+
+
+  history.back();
+
+}
+
+
+// =======================================================
+// RESIZE
+// =======================================================
+
+function resize() {
+
+  if (!renderer || !camera) {
+
+    return;
+
+  }
+
+
+  camera.aspect =
+    window.innerWidth /
+    window.innerHeight;
+
+
+  camera.updateProjectionMatrix();
+
+
+  renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
   );
 
 }
 
 
-async function beginAR() {
+// =======================================================
+// BUTTONS
+// =======================================================
 
-  try {
+startARButton.addEventListener(
+  "click",
+  async () => {
 
-    permission.classList.add(
-      "hidden"
-    );
+    try {
 
-    loading.classList.remove(
-      "hidden"
-    );
+      /*
+       * Hide ready screen.
+       */
 
-
-    await loadItem();
-
-    setupThree();
-
-    await loadModel();
+      permission.classList.add(
+        "hidden"
+      );
 
 
-    /*
-      WebXR immersive AR is the
-      primary production path.
-    */
+      loading.classList.remove(
+        "hidden"
+      );
 
-    await startWebXR();
 
-  } catch (error) {
+      loading.querySelector(
+        "p"
+      ).textContent =
+        "Checking AR support...";
 
-    console.error(error);
 
-    loading.classList.add(
-      "hidden"
-    );
+      /*
+       * Check WebXR.
+       */
 
-    unsupported.classList.remove(
-      "hidden"
-    );
+      await checkWebXR();
+
+
+      loading.querySelector(
+        "p"
+      ).textContent =
+        "Loading pizza...";
+
+
+      /*
+       * Load model.
+       */
+
+      await loadModel();
+
+
+      loading.querySelector(
+        "p"
+      ).textContent =
+        "Starting camera AR...";
+
+
+      /*
+       * Start actual AR.
+       */
+
+      await startWebXR();
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "START AR ERROR:",
+        error
+      );
+
+
+      showError(
+        error.message ||
+        "Unable to start AR."
+      );
+
+    }
 
   }
-
-}
-
-
-placeButton.addEventListener(
-  "click",
-  placeModel
 );
 
+
+// Remove
 
 removeButton.addEventListener(
   "click",
@@ -778,94 +1254,78 @@ removeButton.addEventListener(
 );
 
 
+// Done
+
 doneButton.addEventListener(
   "click",
-  () => {
-
-    if (xrSession) {
-
-      xrSession.end();
-
-    } else {
-
-      history.back();
-
-    }
-
-  }
+  exitAR
 );
 
+
+// Exit
 
 exitButton.addEventListener(
   "click",
+  exitAR
+);
+
+
+// Unsupported back
+
+backUnsupported.addEventListener(
+  "click",
   () => {
-
-    if (xrSession) {
-
-      xrSession.end();
-
-    } else {
-
-      history.back();
-
-    }
-
+    history.back();
   }
 );
 
 
-startAR.addEventListener(
+// Place
+
+placeButton.addEventListener(
   "click",
-  beginAR
+  placeModel
 );
 
+
+// =======================================================
+// INITIALIZATION
+// =======================================================
 
 async function initialize() {
 
   try {
 
-    await loadItem();
-
-    if (
-      !window.isSecureContext
-    ) {
-
-      throw new Error(
-        "HTTPS required"
-      );
-
-    }
+    console.log(
+      "NEMPAT AR initializing..."
+    );
 
 
-    if (
-      !navigator.xr
-    ) {
+    /*
+     * Load menu item first.
+     */
 
-      unsupported.classList.remove(
-        "hidden"
-      );
-
-      return;
-
-    }
+    await loadFood();
 
 
-    const supported =
-      await navigator.xr
-        .isSessionSupported(
-          "immersive-ar"
-        );
+    /*
+     * Set up Three.js.
+     */
 
-    if (!supported) {
+    setupThree();
 
-      unsupported.classList.remove(
-        "hidden"
-      );
 
-      return;
+    /*
+     * Check WebXR WITHOUT
+     * starting an AR session yet.
+     */
 
-    }
+    await checkWebXR();
 
+
+    /*
+     * Everything is ready.
+     */
 
     loading.classList.add(
       "hidden"
@@ -875,16 +1335,24 @@ async function initialize() {
       "hidden"
     );
 
-  } catch (error) {
 
-    console.error(error);
-
-    loading.classList.add(
-      "hidden"
+    console.log(
+      "NEMPAT AR READY TO START"
     );
 
-    unsupported.classList.remove(
-      "hidden"
+  }
+
+  catch (error) {
+
+    console.error(
+      "INITIALIZATION ERROR:",
+      error
+    );
+
+
+    showError(
+      error.message ||
+      "AR could not be initialized."
     );
 
   }
@@ -892,4 +1360,9 @@ async function initialize() {
 }
 
 
+// =======================================================
+// START
+// =======================================================
+
 initialize();
+```
