@@ -1,21 +1,61 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Menu</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<title>AR Menu</title>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+<style>
+  :root{--bg:#fff8f0;--card:#fff;--ink:#2b1d14;--accent:#d9381e;--mute:#8a7566}
+  @media (prefers-color-scheme:dark){:root{--bg:#1a1410;--card:#262019;--ink:#f6ebe0;--mute:#b8a595}}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+  header{padding:28px 20px 8px;text-align:center}
+  header h1{margin:0;font-size:1.7rem}
+  header p{margin:6px 0 0;color:var(--mute);font-size:.95rem}
+  main{max-width:900px;margin:0 auto;padding:16px;display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+  .card{background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 4px 16px #0002}
+  model-viewer{width:100%;height:260px;--poster-color:transparent;background:transparent}
+  .info{padding:14px 16px 18px}
+  .row{display:flex;justify-content:space-between;align-items:baseline}
+  .row h2{margin:0;font-size:1.15rem}
+  .price{font-weight:700;color:var(--accent)}
+  .info p{margin:6px 0 0;color:var(--mute);font-size:.9rem}
+  .ar-btn{position:absolute;bottom:12px;right:12px;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:10px 16px;font-size:.9rem;font-weight:600;cursor:pointer}
+  .hint{position:absolute;top:10px;left:12px;font-size:.75rem;color:var(--mute)}
+  footer{text-align:center;color:var(--mute);font-size:.8rem;padding:20px}
+</style>
 </head>
 <body>
 <header>
-  <h1 id="name">Menu</h1>
-  <p>Tap “See in AR” to view a dish on your table.</p>
+  <h1>🍕 Our Menu</h1>
+  <p>Tap “View in your space” to place the dish on your table — no app needed.</p>
 </header>
-<nav id="tabs"></nav>
-<main id="list"></main>
-<script src="app.js"></script>
+<main id="menu"></main>
+<footer>AR works on Android (Chrome) and iPhone (Safari). Open this page on your phone.</footer>
+
+<script>
+// Add menu items here. Each "model" is a .glb file in /models
+const ITEMS = [
+  {name:"Margherita Pizza", price:"₹349", desc:"Tomato, mozzarella, fresh basil.", model:"models/pizza.glb"},
+  // Demo: reusing the same model. Replace with your own GLBs, e.g. models/burger.glb
+  {name:"Farmhouse Pizza", price:"₹429", desc:"Loaded with veggies and cheese.", model:"models/pizza.glb"}
+];
+
+const menu = document.getElementById('menu');
+menu.innerHTML = ITEMS.map(i => `
+  <article class="card">
+    <model-viewer src="${i.model}" alt="${i.name}"
+      ar ar-modes="webxr scene-viewer quick-look" ar-scale="auto" ar-placement="floor"
+      camera-controls auto-rotate shadow-intensity="1" environment-image="neutral" touch-action="pan-y">
+      <span class="hint">Drag to rotate</span>
+      <button slot="ar-button" class="ar-btn">📱 View in your space</button>
+    </model-viewer>
+    <div class="info">
+      <div class="row"><h2>${i.name}</h2><span class="price">${i.price}</span></div>
+      <p>${i.desc}</p>
+    </div>
+  </article>`).join('');
+</script>
 </body>
 </html>
