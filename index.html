@@ -1,70 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#050505">
   <title>AR Menu</title>
-
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-  <header class="hero">
+<header class="hero">
+  <div class="brand" id="restaurantName">NEMPAT</div>
+  <p id="restaurantTagline">Experience your food in 3D</p>
+</header>
 
-    <div class="restaurant-name" id="restaurantName">
-      NEMPAT
-    </div>
-
-    <p class="tagline" id="restaurantTagline">
-      Experience your food in 3D
-    </p>
-
-  </header>
-
-
-  <main class="menu">
-
-    <div class="menu-heading">
-
-      <div>
-        <span class="eyebrow">EXPLORE</span>
-        <h1>Our Menu</h1>
-      </div>
-
-    </div>
-
-
-    <div
-      id="categories"
-      class="categories">
-    </div>
-
-  </main>
-
-
-  <div
-    id="loading"
-    class="loading">
-    Loading menu...
+<main class="menu">
+  <div class="section-heading">
+    <span>EXPLORE</span>
+    <h1>Our Menu</h1>
   </div>
 
+  <div id="categories"></div>
+</main>
 
-  <div
-    id="error"
-    class="error hidden">
-    Unable to load menu.
-  </div>
+<div id="loading" class="screen-message">
+  Loading menu...
+</div>
 
+<div id="error" class="screen-message hidden">
+  Unable to load menu.
+</div>
 
-  <script src="app.js"></script>
+<script src="app.js"></script>
 
 </body>
-
 </html>
