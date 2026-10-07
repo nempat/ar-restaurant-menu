@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,20 +10,29 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <meta name="theme-color" content="#050505">
+  <meta
+    name="theme-color"
+    content="#050505"
+  >
 
   <title>AR Menu</title>
 
-  <link rel="stylesheet" href="style.css">
+  <!-- Menu styling -->
+  <link
+    rel="stylesheet"
+    href="style.css?v=10"
+  >
 </head>
 
 <body>
 
+  <!-- Restaurant header -->
   <header class="hero">
 
     <div
       id="restaurantName"
-      class="brand">
+      class="brand"
+    >
       NEMPAT
     </div>
 
@@ -33,6 +43,7 @@
   </header>
 
 
+  <!-- Menu -->
   <main class="menu">
 
     <div class="section-heading">
@@ -50,26 +61,30 @@
   </main>
 
 
+  <!-- Loading -->
   <div
     id="loading"
-    class="screen-message">
-
+    class="screen-message"
+  >
     Loading menu...
-
   </div>
 
 
+  <!-- Error -->
   <div
     id="error"
-    class="screen-message hidden">
-
+    class="screen-message hidden"
+  >
     Unable to load menu.
-
   </div>
 
 
-  <script src="app.js"></script>
+  <!-- Menu JavaScript -->
+  <script
+    src="app.js?v=10"
+  ></script>
 
 </body>
 
 </html>
+```
