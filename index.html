@@ -3,6 +3,7 @@
 <html lang="en">
 
 <head>
+
   <meta charset="UTF-8">
 
   <meta
@@ -15,18 +16,18 @@
     content="#050505"
   >
 
-  <title>AR Menu</title>
+  <title>NEMPAT AR Menu</title>
 
-  <!-- Menu styling -->
   <link
     rel="stylesheet"
-    href="style.css?v=10"
+    href="style.css?v=20"
   >
+
 </head>
+
 
 <body>
 
-  <!-- Restaurant header -->
   <header class="hero">
 
     <div
@@ -43,16 +44,13 @@
   </header>
 
 
-  <!-- Menu -->
   <main class="menu">
 
     <div class="section-heading">
 
       <span>EXPLORE</span>
 
-      <h1>
-        Our Menu
-      </h1>
+      <h1>Our Menu</h1>
 
     </div>
 
@@ -61,7 +59,6 @@
   </main>
 
 
-  <!-- Loading -->
   <div
     id="loading"
     class="screen-message"
@@ -70,7 +67,6 @@
   </div>
 
 
-  <!-- Error -->
   <div
     id="error"
     class="screen-message hidden"
@@ -79,10 +75,246 @@
   </div>
 
 
-  <!-- Menu JavaScript -->
-  <script
-    src="app.js?v=10"
-  ></script>
+  <script>
+
+    /*
+     * NEMPAT MENU
+     * Everything is inside this file.
+     * No menu.json.
+     * No app.js.
+     */
+
+    const restaurant = {
+      name: "NEMPAT",
+      tagline: "Experience your food in 3D",
+      currency: "₹"
+    };
+
+
+    const menuItems = [
+      {
+        id: "pizza",
+
+        name: "Classic Pizza",
+
+        description:
+          "Golden crust, mozzarella, fresh vegetables and our signature sauce.",
+
+        price: 299,
+
+        image:
+          "assets/images/pizza.jpg",
+
+        ar: true
+      }
+    ];
+
+
+    function startMenu() {
+
+      try {
+
+        console.log(
+          "NEMPAT MENU STARTED"
+        );
+
+
+        /*
+         * Restaurant information
+         */
+
+        document.getElementById(
+          "restaurantName"
+        ).textContent =
+          restaurant.name;
+
+
+        document.getElementById(
+          "restaurantTagline"
+        ).textContent =
+          restaurant.tagline;
+
+
+        /*
+         * Menu container
+         */
+
+        const categories =
+          document.getElementById(
+            "categories"
+          );
+
+
+        categories.innerHTML = "";
+
+
+        /*
+         * Popular category
+         */
+
+        const section =
+          document.createElement(
+            "section"
+          );
+
+        section.className =
+          "category";
+
+
+        const title =
+          document.createElement(
+            "h2"
+          );
+
+        title.className =
+          "category-title";
+
+        title.textContent =
+          "Popular";
+
+
+        section.appendChild(
+          title
+        );
+
+
+        /*
+         * Food items
+         */
+
+        menuItems.forEach(
+          item => {
+
+            const card =
+              document.createElement(
+                "article"
+              );
+
+            card.className =
+              "food-card";
+
+
+            card.innerHTML = `
+
+              <img
+                class="food-image"
+                src="${item.image}"
+                alt="${item.name}"
+              >
+
+              <div class="food-info">
+
+                <h3 class="food-name">
+                  ${item.name}
+                </h3>
+
+                <p class="food-description">
+                  ${item.description}
+                </p>
+
+                <div class="food-bottom">
+
+                  <div class="food-price">
+                    ${restaurant.currency}${item.price}
+                  </div>
+
+                  <button
+                    class="ar-button"
+                    type="button"
+                    onclick="openAR('${item.id}')"
+                  >
+                    ✨ View in AR
+                  </button>
+
+                </div>
+
+              </div>
+
+            `;
+
+
+            section.appendChild(
+              card
+            );
+
+          }
+        );
+
+
+        categories.appendChild(
+          section
+        );
+
+
+        /*
+         * Hide loading
+         */
+
+        document
+          .getElementById("loading")
+          .classList.add("hidden");
+
+
+        console.log(
+          "NEMPAT MENU LOADED SUCCESSFULLY"
+        );
+
+      }
+
+      catch (error) {
+
+        console.error(
+          "MENU ERROR:",
+          error
+        );
+
+
+        document
+          .getElementById("loading")
+          .classList.add("hidden");
+
+
+        const errorBox =
+          document.getElementById(
+            "error"
+          );
+
+
+        errorBox.classList.remove(
+          "hidden"
+        );
+
+
+        errorBox.textContent =
+          "Menu error: " +
+          error.message;
+
+      }
+
+    }
+
+
+    /*
+     * Open markerless AR
+     */
+
+    function openAR(itemId) {
+
+      window.location.href =
+        "ar.html?item=" +
+        encodeURIComponent(itemId) +
+        "&v=20";
+
+    }
+
+
+    /*
+     * Start immediately
+     */
+
+    startMenu();
+
+  </script>
 
 </body>
 
