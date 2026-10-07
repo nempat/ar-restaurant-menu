@@ -6,56 +6,68 @@
 <title>AR Menu</title>
 <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
 <style>
-  :root{--bg:#fff8f0;--card:#fff;--ink:#2b1d14;--accent:#d9381e;--mute:#8a7566}
-  @media (prefers-color-scheme:dark){:root{--bg:#1a1410;--card:#262019;--ink:#f6ebe0;--mute:#b8a595}}
   *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,sans-serif;background:var(--bg);color:var(--ink)}
-  header{padding:28px 20px 8px;text-align:center}
-  header h1{margin:0;font-size:1.7rem}
-  header p{margin:6px 0 0;color:var(--mute);font-size:.95rem}
+  body{margin:0;font-family:system-ui,sans-serif;background:#fff8f0;color:#2b1d14}
+  header{padding:26px 16px 6px;text-align:center}
+  h1{margin:0;font-size:1.6rem}
+  header p{margin:6px 0 0;color:#8a7566;font-size:.92rem}
   main{max-width:900px;margin:0 auto;padding:16px;display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
-  .card{background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 4px 16px #0002}
-  model-viewer{width:100%;height:260px;--poster-color:transparent;background:transparent}
-  .info{padding:14px 16px 18px}
+  .card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 4px 16px #0002}
+  model-viewer{width:100%;height:270px;background:#fff3e6}
+  .info{padding:14px 16px 16px}
   .row{display:flex;justify-content:space-between;align-items:baseline}
-  .row h2{margin:0;font-size:1.15rem}
-  .price{font-weight:700;color:var(--accent)}
-  .info p{margin:6px 0 0;color:var(--mute);font-size:.9rem}
-  .ar-btn{position:absolute;bottom:12px;right:12px;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:10px 16px;font-size:.9rem;font-weight:600;cursor:pointer}
-  .hint{position:absolute;top:10px;left:12px;font-size:.75rem;color:var(--mute)}
-  footer{text-align:center;color:var(--mute);font-size:.8rem;padding:20px}
+  .row h2{margin:0;font-size:1.1rem}
+  .price{font-weight:700;color:#d9381e}
+  .info p{margin:6px 0 0;color:#8a7566;font-size:.9rem}
+  .ar-btn{position:absolute;bottom:12px;right:12px;background:#d9381e;color:#fff;border:0;border-radius:999px;padding:11px 18px;font-size:.95rem;font-weight:600}
+  .note{display:none;margin:10px 16px 0;padding:8px 10px;background:#fff0d6;border-radius:8px;font-size:.8rem}
 </style>
 </head>
 <body>
 <header>
   <h1>🍕 Our Menu</h1>
-  <p>Tap “View in your space” to place the dish on your table — no app needed.</p>
+  <p>Tap “View in your space” to place the dish on your table. No app needed.</p>
 </header>
 <main id="menu"></main>
-<footer>AR works on Android (Chrome) and iPhone (Safari). Open this page on your phone.</footer>
 
 <script>
-// Add menu items here. Each "model" is a .glb file in /models
+// ===== EDIT YOUR MENU HERE =====
 const ITEMS = [
-  {name:"Margherita Pizza", price:"₹349", desc:"Tomato, mozzarella, fresh basil.", model:"models/pizza.glb"},
-  // Demo: reusing the same model. Replace with your own GLBs, e.g. models/burger.glb
-  {name:"Farmhouse Pizza", price:"₹429", desc:"Loaded with veggies and cheese.", model:"models/pizza.glb"}
+  {name:"Margherita Pizza", price:"₹349", desc:"Tomato, mozzarella, fresh basil.", model:"assets/pizza.glb"},
+  {name:"Farmhouse Pizza",  price:"₹429", desc:"Loaded with veggies and cheese.",  model:"assets/pizza.glb"}
 ];
+// ================================
 
-const menu = document.getElementById('menu');
-menu.innerHTML = ITEMS.map(i => `
+document.getElementById('menu').innerHTML = ITEMS.map(i => `
   <article class="card">
     <model-viewer src="${i.model}" alt="${i.name}"
       ar ar-modes="webxr scene-viewer quick-look" ar-scale="auto" ar-placement="floor"
-      camera-controls auto-rotate shadow-intensity="1" environment-image="neutral" touch-action="pan-y">
-      <span class="hint">Drag to rotate</span>
+      camera-controls auto-rotate shadow-intensity="1" touch-action="pan-y">
       <button slot="ar-button" class="ar-btn">📱 View in your space</button>
     </model-viewer>
+    <div class="note">AR isn't supported in this browser. On Android use Chrome; on iPhone use Safari.</div>
     <div class="info">
       <div class="row"><h2>${i.name}</h2><span class="price">${i.price}</span></div>
       <p>${i.desc}</p>
     </div>
   </article>`).join('');
+
+// If the model file isn't found, try other common locations automatically
+const FALLBACKS = ['assets/pizza.glb','models/pizza.glb','pizza.glb'];
+document.querySelectorAll('model-viewer').forEach(mv => {
+  let tried = 0;
+  mv.addEventListener('error', () => {
+    if (tried < FALLBACKS.length) { mv.src = FALLBACKS[tried++]; }
+    else mv.parentElement.querySelector('.note').textContent = 'Model file not found. Upload pizza.glb to the assets folder in your repo.', mv.parentElement.querySelector('.note').style.display = 'block';
+  });
+});
+
+// Show a hint if AR can't start on this device/browser
+document.querySelectorAll('model-viewer').forEach(mv => {
+  mv.addEventListener('load', () => {
+    if (!mv.canActivateAR) mv.parentElement.querySelector('.note').style.display = 'block';
+  });
+});
 </script>
 </body>
 </html>
