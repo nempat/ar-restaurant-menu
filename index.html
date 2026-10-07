@@ -1,105 +1,21 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <meta name="theme-color" content="#050505">
-
-  <title>NEMPAT AR Menu</title>
-
-  <link rel="stylesheet" href="style.css?v=30">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Menu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
-  <header class="hero">
-
-    <div class="brand">
-      NEMPAT
-    </div>
-
-    <p>
-      Experience your food in 3D
-    </p>
-
-  </header>
-
-
-  <main class="menu">
-
-    <div class="section-heading">
-
-      <span>EXPLORE</span>
-
-      <h1>Our Menu</h1>
-
-    </div>
-
-
-    <section class="category">
-
-      <h2 class="category-title">
-        Popular
-      </h2>
-
-
-      <article class="food-card">
-
-        <img
-          class="food-image"
-          src="assets/images/pizza.jpg"
-          alt="Classic Pizza"
-        >
-
-        <div class="food-info">
-
-          <h3 class="food-name">
-            Classic Pizza
-          </h3>
-
-          <p class="food-description">
-            Golden crust, mozzarella, fresh vegetables
-            and our signature sauce.
-          </p>
-
-
-          <div class="food-bottom">
-
-            <div class="food-price">
-              ₹299
-            </div>
-
-            <button
-              class="ar-button"
-              onclick="openAR()"
-            >
-              ✨ View in AR
-            </button>
-
-          </div>
-
-        </div>
-
-      </article>
-
-    </section>
-
-  </main>
-
-
-  <script>
-    function openAR() {
-      window.location.href =
-        "ar.html?item=pizza&v=30";
-    }
-  </script>
-
+<header>
+  <h1 id="name">Menu</h1>
+  <p>Tap “See in AR” to view a dish on your table.</p>
+</header>
+<nav id="tabs"></nav>
+<main id="list"></main>
+<script src="app.js"></script>
 </body>
-
 </html>
