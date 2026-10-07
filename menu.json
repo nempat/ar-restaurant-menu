@@ -4,20 +4,35 @@
     "tagline": "Experience your food in 3D",
     "currency": "₹"
   },
+
   "categories": [
+
     {
       "name": "Popular",
+
       "items": [
+
         {
           "id": "pizza",
+
           "name": "Classic Pizza",
-          "description": "Golden crust, mozzarella, fresh vegetables and our signature sauce.",
+
+          "description":
+            "Golden crust, mozzarella, fresh vegetables and our signature sauce.",
+
           "price": 299,
-          "image": "assets/images/pizza.jpg",
-          "model": "assets/models/pizza.glb",
+
+          "image":
+            "assets/images/pizza.jpg",
+
+          "model":
+            "assets/models/pizza.glb",
+
           "ar": true
         }
+
       ]
     }
+
   ]
 }
