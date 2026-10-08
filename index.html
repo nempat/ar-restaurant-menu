@@ -2,12 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AR Menu v5</title>
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-<script type="module"
-  src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js">
-</script>
+<title>AR Menu v6</title>
 
 <style>
   *{box-sizing:border-box}
@@ -115,82 +113,169 @@
     display:none
   }
 
-  /* ================= CAMERA FALLBACK ================= */
+  /* =========================================
+     REAL WEBXR AR
+  ========================================= */
 
-  #cam{
+  #ar{
     position:fixed;
     inset:0;
-    z-index:99;
-    background:#000;
+    z-index:9999;
     display:none;
-    overflow:hidden
+    background:#000;
+    overflow:hidden;
   }
 
-  #cam video{
+  #ar canvas{
     position:absolute;
     inset:0;
     width:100%;
     height:100%;
-    object-fit:cover
   }
 
-  #fallback-model{
+  #ar-close{
     position:absolute;
-    width:280px;
-    height:280px;
-    left:50%;
-    top:50%;
-    transform:
-      translate(-50%,-50%);
-    background:transparent;
-    --poster-color:transparent;
-    --progress-bar-color:transparent;
-  }
-
-  #camx{
-    position:absolute;
-    top:14px;
+    top:calc(14px + env(safe-area-inset-top));
     right:14px;
-    z-index:5;
+    z-index:10;
+
     background:#fff;
+    color:#2b1d14;
+
     border:0;
     border-radius:999px;
+
     padding:10px 16px;
+
     font-weight:700;
-    cursor:pointer
+    font-size:.95rem;
+
+    cursor:pointer;
   }
 
-  #camtip{
+  #ar-place{
     position:absolute;
-    bottom:22px;
-    left:0;
-    right:0;
-    text-align:center;
-    color:#fff;
-    font-size:.9rem;
-    text-shadow:0 1px 4px #000;
-    z-index:5
-  }
-
-  #placeBtn{
-    position:absolute;
-    bottom:65px;
     left:50%;
+    bottom:calc(28px + env(safe-area-inset-bottom));
     transform:translateX(-50%);
-    z-index:6;
+
+    z-index:10;
+
     background:#d9381e;
     color:#fff;
+
     border:0;
     border-radius:999px;
-    padding:12px 22px;
+
+    padding:13px 24px;
+
     font-size:.95rem;
     font-weight:700;
-    display:none
+
+    display:none;
   }
 
-  /* Hide fallback model until camera starts */
-  #fallback-model{
-    display:none
+  #ar-tip{
+    position:absolute;
+
+    left:20px;
+    right:20px;
+
+    bottom:calc(82px + env(safe-area-inset-bottom));
+
+    z-index:10;
+
+    text-align:center;
+
+    color:#fff;
+
+    font-size:.9rem;
+
+    text-shadow:
+      0 1px 5px #000,
+      0 1px 10px #000;
+
+    pointer-events:none;
+  }
+
+  #ar-reticle{
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    width:70px;
+    height:70px;
+
+    margin-left:-35px;
+    margin-top:-35px;
+
+    border:2px solid rgba(255,255,255,.9);
+
+    border-radius:50%;
+
+    display:none;
+
+    z-index:5;
+
+    pointer-events:none;
+  }
+
+  #ar-reticle::after{
+    content:"";
+
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    width:6px;
+    height:6px;
+
+    margin:-3px;
+
+    background:#fff;
+
+    border-radius:50%;
+  }
+
+  #ar-message{
+    position:absolute;
+
+    left:20px;
+    right:20px;
+
+    top:50%;
+
+    transform:translateY(-50%);
+
+    z-index:20;
+
+    background:#fff;
+
+    color:#2b1d14;
+
+    padding:20px;
+
+    border-radius:18px;
+
+    text-align:center;
+
+    box-shadow:0 8px 30px #0005;
+
+    display:none;
+  }
+
+  #ar-message h3{
+    margin:0 0 8px;
+  }
+
+  #ar-message p{
+    margin:0;
+
+    color:#8a7566;
+
+    font-size:.9rem;
   }
 </style>
 </head>
@@ -205,43 +290,62 @@
 <main id="menu"></main>
 
 
-<!-- ==================================================
-     CAMERA FALLBACK
-     ================================================== -->
+<!-- =========================================
+     REAL WEBXR AR SCREEN
+========================================= -->
 
-<div id="cam">
+<div id="ar">
 
-  <video
-    id="camv"
-    autoplay
-    playsinline
-    muted>
-  </video>
-
-  <model-viewer
-    id="fallback-model"
-    camera-controls
-    interaction-prompt="none"
-    shadow-intensity="1"
-    touch-action="none">
-  </model-viewer>
-
-  <button id="placeBtn">
-    ✓ Place Pizza
-  </button>
-
-  <button id="camx">
+  <button id="ar-close">
     ✕ Close
   </button>
 
-  <div id="camtip">
-    Move the pizza to where you want it, then tap Place Pizza
+  <div id="ar-reticle"></div>
+
+  <button id="ar-place">
+    ✓ Place Pizza
+  </button>
+
+  <div id="ar-tip">
+    Move your phone slowly to detect the table
+  </div>
+
+  <div id="ar-message">
+    <h3 id="ar-message-title">
+      AR unavailable
+    </h3>
+
+    <p id="ar-message-text">
+      This device or browser does not support
+      browser-based world-tracked AR.
+    </p>
   </div>
 
 </div>
 
 
-<script>
+<!-- =========================================
+     THREE.JS
+========================================= -->
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+  }
+}
+</script>
+
+
+<script type="module">
+
+import * as THREE from
+  'three';
+
+import { GLTFLoader } from
+  'three/addons/loaders/GLTFLoader.js';
+
 
 /* =====================================================
    MENU
@@ -272,7 +376,7 @@ const PATHS = [
 
 
 /* =====================================================
-   CREATE MENU
+   MENU UI
 ===================================================== */
 
 document.getElementById('menu').innerHTML =
@@ -281,57 +385,21 @@ ITEMS.map((item,index) => `
   <article class="card">
 
     <model-viewer
-
-      id="model-${index}"
-
       src="${PATHS[0]}"
-
       alt="${item.name}"
 
-      ar
-
-      /*
-       * IMPORTANT:
-       *
-       * Only WebXR.
-       *
-       * We intentionally DO NOT include:
-       *
-       * scene-viewer
-       * quick-look
-       *
-       * because those can send the user
-       * into another AR application.
-       */
-
-      ar-modes="webxr"
-
-      ar-placement="floor"
-
-      ar-scale="fixed"
-
       camera-controls
-
       auto-rotate
-
       shadow-intensity="1"
-
       touch-action="pan-y"
-
-      interaction-prompt="auto"
-
       loading="lazy"
 
+      style="
+        width:100%;
+        height:270px;
+        background:#fff3e6;
+      "
     >
-
-      <button
-        slot="ar-button"
-        class="ar-btn">
-
-        📱 Place on surface
-
-      </button>
-
     </model-viewer>
 
 
@@ -352,11 +420,9 @@ ITEMS.map((item,index) => `
 
       </div>
 
-
       <p>
         ${item.desc}
       </p>
-
 
       <button
         class="btn camopen"
@@ -374,7 +440,7 @@ ITEMS.map((item,index) => `
 
 
 /* =====================================================
-   MODEL FALLBACK
+   NORMAL MODEL PATH FALLBACK
 ===================================================== */
 
 document
@@ -385,7 +451,6 @@ document
     card.querySelector('model-viewer');
 
   let pathIndex = 0;
-
 
   mv.addEventListener(
     'error',
@@ -416,116 +481,311 @@ document
   );
 
 
-  /* =================================================
-     CAMERA BUTTON
-  ================================================= */
-
   card
-  .querySelector('.camopen')
-  .addEventListener(
-    'click',
-    () => {
+    .querySelector('.camopen')
+    .addEventListener(
+      'click',
+      () => {
 
-      openAR(mv.src);
+        startAR(PATHS[0]);
 
-    }
-  );
+      }
+    );
 
 });
 
 
 /* =====================================================
-   CAMERA ELEMENTS
+   AR VARIABLES
 ===================================================== */
 
-const cam =
-  document.getElementById('cam');
+const ar =
+  document.getElementById('ar');
 
-const camv =
-  document.getElementById('camv');
+const canvas =
+  document.createElement('canvas');
 
-const fallbackModel =
-  document.getElementById(
-    'fallback-model'
-  );
+const arTip =
+  document.getElementById('ar-tip');
 
-const placeBtn =
-  document.getElementById(
-    'placeBtn'
-  );
+const arPlace =
+  document.getElementById('ar-place');
 
-let stream = null;
+const arClose =
+  document.getElementById('ar-close');
+
+const arReticle =
+  document.getElementById('ar-reticle');
+
+const arMessage =
+  document.getElementById('ar-message');
+
+const arMessageTitle =
+  document.getElementById('ar-message-title');
+
+const arMessageText =
+  document.getElementById('ar-message-text');
+
+
+let renderer;
+
+let scene;
+
+let camera;
+
+let controller;
+
+let reticle;
+
+let pizza = null;
+
+let xrSession = null;
+
+let hitTestSource = null;
+
+let hitTestSourceRequested = false;
+
+let placed = false;
 
 
 /* =====================================================
-   OPEN AR
+   THREE.JS SETUP
 ===================================================== */
 
-async function openAR(src){
+function setupThree(){
 
-  /*
-   * First try REAL WebXR AR.
-   *
-   * This is the only mode that can provide
-   * proper world tracking directly in the browser.
-   */
-
-  const webxrSupported =
-    await checkWebXR();
+  scene =
+    new THREE.Scene();
 
 
-  if(webxrSupported){
-
-    /*
-     * Find the first model-viewer
-     * containing this model.
-     */
-
-    const models =
-      document.querySelectorAll(
-        'model-viewer'
-      );
+  camera =
+    new THREE.PerspectiveCamera();
 
 
-    for(const model of models){
+  renderer =
+    new THREE.WebGLRenderer({
 
-      if(model.src === src){
+      canvas:canvas,
 
-        try{
+      alpha:true,
 
-          await model.activateAR();
+      antialias:true
 
-          return;
+    });
 
-        }
-        catch(error){
 
-          console.log(
-            'WebXR failed:',
-            error
-          );
+  renderer.setPixelRatio(
+    Math.min(
+      window.devicePixelRatio || 1,
+      2
+    )
+  );
 
-        }
 
-      }
+  renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
+  );
 
-    }
+
+  renderer.xr.enabled =
+    true;
+
+
+  renderer.outputColorSpace =
+    THREE.SRGBColorSpace;
+
+
+  renderer.shadowMap.enabled =
+    true;
+
+
+  /* -----------------------------------------
+     LIGHTING
+  ----------------------------------------- */
+
+  const ambient =
+    new THREE.HemisphereLight(
+      0xffffff,
+      0x888888,
+      2
+    );
+
+  scene.add(ambient);
+
+
+  const directional =
+    new THREE.DirectionalLight(
+      0xffffff,
+      3
+    );
+
+  directional.position.set(
+    2,
+    4,
+    2
+  );
+
+  directional.castShadow =
+    true;
+
+  scene.add(directional);
+
+
+  /* -----------------------------------------
+     RETICLE
+  ----------------------------------------- */
+
+  const ringGeometry =
+    new THREE.RingGeometry(
+      0.08,
+      0.10,
+      32
+    );
+
+
+  ringGeometry.rotateX(
+    -Math.PI / 2
+  );
+
+
+  const ringMaterial =
+    new THREE.MeshBasicMaterial({
+      color:0xffffff
+    });
+
+
+  reticle =
+    new THREE.Mesh(
+      ringGeometry,
+      ringMaterial
+    );
+
+
+  reticle.matrixAutoUpdate =
+    false;
+
+
+  reticle.visible =
+    false;
+
+
+  scene.add(reticle);
+
+
+  /* -----------------------------------------
+     XR CONTROLLER
+  ----------------------------------------- */
+
+  controller =
+    renderer.xr.getController(0);
+
+
+  controller.addEventListener(
+    'select',
+    onSelect
+  );
+
+
+  scene.add(controller);
+
+
+  ar.appendChild(canvas);
+
+}
+
+
+/* =====================================================
+   LOAD PIZZA
+===================================================== */
+
+async function loadPizza(src){
+
+  if(pizza){
+
+    scene.remove(
+      pizza
+    );
+
+    pizza = null;
 
   }
 
 
-  /*
-   * WebXR unavailable.
-   *
-   * Use universal browser camera fallback.
-   *
-   * IMPORTANT:
-   *
-   * This fallback does NOT claim to have
-   * real-world tracking.
-   */
+  const loader =
+    new GLTFLoader();
 
-  openCameraFallback(src);
+
+  return new Promise(
+    (resolve,reject) => {
+
+      loader.load(
+
+        src,
+
+        gltf => {
+
+          pizza =
+            gltf.scene;
+
+
+          /*
+           * IMPORTANT
+           *
+           * We don't put the pizza
+           * relative to the camera.
+           *
+           * Its position will later
+           * come from the WebXR hit-test
+           * world coordinates.
+           */
+
+          pizza.visible =
+            false;
+
+
+          pizza.traverse(
+            object => {
+
+              if(
+                object.isMesh
+              ){
+
+                object.castShadow =
+                  true;
+
+                object.receiveShadow =
+                  true;
+
+              }
+
+            }
+          );
+
+
+          scene.add(
+            pizza
+          );
+
+
+          resolve(
+            pizza
+          );
+
+        },
+
+        undefined,
+
+        error => {
+
+          reject(error);
+
+        }
+
+      );
+
+    }
+  );
 
 }
 
@@ -534,7 +794,7 @@ async function openAR(src){
    CHECK WEBXR
 ===================================================== */
 
-async function checkWebXR(){
+async function supportsAR(){
 
   if(!navigator.xr){
 
@@ -545,17 +805,15 @@ async function checkWebXR(){
 
   try{
 
-    return await navigator.xr.isSessionSupported(
-      'immersive-ar'
-    );
+    return await
+      navigator.xr.isSessionSupported(
+        'immersive-ar'
+      );
 
   }
   catch(error){
 
-    console.log(
-      'WebXR detection failed:',
-      error
-    );
+    console.error(error);
 
     return false;
 
@@ -565,58 +823,121 @@ async function checkWebXR(){
 
 
 /* =====================================================
-   CAMERA FALLBACK
+   START AR
 ===================================================== */
 
-async function openCameraFallback(src){
+async function startAR(src){
+
+  const supported =
+    await supportsAR();
+
+
+  if(!supported){
+
+    showUnsupported();
+
+    return;
+
+  }
+
 
   try{
 
-    stream =
-      await navigator.mediaDevices.getUserMedia({
-
-        video:{
-          facingMode:{
-            ideal:'environment'
-          }
-        },
-
-        audio:false
-
-      });
+    setupThree();
 
 
-    camv.srcObject =
-      stream;
+    await loadPizza(src);
 
 
-    fallbackModel.src =
-      src;
+    xrSession =
+      await navigator.xr.requestSession(
+        'immersive-ar',
+        {
+
+          requiredFeatures:[
+            'hit-test',
+            'local-floor'
+          ],
+
+          optionalFeatures:[
+            'dom-overlay',
+            'anchors',
+            'plane-detection'
+          ]
+
+        }
+      );
 
 
-    fallbackModel.style.display =
+    xrSession.addEventListener(
+      'end',
+      onSessionEnd
+    );
+
+
+    renderer.xr.setReferenceSpaceType(
+      'local-floor'
+    );
+
+
+    await renderer.xr.setSession(
+      xrSession
+    );
+
+
+    ar.style.display =
       'block';
 
 
-    placeBtn.style.display =
+    arReticle.style.display =
       'block';
 
 
-    cam.style.display =
-      'block';
+    arTip.textContent =
+      'Move your phone slowly to find a surface';
 
+
+    placed =
+      false;
+
+
+    arPlace.style.display =
+      'none';
+
+
+    hitTestSourceRequested =
+      false;
+
+
+    hitTestSource =
+      null;
+
+
+    renderer.setAnimationLoop(
+      renderAR
+    );
 
   }
   catch(error){
 
-    console.error(error);
-
-
-    alert(
-      'Camera could not start. ' +
-      'Please allow camera permission ' +
-      'and make sure this website uses HTTPS.'
+    console.error(
+      'Could not start WebXR:',
+      error
     );
+
+
+    if(
+      xrSession
+    ){
+
+      try{
+        await xrSession.end();
+      }
+      catch(e){}
+    }
+
+
+    showUnsupported();
 
   }
 
@@ -624,85 +945,481 @@ async function openCameraFallback(src){
 
 
 /* =====================================================
-   PLACE BUTTON
+   HIT TEST
 ===================================================== */
 
-placeBtn.addEventListener(
+async function requestHitTestSource(
+  frame
+){
+
+  if(
+    hitTestSourceRequested
+  ){
+
+    return;
+
+  }
+
+
+  const session =
+    renderer.xr.getSession();
+
+
+  const viewerSpace =
+    await session.requestReferenceSpace(
+      'viewer'
+    );
+
+
+  hitTestSource =
+    await session.requestHitTestSource({
+      space:viewerSpace
+    });
+
+
+  hitTestSourceRequested =
+    true;
+
+
+  session.addEventListener(
+    'end',
+    () => {
+
+      hitTestSourceRequested =
+        false;
+
+      hitTestSource =
+        null;
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   RENDER LOOP
+===================================================== */
+
+function renderAR(
+  timestamp,
+  frame
+){
+
+  if(!frame){
+
+    return;
+
+  }
+
+
+  const session =
+    renderer.xr.getSession();
+
+
+  requestHitTestSource(
+    frame
+  );
+
+
+  if(
+    hitTestSource
+  ){
+
+    const referenceSpace =
+      renderer.xr.getReferenceSpace();
+
+
+    const hitResults =
+      frame.getHitTestResults(
+        hitTestSource
+      );
+
+
+    if(
+      hitResults.length > 0
+    ){
+
+      const hit =
+        hitResults[0];
+
+
+      const pose =
+        hit.getPose(
+          referenceSpace
+        );
+
+
+      if(pose){
+
+        /*
+         * Reticle follows the REAL
+         * detected surface.
+         */
+
+        reticle.visible =
+          !placed;
+
+
+        reticle.matrix.fromArray(
+          pose.transform.matrix
+        );
+
+
+        /*
+         * If the pizza has NOT been
+         * placed yet, preview it at
+         * the detected real-world
+         * position.
+         */
+
+        if(
+          pizza &&
+          !placed
+        ){
+
+          pizza.matrixAutoUpdate =
+            false;
+
+          pizza.matrix.fromArray(
+            pose.transform.matrix
+          );
+
+          pizza.visible =
+            true;
+
+        }
+
+
+        if(
+          !placed
+        ){
+
+          arTip.textContent =
+            'Tap the screen to place the pizza';
+
+          arPlace.style.display =
+            'block';
+
+        }
+
+      }
+
+    }
+    else{
+
+      reticle.visible =
+        false;
+
+
+      if(
+        !placed
+      ){
+
+        arTip.textContent =
+          'Move your phone slowly to find a surface';
+
+        arPlace.style.display =
+          'none';
+
+      }
+
+    }
+
+  }
+
+
+  renderer.render(
+    scene,
+    camera
+  );
+
+}
+
+
+/* =====================================================
+   USER TAPS SCREEN
+===================================================== */
+
+function onSelect(){
+
+  if(
+    !pizza ||
+    !reticle.visible
+  ){
+
+    return;
+
+  }
+
+
+  /*
+   * CRITICAL PART
+   *
+   * Copy the current WORLD-SPACE
+   * reticle transform.
+   *
+   * After this point the pizza is
+   * NOT attached to the camera.
+   */
+
+  pizza.matrix.copy(
+    reticle.matrix
+  );
+
+
+  pizza.matrixAutoUpdate =
+    false;
+
+
+  pizza.visible =
+    true;
+
+
+  placed =
+    true;
+
+
+  reticle.visible =
+    false;
+
+
+  arPlace.style.display =
+    'none';
+
+
+  arTip.textContent =
+    '🍕 Pizza placed — move around it';
+
+
+  /*
+   * The pizza's matrix is now
+   * independent of the camera.
+   *
+   * WebXR's tracking system keeps
+   * the world coordinate system
+   * stable while the user moves.
+   */
+
+}
+
+
+/* =====================================================
+   MANUAL PLACE BUTTON
+===================================================== */
+
+arPlace.addEventListener(
   'click',
   () => {
 
-    /*
-     * In fallback mode this simply
-     * freezes the model's current screen
-     * position.
-     *
-     * It is NOT real-world AR tracking.
-     */
+    if(
+      !pizza ||
+      !reticle.visible
+    ){
 
-    placeBtn.style.display =
+      return;
+
+    }
+
+
+    pizza.matrix.copy(
+      reticle.matrix
+    );
+
+
+    pizza.matrixAutoUpdate =
+      false;
+
+
+    pizza.visible =
+      true;
+
+
+    placed =
+      true;
+
+
+    reticle.visible =
+      false;
+
+
+    arPlace.style.display =
       'none';
 
 
-    document.getElementById(
-      'camtip'
-    ).textContent =
-      'Pizza placed · Move it again by dragging';
-
+    arTip.textContent =
+      '🍕 Pizza placed — move around it';
 
   }
 );
 
 
 /* =====================================================
-   CLOSE
+   CLOSE AR
 ===================================================== */
 
-document
-.getElementById('camx')
-.addEventListener(
+arClose.addEventListener(
   'click',
-  closeCam
+  async () => {
+
+    if(
+      xrSession
+    ){
+
+      try{
+
+        await xrSession.end();
+
+      }
+      catch(error){
+
+        console.log(error);
+
+      }
+
+    }
+
+  }
 );
 
 
-function closeCam(){
+/* =====================================================
+   SESSION END
+===================================================== */
 
-  if(stream){
+function onSessionEnd(){
 
-    stream
-      .getTracks()
-      .forEach(
-        track => track.stop()
-      );
+  renderer.setAnimationLoop(
+    null
+  );
+
+
+  if(
+    pizza
+  ){
+
+    scene.remove(
+      pizza
+    );
+
+    pizza = null;
 
   }
 
 
-  stream = null;
+  hitTestSource =
+    null;
 
-  camv.srcObject = null;
+  hitTestSourceRequested =
+    false;
 
-  fallbackModel.style.display =
+  xrSession =
+    null;
+
+  ar.style.display =
     'none';
 
-  placeBtn.style.display =
+  arReticle.style.display =
     'none';
 
-  cam.style.display =
+  arPlace.style.display =
     'none';
 
 }
 
 
 /* =====================================================
-   CLEANUP WHEN PAGE CLOSES
+   UNSUPPORTED DEVICE
+===================================================== */
+
+function showUnsupported(){
+
+  ar.style.display =
+    'block';
+
+
+  arMessage.style.display =
+    'block';
+
+
+  arMessageTitle.textContent =
+    'AR is not supported here';
+
+
+  arMessageText.textContent =
+    'This browser does not provide world-tracked AR. Please try a browser/device with WebXR AR support. No app installation is required.';
+
+
+  arTip.textContent =
+    '';
+
+
+  arReticle.style.display =
+    'none';
+
+
+  arPlace.style.display =
+    'none';
+
+}
+
+
+/* =====================================================
+   CLOSE UNSUPPORTED SCREEN
+===================================================== */
+
+arClose.addEventListener(
+  'click',
+  () => {
+
+    if(
+      !xrSession
+    ){
+
+      ar.style.display =
+        'none';
+
+      arMessage.style.display =
+        'none';
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   RESIZE
 ===================================================== */
 
 window.addEventListener(
-  'pagehide',
-  closeCam
+  'resize',
+  () => {
+
+    if(
+      !renderer ||
+      !camera
+    ){
+
+      return;
+
+    }
+
+
+    renderer.setSize(
+      window.innerWidth,
+      window.innerHeight
+    );
+
+  }
 );
 
+</script>
+
+
+<!-- model-viewer is only used for the normal menu preview -->
+<script type="module"
+src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js">
 </script>
 
 </body>
