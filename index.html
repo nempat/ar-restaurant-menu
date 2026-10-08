@@ -1,108 +1,1018 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AR Menu v3</title>
-<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
-<style>
-  *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,sans-serif;background:#fff8f0;color:#2b1d14}
-  header{padding:26px 16px 6px;text-align:center}
-  h1{margin:0;font-size:1.6rem}
-  header p{margin:6px 0 0;color:#8a7566;font-size:.92rem}
-  main{max-width:900px;margin:0 auto;padding:16px;display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
-  .card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 4px 16px #0002}
-  .card model-viewer{width:100%;height:270px;background:#fff3e6}
-  .info{padding:14px 16px 16px}
-  .row{display:flex;justify-content:space-between;align-items:baseline}
-  .row h2{margin:0;font-size:1.1rem}
-  .price{font-weight:700;color:#d9381e}
-  .info p{margin:6px 0 10px;color:#8a7566;font-size:.9rem}
-  .btn{background:#d9381e;color:#fff;border:0;border-radius:999px;padding:11px 18px;font-size:.95rem;font-weight:600;width:100%}
-  .ar-btn{position:absolute;bottom:12px;right:12px;background:#2b1d14;color:#fff;border:0;border-radius:999px;padding:10px 16px;font-size:.9rem;font-weight:600}
-  .note{margin:8px 16px 0;font-size:.8rem;color:#b00020}
-  /* camera overlay */
-  #cam{position:fixed;inset:0;z-index:99;background:#000;display:none}
-  #cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-  #cam model-viewer{position:absolute;inset:0;width:100%;height:100%;background:transparent;--poster-color:transparent}
-  #camx{position:absolute;top:14px;right:14px;z-index:5;background:#fff;border:0;border-radius:999px;padding:10px 16px;font-weight:700}
-  #camtip{position:absolute;bottom:22px;left:0;right:0;text-align:center;color:#fff;font-size:.9rem;text-shadow:0 1px 4px #000;z-index:5}
-</style>
-</head>
-<body>
-<header>
-  <h1>🍕 Our Menu (v3)</h1>
-  <p>See the dish on your table through your camera. No app needed.</p>
-</header>
-<main id="menu"></main>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  />
 
-<div id="cam">
-  <video id="camv" autoplay playsinline muted></video>
-  <model-viewer id="camm" camera-controls auto-rotate interaction-prompt="none" shadow-intensity="1" touch-action="none"></model-viewer>
-  <button id="camx">✕ Close</button>
-  <div id="camtip">Drag to rotate · Pinch to resize</div>
+  <title>AR Menu</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f7f7f7;
+      color: #111;
+    }
+
+    header {
+      background: #111;
+      color: white;
+      padding: 22px 18px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 26px;
+    }
+
+    header p {
+      margin: 7px 0 0;
+      opacity: 0.75;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      padding: 18px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    .food-image {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      background: #eee;
+    }
+
+    .content {
+      padding: 17px;
+    }
+
+    .name-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .name {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .price {
+      font-size: 18px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .desc {
+      margin: 9px 0 15px;
+      color: #666;
+      line-height: 1.4;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .ar-btn {
+      background: #111;
+      color: white;
+    }
+
+    .ar-btn:active {
+      transform: scale(0.98);
+    }
+
+    #ar-ui {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      color: white;
+    }
+
+    #ar-ui.active {
+      display: block;
+    }
+
+    #ar-hint {
+      position: absolute;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 40px);
+      max-width: 420px;
+      text-align: center;
+      background: rgba(0,0,0,0.72);
+      padding: 13px 16px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+
+    #place-btn {
+      position: absolute;
+      bottom: 35px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 180px;
+      background: white;
+      color: #111;
+      pointer-events: auto;
+      display: none;
+    }
+
+    #exit-btn {
+      position: absolute;
+      top: 22px;
+      right: 18px;
+      width: auto;
+      padding: 10px 15px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      pointer-events: auto;
+      display: none;
+    }
+
+    #reticle {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border: 3px solid white;
+      border-radius: 50%;
+      display: none;
+    }
+
+    .unsupported {
+      padding: 18px;
+      text-align: center;
+      color: #555;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🍕 Our Menu</h1>
+  <p>Explore our dishes in AR</p>
+</header>
+
+<div class="container" id="menu"></div>
+
+<div class="unsupported" id="unsupported" style="display:none;">
+  AR is not supported on this device/browser.
 </div>
 
-<script>
-// ===== EDIT YOUR MENU HERE =====
+<!-- AR UI -->
+<div id="ar-ui">
+
+  <div id="ar-hint">
+    Move your phone slowly over a table or floor to find a surface.
+  </div>
+
+  <div id="reticle"></div>
+
+  <button id="place-btn">
+    Place Pizza
+  </button>
+
+  <button id="exit-btn">
+    ✕ Exit AR
+  </button>
+
+</div>
+
+<script type="module">
+
+/* =========================================================
+   THREE.JS
+   ========================================================= */
+
+import * as THREE from
+  "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js";
+
+import { GLTFLoader } from
+  "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/loaders/GLTFLoader.js";
+
+
+/* =========================================================
+   RESTAURANT MENU
+   ========================================================= */
+
 const ITEMS = [
-  {name:"Margherita Pizza", price:"₹349", desc:"Tomato, mozzarella, fresh basil."},
-  {name:"Farmhouse Pizza",  price:"₹429", desc:"Loaded with veggies and cheese."}
+
+  {
+    name: "Margherita Pizza",
+    price: "₹349",
+    desc: "Tomato, mozzarella, fresh basil.",
+    image: "assets/images/pizza.jpg",
+    model: "assets/models/pizza.glb"
+  },
+
+  {
+    name: "Farmhouse Pizza",
+    price: "₹429",
+    desc: "Loaded with veggies and cheese.",
+    image: "assets/images/pizza.jpg",
+    model: "assets/models/pizza.glb"
+  }
+
 ];
-const PATHS = ['pizza.glb','assets/pizza.glb','models/pizza.glb'];
-// ================================
 
-document.getElementById('menu').innerHTML = ITEMS.map(i => `
-  <article class="card">
-    <model-viewer src="${PATHS[0]}" alt="${i.name}"
-      ar ar-modes="webxr scene-viewer quick-look" ar-scale="auto" ar-placement="floor"
-      camera-controls auto-rotate shadow-intensity="1" touch-action="pan-y">
-      <button slot="ar-button" class="ar-btn">📱 Place on surface</button>
-    </model-viewer>
-    <div class="note" style="display:none"></div>
-    <div class="info">
-      <div class="row"><h2>${i.name}</h2><span class="price">${i.price}</span></div>
-      <p>${i.desc}</p>
-      <button class="btn camopen">📷 View with camera</button>
+
+/* =========================================================
+   MENU UI
+   ========================================================= */
+
+const menu = document.getElementById("menu");
+
+ITEMS.forEach((item, index) => {
+
+  const card = document.createElement("div");
+
+  card.className = "card";
+
+  card.innerHTML = `
+
+    <img
+      class="food-image"
+      src="${item.image}"
+      alt="${item.name}"
+      onerror="this.style.display='none'"
+    >
+
+    <div class="content">
+
+      <div class="name-row">
+
+        <div class="name">
+          ${item.name}
+        </div>
+
+        <div class="price">
+          ${item.price}
+        </div>
+
+      </div>
+
+      <div class="desc">
+        ${item.desc}
+      </div>
+
+      <button
+        class="ar-btn"
+        data-index="${index}"
+      >
+        📱 View in AR
+      </button>
+
     </div>
-  </article>`).join('');
+  `;
 
-document.querySelectorAll('.card').forEach(card => {
-  const mv = card.querySelector('model-viewer');
-  let n = 1;
-  mv.addEventListener('error', () => {
-    if (n < PATHS.length) { mv.src = PATHS[n++]; return; }
-    const note = card.querySelector('.note');
-    note.style.display = 'block';
-    note.textContent = 'pizza.glb not found in your repo.';
-  });
-  card.querySelector('.camopen').addEventListener('click', () => openCam(mv.src));
+  menu.appendChild(card);
+
 });
 
-// ---- camera view (works in any phone browser, no app) ----
-const cam = document.getElementById('cam');
-const camv = document.getElementById('camv');
-const camm = document.getElementById('camm');
-let stream = null;
 
-async function openCam(src) {
+/* =========================================================
+   WEBXR VARIABLES
+   ========================================================= */
+
+let renderer;
+let scene;
+let camera;
+
+let xrSession = null;
+let hitTestSource = null;
+let viewerSpace = null;
+
+let reticle;
+
+let pizzaModel = null;
+
+let currentModelURL = null;
+
+let surfaceDetected = false;
+let pizzaPlaced = false;
+
+
+/* =========================================================
+   DOM
+   ========================================================= */
+
+const arUI =
+  document.getElementById("ar-ui");
+
+const arHint =
+  document.getElementById("ar-hint");
+
+const placeBtn =
+  document.getElementById("place-btn");
+
+const exitBtn =
+  document.getElementById("exit-btn");
+
+const reticleElement =
+  document.getElementById("reticle");
+
+const unsupported =
+  document.getElementById("unsupported");
+
+
+/* =========================================================
+   CHECK WEBXR
+   ========================================================= */
+
+async function checkARSupport() {
+
+  if (!navigator.xr) {
+    return false;
+  }
+
   try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' } }, audio: false
-    });
-    camv.srcObject = stream;
-    camm.src = src;
-    cam.style.display = 'block';
-  } catch (e) {
-    alert('Camera could not start. Please allow camera permission for this site and make sure you opened it over https.');
+
+    return await navigator.xr.isSessionSupported(
+      "immersive-ar"
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    return false;
   }
 }
-function closeCam() {
-  if (stream) stream.getTracks().forEach(t => t.stop());
-  stream = null; camv.srcObject = null; cam.style.display = 'none';
+
+
+/* =========================================================
+   BUTTON HANDLER
+   ========================================================= */
+
+document.addEventListener("click", async (event) => {
+
+  const button =
+    event.target.closest(".ar-btn");
+
+  if (!button) return;
+
+  const index =
+    Number(button.dataset.index);
+
+  await startAR(ITEMS[index]);
+
+});
+
+
+/* =========================================================
+   START AR
+   ========================================================= */
+
+async function startAR(item) {
+
+  const supported =
+    await checkARSupport();
+
+  if (!supported) {
+
+    unsupported.style.display = "block";
+
+    alert(
+      "Markerless browser AR is not supported on this device/browser. Try a compatible Android phone and browser."
+    );
+
+    return;
+  }
+
+  currentModelURL =
+    item.model;
+
+  try {
+
+    await setupThree();
+
+    xrSession =
+      await navigator.xr.requestSession(
+        "immersive-ar",
+        {
+          requiredFeatures: [
+            "hit-test"
+          ],
+
+          optionalFeatures: [
+            "dom-overlay"
+          ],
+
+          domOverlay: {
+            root: arUI
+          }
+        }
+      );
+
+    arUI.classList.add("active");
+
+    exitBtn.style.display = "block";
+
+    placeBtn.style.display = "none";
+
+    arHint.textContent =
+      "Move your phone slowly over a table or floor to find a surface.";
+
+    await renderer.xr.setSession(
+      xrSession
+    );
+
+    renderer.xr.setReferenceSpaceType(
+      "local"
+    );
+
+    await setupHitTest();
+
+    xrSession.addEventListener(
+      "select",
+      onARSelect
+    );
+
+    xrSession.addEventListener(
+      "end",
+      cleanupAR
+    );
+
+  } catch (error) {
+
+    console.error(
+      "AR failed:",
+      error
+    );
+
+    alert(
+      "AR could not start. Please use a supported Android phone/browser and make sure camera permission is allowed."
+    );
+
+    cleanupAR();
+  }
 }
-document.getElementById('camx').addEventListener('click', closeCam);
+
+
+/* =========================================================
+   THREE.JS SETUP
+   ========================================================= */
+
+async function setupThree() {
+
+  if (renderer) return;
+
+  scene =
+    new THREE.Scene();
+
+  camera =
+    new THREE.PerspectiveCamera(
+      70,
+      window.innerWidth /
+      window.innerHeight,
+      0.01,
+      20
+    );
+
+
+  /* Renderer */
+
+  renderer =
+    new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      preserveDrawingBuffer: false
+    });
+
+  renderer.setPixelRatio(
+    Math.min(
+      window.devicePixelRatio,
+      2
+    )
+  );
+
+  renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
+  );
+
+  renderer.xr.enabled = true;
+
+  renderer.outputColorSpace =
+    THREE.SRGBColorSpace;
+
+  renderer.toneMapping =
+    THREE.ACESFilmicToneMapping;
+
+  renderer.toneMappingExposure =
+    1.2;
+
+
+  /* Put canvas on page */
+
+  renderer.domElement.style.position =
+    "fixed";
+
+  renderer.domElement.style.left =
+    "0";
+
+  renderer.domElement.style.top =
+    "0";
+
+  renderer.domElement.style.width =
+    "100%";
+
+  renderer.domElement.style.height =
+    "100%";
+
+  renderer.domElement.style.zIndex =
+    "9998";
+
+  document.body.appendChild(
+    renderer.domElement
+  );
+
+
+  /* Lighting */
+
+  const hemi =
+    new THREE.HemisphereLight(
+      0xffffff,
+      0x555555,
+      2
+    );
+
+  scene.add(hemi);
+
+
+  const directional =
+    new THREE.DirectionalLight(
+      0xffffff,
+      3
+    );
+
+  directional.position.set(
+    2,
+    4,
+    2
+  );
+
+  scene.add(directional);
+
+
+  /* Reticle */
+
+  reticle =
+    new THREE.Mesh(
+
+      new THREE.RingGeometry(
+        0.08,
+        0.10,
+        32
+      ),
+
+      new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        side: THREE.DoubleSide
+      })
+
+    );
+
+  reticle.rotation.x =
+    -Math.PI / 2;
+
+  reticle.matrixAutoUpdate =
+    false;
+
+  reticle.visible =
+    false;
+
+  scene.add(reticle);
+
+
+  /* Resize */
+
+  window.addEventListener(
+    "resize",
+    onResize
+  );
+
+
+  /* Render loop */
+
+  renderer.setAnimationLoop(
+    render
+  );
+}
+
+
+/* =========================================================
+   HIT TEST
+   ========================================================= */
+
+async function setupHitTest() {
+
+  viewerSpace =
+    await xrSession.requestReferenceSpace(
+      "viewer"
+    );
+
+  hitTestSource =
+    await xrSession.requestHitTestSource({
+      space: viewerSpace
+    });
+
+}
+
+
+/* =========================================================
+   RENDER LOOP
+   ========================================================= */
+
+function render(
+  timestamp,
+  frame
+) {
+
+  if (
+    frame &&
+    xrSession &&
+    hitTestSource
+  ) {
+
+    const referenceSpace =
+      renderer.xr.getReferenceSpace();
+
+    const hitResults =
+      frame.getHitTestResults(
+        hitTestSource
+      );
+
+
+    if (hitResults.length > 0) {
+
+      const hit =
+        hitResults[0];
+
+      const pose =
+        hit.getPose(
+          referenceSpace
+        );
+
+      if (pose) {
+
+        reticle.visible =
+          true;
+
+        reticle.matrix.fromArray(
+          pose.transform.matrix
+        );
+
+        surfaceDetected =
+          true;
+
+        if (!pizzaPlaced) {
+
+          reticleElement.style.display =
+            "block";
+
+          placeBtn.style.display =
+            "block";
+
+          arHint.textContent =
+            "Surface found. Tap the screen or Place Pizza.";
+
+        }
+
+      }
+
+    } else {
+
+      reticle.visible =
+        false;
+
+      surfaceDetected =
+        false;
+
+      if (!pizzaPlaced) {
+
+        reticleElement.style.display =
+          "none";
+
+        placeBtn.style.display =
+          "none";
+
+        arHint.textContent =
+          "Move your phone slowly over a table or floor to find a surface.";
+      }
+
+    }
+
+  }
+
+
+  renderer.render(
+    scene,
+    camera
+  );
+}
+
+
+/* =========================================================
+   PLACE PIZZA
+   ========================================================= */
+
+async function placePizza() {
+
+  if (!surfaceDetected) {
+
+    arHint.textContent =
+      "Move your phone until a surface is detected.";
+
+    return;
+  }
+
+
+  if (!pizzaModel) {
+
+    await loadPizza();
+  }
+
+
+  /* IMPORTANT:
+     Copy the detected WORLD position.
+     This makes the pizza stay fixed
+     instead of moving with the camera.
+  */
+
+  pizzaModel.position.setFromMatrixPosition(
+    reticle.matrix
+  );
+
+
+  /* Put model on the detected surface */
+
+  pizzaModel.visible =
+    true;
+
+  pizzaPlaced =
+    true;
+
+
+  reticle.visible =
+    false;
+
+  reticleElement.style.display =
+    "none";
+
+  placeBtn.style.display =
+    "none";
+
+  arHint.textContent =
+    "Pizza placed. Move your phone around it — it stays on the table.";
+
+}
+
+
+/* =========================================================
+   TAP / SELECT
+   ========================================================= */
+
+function onARSelect() {
+
+  if (!pizzaPlaced) {
+
+    placePizza();
+
+  } else {
+
+    /* If already placed, tapping again
+       does NOT attach it to the camera.
+       It remains world anchored.
+    */
+
+  }
+}
+
+
+/* =========================================================
+   PLACE BUTTON
+   ========================================================= */
+
+placeBtn.addEventListener(
+  "click",
+  placePizza
+);
+
+
+/* =========================================================
+   LOAD GLB
+   ========================================================= */
+
+async function loadPizza() {
+
+  const loader =
+    new GLTFLoader();
+
+
+  try {
+
+    const gltf =
+      await loader.loadAsync(
+        currentModelURL
+      );
+
+    pizzaModel =
+      gltf.scene;
+
+
+    /*
+      Adjust this value depending
+      on the actual GLB size.
+
+      0.35 is a good starting point.
+    */
+
+    pizzaModel.scale.setScalar(
+      0.35
+    );
+
+
+    pizzaModel.visible =
+      false;
+
+
+    /*
+      Enable shadows if available.
+    */
+
+    pizzaModel.traverse(
+      object => {
+
+        if (
+          object.isMesh
+        ) {
+
+          object.castShadow =
+            true;
+
+          object.receiveShadow =
+            true;
+
+        }
+
+      }
+    );
+
+
+    scene.add(
+      pizzaModel
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Could not load pizza GLB:",
+      error
+    );
+
+    throw error;
+  }
+}
+
+
+/* =========================================================
+   EXIT AR
+   ========================================================= */
+
+exitBtn.addEventListener(
+  "click",
+  async () => {
+
+    if (xrSession) {
+
+      try {
+
+        await xrSession.end();
+
+      } catch (error) {
+
+        console.error(error);
+
+      }
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   CLEANUP
+   ========================================================= */
+
+function cleanupAR() {
+
+  xrSession =
+    null;
+
+  hitTestSource =
+    null;
+
+  viewerSpace =
+    null;
+
+  surfaceDetected =
+    false;
+
+  pizzaPlaced =
+    false;
+
+  if (pizzaModel) {
+
+    pizzaModel.visible =
+      false;
+
+  }
+
+  reticle.visible =
+    false;
+
+  arUI.classList.remove(
+    "active"
+  );
+
+  exitBtn.style.display =
+    "none";
+
+  placeBtn.style.display =
+    "none";
+
+  reticleElement.style.display =
+    "none";
+
+  if (renderer) {
+
+    renderer.setAnimationLoop(
+      render
+    );
+  }
+}
+
+
+/* =========================================================
+   RESIZE
+   ========================================================= */
+
+function onResize() {
+
+  if (!renderer) return;
+
+  camera.aspect =
+    window.innerWidth /
+    window.innerHeight;
+
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
+  );
+}
+
 </script>
+
 </body>
 </html>
