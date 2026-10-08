@@ -10,219 +10,298 @@
 </script>
 
 <style>
-  *{box-sizing:border-box}
 
-  body{
-    margin:0;
-    font-family:system-ui,sans-serif;
-    background:#fff8f0;
-    color:#2b1d14
-  }
+*{
+  box-sizing:border-box
+}
 
-  header{
-    padding:26px 16px 6px;
-    text-align:center
-  }
+body{
+  margin:0;
+  font-family:system-ui,sans-serif;
+  background:#fff8f0;
+  color:#2b1d14
+}
 
-  h1{
-    margin:0;
-    font-size:1.6rem
-  }
+header{
+  padding:26px 16px 6px;
+  text-align:center
+}
 
-  header p{
-    margin:6px 0 0;
-    color:#8a7566;
-    font-size:.92rem
-  }
+h1{
+  margin:0;
+  font-size:1.6rem
+}
 
-  main{
-    max-width:900px;
-    margin:0 auto;
-    padding:16px;
-    display:grid;
-    gap:18px;
-    grid-template-columns:repeat(auto-fill,minmax(280px,1fr))
-  }
+header p{
+  margin:6px 0 0;
+  color:#8a7566;
+  font-size:.92rem
+}
 
-  .card{
-    background:#fff;
-    border-radius:18px;
-    overflow:hidden;
-    box-shadow:0 4px 16px #0002
-  }
+main{
+  max-width:900px;
+  margin:0 auto;
+  padding:16px;
+  display:grid;
+  gap:18px;
+  grid-template-columns:repeat(
+    auto-fill,
+    minmax(280px,1fr)
+  )
+}
 
-  .card model-viewer{
-    width:100%;
-    height:270px;
-    background:#fff3e6
-  }
+.card{
+  background:#fff;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 4px 16px #0002
+}
 
-  .info{
-    padding:14px 16px 16px
-  }
+.card model-viewer{
+  width:100%;
+  height:270px;
+  background:#fff3e6
+}
 
-  .row{
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline
-  }
+.info{
+  padding:14px 16px 16px
+}
 
-  .row h2{
-    margin:0;
-    font-size:1.1rem
-  }
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline
+}
 
-  .price{
-    font-weight:700;
-    color:#d9381e
-  }
+.row h2{
+  margin:0;
+  font-size:1.1rem
+}
 
-  .info p{
-    margin:6px 0 10px;
-    color:#8a7566;
-    font-size:.9rem
-  }
+.price{
+  font-weight:700;
+  color:#d9381e
+}
 
-  .btn{
-    background:#d9381e;
-    color:#fff;
-    border:0;
-    border-radius:999px;
-    padding:11px 18px;
-    font-size:.95rem;
-    font-weight:600;
-    width:100%;
-    cursor:pointer
-  }
+.info p{
+  margin:6px 0 10px;
+  color:#8a7566;
+  font-size:.9rem
+}
 
-  .ar-btn{
-    position:absolute;
-    bottom:12px;
-    right:12px;
-    background:#2b1d14;
-    color:#fff;
-    border:0;
-    border-radius:999px;
-    padding:10px 16px;
-    font-size:.9rem;
-    font-weight:600
-  }
+.btn{
+  background:#d9381e;
+  color:#fff;
+  border:0;
+  border-radius:999px;
+  padding:11px 18px;
+  font-size:.95rem;
+  font-weight:600;
+  width:100%;
+  cursor:pointer
+}
 
-  .note{
-    margin:8px 16px 0;
-    font-size:.8rem;
-    color:#b00020;
-    display:none
-  }
+.ar-btn{
+  position:absolute;
+  bottom:12px;
+  right:12px;
+  background:#2b1d14;
+  color:#fff;
+  border:0;
+  border-radius:999px;
+  padding:10px 16px;
+  font-size:.9rem;
+  font-weight:600
+}
 
-  /* ================= CAMERA FALLBACK ================= */
+.note{
+  margin:8px 16px 0;
+  font-size:.8rem;
+  color:#b00020;
+  display:none
+}
 
-  #cam{
-    position:fixed;
-    inset:0;
-    z-index:99;
-    background:#000;
-    display:none;
-    overflow:hidden;
-    touch-action:none;
-  }
 
-  #cam video{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:cover
-  }
+/* =====================================================
+   CAMERA FALLBACK
+===================================================== */
 
-  #fallback-model{
-    position:absolute;
-    width:280px;
-    height:280px;
+#cam{
+  position:fixed;
+  inset:0;
+  z-index:99;
+  background:#000;
+  display:none;
+  overflow:hidden;
 
-    left:50%;
-    top:50%;
+  /*
+   * We handle touch gestures ourselves.
+   */
+  touch-action:none;
+}
 
-    transform:translate(-50%,-50%);
+#cam video{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover
+}
 
-    background:transparent;
 
-    --poster-color:transparent;
-    --progress-bar-color:transparent;
+/* =====================================================
+   FALLBACK PIZZA
+===================================================== */
 
-    display:none;
+#fallback-model{
 
-    /* IMPORTANT:
-       We handle dragging ourselves. */
-    touch-action:none;
-    user-select:none;
-    -webkit-user-select:none;
+  position:absolute;
 
-    cursor:grab;
-  }
+  width:280px;
+  height:280px;
 
-  #fallback-model.dragging{
-    cursor:grabbing;
-  }
+  left:50%;
+  top:50%;
 
-  #camx{
-    position:absolute;
-    top:14px;
-    right:14px;
-    z-index:10;
-    background:#fff;
-    border:0;
-    border-radius:999px;
-    padding:10px 16px;
-    font-weight:700;
-    cursor:pointer
-  }
+  transform:
+    translate(-50%,-50%);
 
-  #camtip{
-    position:absolute;
-    bottom:22px;
-    left:0;
-    right:0;
-    text-align:center;
-    color:#fff;
-    font-size:.9rem;
-    text-shadow:0 1px 4px #000;
-    z-index:5;
-    pointer-events:none;
-  }
+  background:transparent;
 
-  #placeBtn{
-    position:absolute;
-    bottom:65px;
-    left:50%;
-    transform:translateX(-50%);
-    z-index:10;
-    background:#d9381e;
-    color:#fff;
-    border:0;
-    border-radius:999px;
-    padding:12px 22px;
-    font-size:.95rem;
-    font-weight:700;
-    display:none;
-    cursor:pointer;
-  }
+  --poster-color:transparent;
+  --progress-bar-color:transparent;
+
+  display:none;
+
+  /*
+   * Disable model-viewer's own
+   * touch interaction.
+   *
+   * We move the whole element ourselves.
+   */
+  touch-action:none;
+
+  user-select:none;
+  -webkit-user-select:none;
+
+  cursor:grab;
+}
+
+#fallback-model.dragging{
+  cursor:grabbing;
+}
+
+
+/* =====================================================
+   CLOSE BUTTON
+===================================================== */
+
+#camx{
+  position:absolute;
+  top:14px;
+  right:14px;
+
+  z-index:10;
+
+  background:#fff;
+  border:0;
+  border-radius:999px;
+
+  padding:10px 16px;
+
+  font-weight:700;
+
+  cursor:pointer
+}
+
+
+/* =====================================================
+   CAMERA TIP
+===================================================== */
+
+#camtip{
+  position:absolute;
+
+  bottom:22px;
+  left:0;
+  right:0;
+
+  text-align:center;
+
+  color:#fff;
+
+  font-size:.9rem;
+
+  text-shadow:
+    0 1px 4px #000;
+
+  z-index:5;
+
+  pointer-events:none
+}
+
+
+/* =====================================================
+   PLACE / MOVE BUTTON
+===================================================== */
+
+#placeBtn{
+
+  position:absolute;
+
+  bottom:65px;
+  left:50%;
+
+  transform:
+    translateX(-50%);
+
+  z-index:10;
+
+  background:#d9381e;
+
+  color:#fff;
+
+  border:0;
+
+  border-radius:999px;
+
+  padding:12px 22px;
+
+  font-size:.95rem;
+
+  font-weight:700;
+
+  display:none;
+
+  cursor:pointer
+}
+
 </style>
 </head>
 
+
 <body>
 
+
 <header>
-  <h1>🍕 Our Menu (v3)</h1>
-  <p>See the dish on your table through your camera. No app needed.</p>
+
+  <h1>
+    🍕 Our Menu (v3)
+  </h1>
+
+  <p>
+    See the dish on your table through your camera. No app needed.
+  </p>
+
 </header>
+
 
 <main id="menu"></main>
 
 
 <!-- ==================================================
      CAMERA FALLBACK
-     ================================================== -->
+================================================== -->
 
 <div id="cam">
 
@@ -233,26 +312,39 @@
     muted>
   </video>
 
+
   <model-viewer
+
     id="fallback-model"
+
     interaction-prompt="none"
+
     shadow-intensity="1"
+
     touch-action="none">
+
   </model-viewer>
+
 
   <button id="placeBtn">
     ✓ Place Pizza
   </button>
 
+
   <button id="camx">
     ✕ Close
   </button>
 
+
   <div id="camtip">
-    Move the pizza to where you want it, then tap Place Pizza
+
+    Move the pizza to where you want it,
+    then tap Place Pizza
+
   </div>
 
 </div>
+
 
 
 <script>
@@ -279,9 +371,13 @@ const ITEMS = [
 
 
 const PATHS = [
+
   'pizza.glb',
+
   'assets/pizza.glb',
+
   'models/pizza.glb'
+
 ];
 
 
@@ -290,6 +386,7 @@ const PATHS = [
 ===================================================== */
 
 document.getElementById('menu').innerHTML =
+
 ITEMS.map((item,index) => `
 
   <article class="card">
@@ -393,12 +490,14 @@ document
 
       pathIndex++;
 
+
       if(pathIndex < PATHS.length){
 
         mv.src =
           PATHS[pathIndex];
 
       }
+
       else{
 
         const note =
@@ -458,14 +557,32 @@ let stream = null;
 
 
 /* =====================================================
+   PIZZA STATE
+===================================================== */
+
+/*
+ * false = user can drag
+ * true  = pizza is fixed
+ */
+
+let pizzaLocked = false;
+
+let dragging = false;
+
+let dragPointerId = null;
+
+let startX = 0;
+let startY = 0;
+
+let startLeft = 0;
+let startTop = 0;
+
+
+/* =====================================================
    OPEN AR
 ===================================================== */
 
 async function openAR(src){
-
-  /*
-   * First try REAL WebXR AR.
-   */
 
   const webxrSupported =
     await checkWebXR();
@@ -490,6 +607,7 @@ async function openAR(src){
           return;
 
         }
+
         catch(error){
 
           console.log(
@@ -537,6 +655,7 @@ async function checkWebXR(){
     );
 
   }
+
   catch(error){
 
     console.log(
@@ -582,8 +701,7 @@ async function openCameraFallback(src){
 
 
     /*
-     * Reset pizza position
-     * every time camera opens.
+     * Reset position.
      */
 
     fallbackModel.style.left =
@@ -596,11 +714,36 @@ async function openCameraFallback(src){
       'translate(-50%,-50%)';
 
 
+    /*
+     * Reset state.
+     */
+
+    pizzaLocked = false;
+
+    dragging = false;
+
+    dragPointerId = null;
+
+
+    /*
+     * Reset button.
+     */
+
+    placeBtn.textContent =
+      '✓ Place Pizza';
+
+
+    /*
+     * Show.
+     */
+
     fallbackModel.style.display =
       'block';
 
-
     placeBtn.style.display =
+      'block';
+
+    cam.style.display =
       'block';
 
 
@@ -609,12 +752,8 @@ async function openCameraFallback(src){
     ).textContent =
       'Move the pizza to where you want it, then tap Place Pizza';
 
-
-    cam.style.display =
-      'block';
-
-
   }
+
   catch(error){
 
     console.error(error);
@@ -632,29 +771,14 @@ async function openCameraFallback(src){
 
 
 /* =====================================================
-   DRAG PIZZA
+   GET PIZZA CENTER
 ===================================================== */
-
-let dragging = false;
-
-let dragPointerId = null;
-
-let startX = 0;
-let startY = 0;
-
-let startLeft = 0;
-let startTop = 0;
-
-
-/*
- * Convert the current pizza position
- * into actual pixel coordinates.
- */
 
 function getPizzaPosition(){
 
   const rect =
     fallbackModel.getBoundingClientRect();
+
 
   return {
 
@@ -671,17 +795,23 @@ function getPizzaPosition(){
 }
 
 
-/*
- * START DRAG
- */
+/* =====================================================
+   START DRAG
+===================================================== */
 
 fallbackModel.addEventListener(
+
   'pointerdown',
+
   (event) => {
 
-    if(
-      fallbackModel.style.display === 'none'
-    ){
+    /*
+     * 🔒 FIXED?
+     *
+     * Don't allow dragging.
+     */
+
+    if(pizzaLocked){
 
       return;
 
@@ -690,10 +820,12 @@ fallbackModel.addEventListener(
 
     event.preventDefault();
 
+
     dragging = true;
 
     dragPointerId =
       event.pointerId;
+
 
     startX =
       event.clientX;
@@ -704,6 +836,7 @@ fallbackModel.addEventListener(
 
     const pos =
       getPizzaPosition();
+
 
     startLeft =
       pos.left;
@@ -717,26 +850,58 @@ fallbackModel.addEventListener(
     );
 
 
-    fallbackModel.setPointerCapture(
-      event.pointerId
-    );
+    try{
+
+      fallbackModel.setPointerCapture(
+        event.pointerId
+      );
+
+    }
+
+    catch(error){
+
+      console.log(
+        'Pointer capture failed:',
+        error
+      );
+
+    }
 
   },
-  {passive:false}
+
+  {
+    passive:false
+  }
+
 );
 
 
-/*
- * MOVE
- */
+/* =====================================================
+   DRAG
+===================================================== */
 
 fallbackModel.addEventListener(
+
   'pointermove',
+
   (event) => {
 
+    /*
+     * Don't move if:
+     *
+     * - not dragging
+     * - locked
+     * - wrong pointer
+     */
+
     if(
+
       !dragging ||
+
+      pizzaLocked ||
+
       event.pointerId !== dragPointerId
+
     ){
 
       return;
@@ -751,6 +916,7 @@ fallbackModel.addEventListener(
       event.clientX -
       startX;
 
+
     const dy =
       event.clientY -
       startY;
@@ -759,19 +925,22 @@ fallbackModel.addEventListener(
     let newLeft =
       startLeft + dx;
 
+
     let newTop =
       startTop + dy;
 
 
     /*
-     * Keep pizza inside screen.
+     * Keep pizza inside viewport.
      */
 
     const rect =
       fallbackModel.getBoundingClientRect();
 
+
     const halfW =
       rect.width / 2;
+
 
     const halfH =
       rect.height / 2;
@@ -779,46 +948,65 @@ fallbackModel.addEventListener(
 
     newLeft =
       Math.max(
+
         halfW,
+
         Math.min(
-          window.innerWidth - halfW,
+
+          window.innerWidth -
+          halfW,
+
           newLeft
+
         )
+
       );
 
 
     newTop =
       Math.max(
+
         halfH,
+
         Math.min(
-          window.innerHeight - halfH,
+
+          window.innerHeight -
+          halfH,
+
           newTop
+
         )
+
       );
 
 
     /*
-     * Switch from percentage positioning
-     * to exact pixel positioning.
+     * Set exact pixel position.
      */
 
     fallbackModel.style.left =
       newLeft + 'px';
 
+
     fallbackModel.style.top =
       newTop + 'px';
+
 
     fallbackModel.style.transform =
       'translate(-50%,-50%)';
 
   },
-  {passive:false}
+
+  {
+    passive:false
+  }
+
 );
 
 
-/*
- * END DRAG
- */
+/* =====================================================
+   STOP DRAG
+===================================================== */
 
 function stopDragging(event){
 
@@ -835,6 +1023,7 @@ function stopDragging(event){
 
   dragPointerId = null;
 
+
   fallbackModel.classList.remove(
     'dragging'
   );
@@ -847,6 +1036,7 @@ fallbackModel.addEventListener(
   stopDragging
 );
 
+
 fallbackModel.addEventListener(
   'pointercancel',
   stopDragging
@@ -854,23 +1044,88 @@ fallbackModel.addEventListener(
 
 
 /* =====================================================
-   PLACE BUTTON
+   PLACE / MOVE BUTTON
 ===================================================== */
 
 placeBtn.addEventListener(
+
   'click',
+
   () => {
 
-    placeBtn.style.display =
-      'none';
+    /*
+     * ================================================
+     * CURRENTLY MOVABLE
+     *
+     * → FIX IT
+     * ================================================
+     */
+
+    if(!pizzaLocked){
+
+      pizzaLocked = true;
+
+      dragging = false;
+
+      dragPointerId = null;
+
+
+      fallbackModel.classList.remove(
+        'dragging'
+      );
+
+
+      /*
+       * IMPORTANT:
+       *
+       * We DO NOT change:
+       *
+       * left
+       * top
+       * transform
+       *
+       * So the pizza stays EXACTLY
+       * where the user dragged it.
+       */
+
+
+      placeBtn.textContent =
+        '↔ Move Pizza';
+
+
+      document.getElementById(
+        'camtip'
+      ).textContent =
+        '✓ Pizza fixed · Tap Move Pizza to reposition';
+
+
+      return;
+
+    }
+
+
+    /*
+     * ================================================
+     * CURRENTLY FIXED
+     *
+     * → UNLOCK IT
+     * ================================================
+     */
+
+    pizzaLocked = false;
+
+
+    placeBtn.textContent =
+      '✓ Place Pizza';
 
 
     document.getElementById(
       'camtip'
     ).textContent =
-      'Pizza placed · Drag the pizza to move it again';
+      'Drag the pizza to a new position, then tap Place Pizza';
 
   }
+
 );
 
 
@@ -901,17 +1156,30 @@ function closeCam(){
 
   stream = null;
 
-  camv.srcObject = null;
+
+  camv.srcObject =
+    null;
+
 
   fallbackModel.style.display =
     'none';
 
+
   placeBtn.style.display =
     'none';
 
-  dragging = false;
 
-  dragPointerId = null;
+  pizzaLocked =
+    false;
+
+
+  dragging =
+    false;
+
+
+  dragPointerId =
+    null;
+
 
   cam.style.display =
     'none';
@@ -920,7 +1188,7 @@ function closeCam(){
 
 
 /* =====================================================
-   CLEANUP WHEN PAGE CLOSES
+   CLEANUP
 ===================================================== */
 
 window.addEventListener(
