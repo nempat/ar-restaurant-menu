@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-  />
+  >
 
   <title>AR Menu</title>
 
@@ -15,150 +16,163 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    html,
     body {
       margin: 0;
+      padding: 0;
       font-family: Arial, Helvetica, sans-serif;
-      background: #f7f7f7;
+      background: #f5f5f5;
       color: #111;
+    }
+
+    body {
+      min-height: 100vh;
     }
 
     header {
       background: #111;
       color: white;
-      padding: 22px 18px;
       text-align: center;
+      padding: 28px 20px 24px;
     }
 
     header h1 {
       margin: 0;
-      font-size: 26px;
+      font-size: 30px;
+      font-weight: 700;
     }
 
     header p {
-      margin: 7px 0 0;
-      opacity: 0.75;
-      font-size: 14px;
+      margin: 8px 0 0;
+      color: #bdbdbd;
+      font-size: 15px;
     }
 
-    .container {
+    #menu {
+      width: 100%;
       max-width: 700px;
-      margin: auto;
-      padding: 18px;
+      margin: 0 auto;
+      padding: 22px 16px 40px;
     }
 
-    .card {
+    .food-card {
       background: white;
       border-radius: 18px;
       overflow: hidden;
       margin-bottom: 20px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 5px 22px rgba(0, 0, 0, 0.08);
     }
 
     .food-image {
       width: 100%;
-      height: 220px;
+      height: 230px;
+      display: block;
       object-fit: cover;
-      background: #eee;
+      background: #ddd;
     }
 
-    .content {
-      padding: 17px;
+    .food-info {
+      padding: 18px;
     }
 
-    .name-row {
+    .food-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
-    .name {
-      font-size: 20px;
+    .food-name {
+      font-size: 21px;
       font-weight: 700;
     }
 
-    .price {
+    .food-price {
       font-size: 18px;
       font-weight: 700;
       white-space: nowrap;
     }
 
-    .desc {
-      margin: 9px 0 15px;
+    .food-description {
       color: #666;
-      line-height: 1.4;
       font-size: 14px;
+      line-height: 1.45;
+      margin: 8px 0 16px;
     }
 
-    button {
+    .ar-button {
       width: 100%;
-      border: none;
+      border: 0;
       border-radius: 12px;
+      background: #111;
+      color: white;
       padding: 14px;
       font-size: 16px;
       font-weight: 700;
       cursor: pointer;
     }
 
-    .ar-btn {
-      background: #111;
-      color: white;
-    }
-
-    .ar-btn:active {
+    .ar-button:active {
       transform: scale(0.98);
     }
 
-    #ar-ui {
-      display: none;
+    #ar-overlay {
       position: fixed;
       inset: 0;
-      z-index: 9999;
+      z-index: 10000;
+      display: none;
       pointer-events: none;
-      color: white;
     }
 
-    #ar-ui.active {
+    #ar-overlay.active {
       display: block;
     }
 
-    #ar-hint {
+    #ar-message {
       position: absolute;
-      top: 24px;
+      top: 22px;
       left: 50%;
       transform: translateX(-50%);
       width: calc(100% - 40px);
       max-width: 420px;
-      text-align: center;
-      background: rgba(0,0,0,0.72);
       padding: 13px 16px;
-      border-radius: 14px;
+      border-radius: 15px;
+      background: rgba(0, 0, 0, 0.75);
+      color: white;
+      text-align: center;
       font-size: 14px;
-      line-height: 1.35;
+      line-height: 1.4;
     }
 
-    #place-btn {
+    #place-button {
       position: absolute;
-      bottom: 35px;
+      bottom: 32px;
       left: 50%;
       transform: translateX(-50%);
-      width: 180px;
+      width: 190px;
+      border: 0;
+      border-radius: 14px;
       background: white;
       color: #111;
-      pointer-events: auto;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 700;
       display: none;
+      pointer-events: auto;
     }
 
-    #exit-btn {
+    #exit-button {
       position: absolute;
-      top: 22px;
+      top: 20px;
       right: 18px;
-      width: auto;
-      padding: 10px 15px;
-      background: rgba(0,0,0,0.7);
+      border: 0;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.75);
       color: white;
-      pointer-events: auto;
+      padding: 11px 15px;
+      font-size: 15px;
       display: none;
+      pointer-events: auto;
     }
 
     #reticle {
@@ -171,10 +185,14 @@
       border: 3px solid white;
       border-radius: 50%;
       display: none;
+      pointer-events: none;
     }
 
-    .unsupported {
-      padding: 18px;
+    #status {
+      display: none;
+      max-width: 650px;
+      margin: 20px auto;
+      padding: 15px;
       text-align: center;
       color: #555;
       font-size: 14px;
@@ -189,80 +207,76 @@
   <p>Explore our dishes in AR</p>
 </header>
 
-<div class="container" id="menu"></div>
+<main id="menu"></main>
 
-<div class="unsupported" id="unsupported" style="display:none;">
-  AR is not supported on this device/browser.
-</div>
+<div id="status"></div>
 
-<!-- AR UI -->
-<div id="ar-ui">
+<div id="ar-overlay">
 
-  <div id="ar-hint">
-    Move your phone slowly over a table or floor to find a surface.
+  <div id="ar-message">
+    Move your phone slowly over a table to find a surface.
   </div>
 
   <div id="reticle"></div>
 
-  <button id="place-btn">
+  <button id="place-button">
     Place Pizza
   </button>
 
-  <button id="exit-btn">
+  <button id="exit-button">
     ✕ Exit AR
   </button>
 
 </div>
 
-<script type="module">
+
+<script>
 
 /* =========================================================
-   THREE.JS
+   MENU
    ========================================================= */
 
-import * as THREE from
-  "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js";
-
-import { GLTFLoader } from
-  "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/loaders/GLTFLoader.js";
-
-
-/* =========================================================
-   RESTAURANT MENU
-   ========================================================= */
-
-const ITEMS = [
+const menuItems = [
 
   {
     name: "Margherita Pizza",
     price: "₹349",
-    desc: "Tomato, mozzarella, fresh basil.",
-    image: "assets/images/pizza.jpg",
-    model: "assets/models/pizza.glb"
+    description:
+      "Tomato, mozzarella and fresh basil.",
+    image:
+      "pizza.jpg",
+    model:
+      "pizza.glb"
   },
 
   {
     name: "Farmhouse Pizza",
     price: "₹429",
-    desc: "Loaded with veggies and cheese.",
-    image: "assets/images/pizza.jpg",
-    model: "assets/models/pizza.glb"
+    description:
+      "Loaded with fresh vegetables and cheese.",
+    image:
+      "pizza.jpg",
+    model:
+      "pizza.glb"
   }
 
 ];
 
 
 /* =========================================================
-   MENU UI
+   CREATE MENU
    ========================================================= */
 
-const menu = document.getElementById("menu");
+const menu =
+  document.getElementById("menu");
 
-ITEMS.forEach((item, index) => {
+menuItems.forEach((item, index) => {
 
-  const card = document.createElement("div");
+  const card =
+    document.createElement("article");
 
-  card.className = "card";
+  card.className =
+    "food-card";
 
   card.innerHTML = `
 
@@ -273,26 +287,26 @@ ITEMS.forEach((item, index) => {
       onerror="this.style.display='none'"
     >
 
-    <div class="content">
+    <div class="food-info">
 
-      <div class="name-row">
+      <div class="food-top">
 
-        <div class="name">
+        <div class="food-name">
           ${item.name}
         </div>
 
-        <div class="price">
+        <div class="food-price">
           ${item.price}
         </div>
 
       </div>
 
-      <div class="desc">
-        ${item.desc}
+      <div class="food-description">
+        ${item.description}
       </div>
 
       <button
-        class="ar-btn"
+        class="ar-button"
         data-index="${index}"
       >
         📱 View in AR
@@ -307,52 +321,77 @@ ITEMS.forEach((item, index) => {
 
 
 /* =========================================================
-   WEBXR VARIABLES
+   AR VARIABLES
    ========================================================= */
 
-let renderer;
-let scene;
-let camera;
+let THREE = null;
+let GLTFLoader = null;
+
+let renderer = null;
+let scene = null;
+let camera = null;
 
 let xrSession = null;
 let hitTestSource = null;
-let viewerSpace = null;
+let referenceSpace = null;
 
-let reticle;
+let reticle = null;
+let pizza = null;
 
-let pizzaModel = null;
+let currentItem = null;
 
-let currentModelURL = null;
-
-let surfaceDetected = false;
+let surfaceFound = false;
 let pizzaPlaced = false;
 
 
 /* =========================================================
-   DOM
+   UI
    ========================================================= */
 
-const arUI =
-  document.getElementById("ar-ui");
+const arOverlay =
+  document.getElementById("ar-overlay");
 
-const arHint =
-  document.getElementById("ar-hint");
+const arMessage =
+  document.getElementById("ar-message");
 
-const placeBtn =
-  document.getElementById("place-btn");
+const placeButton =
+  document.getElementById("place-button");
 
-const exitBtn =
-  document.getElementById("exit-btn");
+const exitButton =
+  document.getElementById("exit-button");
 
-const reticleElement =
+const reticleUI =
   document.getElementById("reticle");
-
-const unsupported =
-  document.getElementById("unsupported");
 
 
 /* =========================================================
-   CHECK WEBXR
+   LOAD THREE.JS
+   ========================================================= */
+
+async function loadThreeJS() {
+
+  if (THREE) return;
+
+  const threeModule =
+    await import(
+      "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js"
+    );
+
+  const loaderModule =
+    await import(
+      "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/loaders/GLTFLoader.js"
+    );
+
+  THREE =
+    threeModule;
+
+  GLTFLoader =
+    loaderModule.GLTFLoader;
+}
+
+
+/* =========================================================
+   CHECK AR SUPPORT
    ========================================================= */
 
 async function checkARSupport() {
@@ -377,50 +416,52 @@ async function checkARSupport() {
 
 
 /* =========================================================
-   BUTTON HANDLER
+   AR BUTTON
    ========================================================= */
 
-document.addEventListener("click", async (event) => {
+document.addEventListener(
+  "click",
+  async (event) => {
 
-  const button =
-    event.target.closest(".ar-btn");
+    const button =
+      event.target.closest(".ar-button");
 
-  if (!button) return;
+    if (!button) return;
 
-  const index =
-    Number(button.dataset.index);
+    const index =
+      Number(button.dataset.index);
 
-  await startAR(ITEMS[index]);
+    currentItem =
+      menuItems[index];
 
-});
+    await startAR();
+  }
+);
 
 
 /* =========================================================
    START AR
    ========================================================= */
 
-async function startAR(item) {
-
-  const supported =
-    await checkARSupport();
-
-  if (!supported) {
-
-    unsupported.style.display = "block";
-
-    alert(
-      "Markerless browser AR is not supported on this device/browser. Try a compatible Android phone and browser."
-    );
-
-    return;
-  }
-
-  currentModelURL =
-    item.model;
+async function startAR() {
 
   try {
 
-    await setupThree();
+    const supported =
+      await checkARSupport();
+
+    if (!supported) {
+
+      alert(
+        "Markerless AR is not supported on this device/browser. Try a compatible Android phone and browser."
+      );
+
+      return;
+    }
+
+    await loadThreeJS();
+
+    createScene();
 
     xrSession =
       await navigator.xr.requestSession(
@@ -435,33 +476,48 @@ async function startAR(item) {
           ],
 
           domOverlay: {
-            root: arUI
+            root: arOverlay
           }
         }
       );
 
-    arUI.classList.add("active");
+    arOverlay.classList.add(
+      "active"
+    );
 
-    exitBtn.style.display = "block";
+    exitButton.style.display =
+      "block";
 
-    placeBtn.style.display = "none";
+    placeButton.style.display =
+      "none";
 
-    arHint.textContent =
-      "Move your phone slowly over a table or floor to find a surface.";
+    arMessage.textContent =
+      "Move your phone slowly over a table to find a surface.";
 
     await renderer.xr.setSession(
       xrSession
     );
 
-    renderer.xr.setReferenceSpaceType(
-      "local"
-    );
+    const viewerSpace =
+      await xrSession.requestReferenceSpace(
+        "viewer"
+      );
 
-    await setupHitTest();
+    referenceSpace =
+      await xrSession.requestReferenceSpace(
+        "local"
+      );
+
+    hitTestSource =
+      await xrSession.requestHitTestSource({
+        space: viewerSpace
+      });
+
+    await loadPizza();
 
     xrSession.addEventListener(
       "select",
-      onARSelect
+      handleARSelect
     );
 
     xrSession.addEventListener(
@@ -472,12 +528,12 @@ async function startAR(item) {
   } catch (error) {
 
     console.error(
-      "AR failed:",
+      "AR ERROR:",
       error
     );
 
     alert(
-      "AR could not start. Please use a supported Android phone/browser and make sure camera permission is allowed."
+      "AR could not start. Please allow camera permission and use a supported browser."
     );
 
     cleanupAR();
@@ -486,12 +542,10 @@ async function startAR(item) {
 
 
 /* =========================================================
-   THREE.JS SETUP
+   THREE.JS SCENE
    ========================================================= */
 
-async function setupThree() {
-
-  if (renderer) return;
+function createScene() {
 
   scene =
     new THREE.Scene();
@@ -505,14 +559,10 @@ async function setupThree() {
       20
     );
 
-
-  /* Renderer */
-
   renderer =
     new THREE.WebGLRenderer({
       antialias: true,
-      alpha: true,
-      preserveDrawingBuffer: false
+      alpha: true
     });
 
   renderer.setPixelRatio(
@@ -527,7 +577,8 @@ async function setupThree() {
     window.innerHeight
   );
 
-  renderer.xr.enabled = true;
+  renderer.xr.enabled =
+    true;
 
   renderer.outputColorSpace =
     THREE.SRGBColorSpace;
@@ -536,10 +587,7 @@ async function setupThree() {
     THREE.ACESFilmicToneMapping;
 
   renderer.toneMappingExposure =
-    1.2;
-
-
-  /* Put canvas on page */
+    1.15;
 
   renderer.domElement.style.position =
     "fixed";
@@ -566,14 +614,16 @@ async function setupThree() {
 
   /* Lighting */
 
-  const hemi =
+  const hemisphere =
     new THREE.HemisphereLight(
       0xffffff,
-      0x555555,
+      0x777777,
       2
     );
 
-  scene.add(hemi);
+  scene.add(
+    hemisphere
+  );
 
 
   const directional =
@@ -588,7 +638,9 @@ async function setupThree() {
     2
   );
 
-  scene.add(directional);
+  scene.add(
+    directional
+  );
 
 
   /* Reticle */
@@ -597,8 +649,8 @@ async function setupThree() {
     new THREE.Mesh(
 
       new THREE.RingGeometry(
-        0.08,
-        0.10,
+        0.07,
+        0.09,
         32
       ),
 
@@ -618,46 +670,81 @@ async function setupThree() {
   reticle.visible =
     false;
 
-  scene.add(reticle);
-
-
-  /* Resize */
-
-  window.addEventListener(
-    "resize",
-    onResize
+  scene.add(
+    reticle
   );
 
-
-  /* Render loop */
 
   renderer.setAnimationLoop(
     render
   );
+
+
+  window.addEventListener(
+    "resize",
+    resize
+  );
 }
 
 
 /* =========================================================
-   HIT TEST
+   LOAD PIZZA
    ========================================================= */
 
-async function setupHitTest() {
+async function loadPizza() {
 
-  viewerSpace =
-    await xrSession.requestReferenceSpace(
-      "viewer"
+  const loader =
+    new GLTFLoader();
+
+  const gltf =
+    await loader.loadAsync(
+      currentItem.model
     );
 
-  hitTestSource =
-    await xrSession.requestHitTestSource({
-      space: viewerSpace
-    });
+  pizza =
+    gltf.scene;
 
+
+  /*
+    Pizza size.
+    Change 0.35 if your GLB is too
+    large or too small.
+  */
+
+  pizza.scale.setScalar(
+    0.35
+  );
+
+
+  pizza.visible =
+    false;
+
+
+  pizza.traverse(
+    object => {
+
+      if (object.isMesh) {
+
+        object.castShadow =
+          true;
+
+        object.receiveShadow =
+          true;
+
+      }
+
+    }
+  );
+
+
+  scene.add(
+    pizza
+  );
 }
 
 
 /* =========================================================
-   RENDER LOOP
+   WEBXR RENDER LOOP
    ========================================================= */
 
 function render(
@@ -671,24 +758,19 @@ function render(
     hitTestSource
   ) {
 
-    const referenceSpace =
-      renderer.xr.getReferenceSpace();
-
-    const hitResults =
+    const hits =
       frame.getHitTestResults(
         hitTestSource
       );
 
 
-    if (hitResults.length > 0) {
-
-      const hit =
-        hitResults[0];
+    if (hits.length > 0) {
 
       const pose =
-        hit.getPose(
+        hits[0].getPose(
           referenceSpace
         );
+
 
       if (pose) {
 
@@ -699,19 +781,20 @@ function render(
           pose.transform.matrix
         );
 
-        surfaceDetected =
+        surfaceFound =
           true;
+
 
         if (!pizzaPlaced) {
 
-          reticleElement.style.display =
+          reticleUI.style.display =
             "block";
 
-          placeBtn.style.display =
+          placeButton.style.display =
             "block";
 
-          arHint.textContent =
-            "Surface found. Tap the screen or Place Pizza.";
+          arMessage.textContent =
+            "Surface found — tap to place the pizza.";
 
         }
 
@@ -722,23 +805,22 @@ function render(
       reticle.visible =
         false;
 
-      surfaceDetected =
+      surfaceFound =
         false;
+
 
       if (!pizzaPlaced) {
 
-        reticleElement.style.display =
+        reticleUI.style.display =
           "none";
 
-        placeBtn.style.display =
+        placeButton.style.display =
           "none";
 
-        arHint.textContent =
-          "Move your phone slowly over a table or floor to find a surface.";
+        arMessage.textContent =
+          "Move your phone slowly over a table to find a surface.";
       }
-
     }
-
   }
 
 
@@ -750,40 +832,57 @@ function render(
 
 
 /* =========================================================
+   TAP
+   ========================================================= */
+
+function handleARSelect() {
+
+  if (!pizzaPlaced) {
+
+    placePizza();
+
+  }
+}
+
+
+/* =========================================================
    PLACE PIZZA
    ========================================================= */
 
-async function placePizza() {
+function placePizza() {
 
-  if (!surfaceDetected) {
-
-    arHint.textContent =
-      "Move your phone until a surface is detected.";
+  if (
+    !surfaceFound ||
+    !pizza
+  ) {
 
     return;
   }
 
 
-  if (!pizzaModel) {
+  /*
+    IMPORTANT:
 
-    await loadPizza();
-  }
+    This copies the REAL WORLD
+    position detected by WebXR.
 
-
-  /* IMPORTANT:
-     Copy the detected WORLD position.
-     This makes the pizza stay fixed
-     instead of moving with the camera.
+    The pizza is NOT attached to
+    the phone/camera.
   */
 
-  pizzaModel.position.setFromMatrixPosition(
+  pizza.position.setFromMatrixPosition(
     reticle.matrix
   );
 
 
-  /* Put model on the detected surface */
+  pizza.rotation.set(
+    0,
+    0,
+    0
+  );
 
-  pizzaModel.visible =
+
+  pizza.visible =
     true;
 
   pizzaPlaced =
@@ -793,36 +892,15 @@ async function placePizza() {
   reticle.visible =
     false;
 
-  reticleElement.style.display =
+  reticleUI.style.display =
     "none";
 
-  placeBtn.style.display =
+  placeButton.style.display =
     "none";
 
-  arHint.textContent =
-    "Pizza placed. Move your phone around it — it stays on the table.";
 
-}
-
-
-/* =========================================================
-   TAP / SELECT
-   ========================================================= */
-
-function onARSelect() {
-
-  if (!pizzaPlaced) {
-
-    placePizza();
-
-  } else {
-
-    /* If already placed, tapping again
-       does NOT attach it to the camera.
-       It remains world anchored.
-    */
-
-  }
+  arMessage.textContent =
+    "🍕 Pizza placed! Move around it — it stays on the table.";
 }
 
 
@@ -830,94 +908,17 @@ function onARSelect() {
    PLACE BUTTON
    ========================================================= */
 
-placeBtn.addEventListener(
+placeButton.addEventListener(
   "click",
   placePizza
 );
 
 
 /* =========================================================
-   LOAD GLB
-   ========================================================= */
-
-async function loadPizza() {
-
-  const loader =
-    new GLTFLoader();
-
-
-  try {
-
-    const gltf =
-      await loader.loadAsync(
-        currentModelURL
-      );
-
-    pizzaModel =
-      gltf.scene;
-
-
-    /*
-      Adjust this value depending
-      on the actual GLB size.
-
-      0.35 is a good starting point.
-    */
-
-    pizzaModel.scale.setScalar(
-      0.35
-    );
-
-
-    pizzaModel.visible =
-      false;
-
-
-    /*
-      Enable shadows if available.
-    */
-
-    pizzaModel.traverse(
-      object => {
-
-        if (
-          object.isMesh
-        ) {
-
-          object.castShadow =
-            true;
-
-          object.receiveShadow =
-            true;
-
-        }
-
-      }
-    );
-
-
-    scene.add(
-      pizzaModel
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      "Could not load pizza GLB:",
-      error
-    );
-
-    throw error;
-  }
-}
-
-
-/* =========================================================
    EXIT AR
    ========================================================= */
 
-exitBtn.addEventListener(
+exitButton.addEventListener(
   "click",
   async () => {
 
@@ -932,9 +933,7 @@ exitBtn.addEventListener(
         console.error(error);
 
       }
-
     }
-
   }
 );
 
@@ -951,44 +950,43 @@ function cleanupAR() {
   hitTestSource =
     null;
 
-  viewerSpace =
+  referenceSpace =
     null;
 
-  surfaceDetected =
+  surfaceFound =
     false;
 
   pizzaPlaced =
     false;
 
-  if (pizzaModel) {
 
-    pizzaModel.visible =
+  if (pizza) {
+
+    pizza.visible =
       false;
-
   }
 
-  reticle.visible =
-    false;
 
-  arUI.classList.remove(
+  if (reticle) {
+
+    reticle.visible =
+      false;
+  }
+
+
+  arOverlay.classList.remove(
     "active"
   );
 
-  exitBtn.style.display =
+
+  exitButton.style.display =
     "none";
 
-  placeBtn.style.display =
+  placeButton.style.display =
     "none";
 
-  reticleElement.style.display =
+  reticleUI.style.display =
     "none";
-
-  if (renderer) {
-
-    renderer.setAnimationLoop(
-      render
-    );
-  }
 }
 
 
@@ -996,9 +994,16 @@ function cleanupAR() {
    RESIZE
    ========================================================= */
 
-function onResize() {
+function resize() {
 
-  if (!renderer) return;
+  if (
+    !camera ||
+    !renderer
+  ) {
+
+    return;
+  }
+
 
   camera.aspect =
     window.innerWidth /
