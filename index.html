@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
 
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
->
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1,
+               maximum-scale=1,
+               user-scalable=no">
 
 <title>AR Menu v5</title>
 
-<script
-  type="module"
+
+<script type="module"
   src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js">
 </script>
+
 
 <style>
 
@@ -36,6 +39,11 @@ body{
   color:#2b1d14;
 }
 
+
+/* =====================================================
+   HEADER
+===================================================== */
+
 header{
   padding:26px 16px 6px;
   text-align:center;
@@ -51,6 +59,11 @@ header p{
   color:#8a7566;
   font-size:.92rem;
 }
+
+
+/* =====================================================
+   MENU
+===================================================== */
 
 main{
   max-width:900px;
@@ -155,25 +168,21 @@ main{
 
   overflow:hidden;
 
-  /*
-   * CRITICAL FOR MOBILE
-   */
   touch-action:none;
 
   overscroll-behavior:none;
 
   user-select:none;
   -webkit-user-select:none;
-
   -webkit-touch-callout:none;
 }
 
 
 /* =====================================================
-   CAMERA
+   CAMERA VIDEO
 ===================================================== */
 
-#cam video{
+#camv{
 
   position:absolute;
 
@@ -184,13 +193,9 @@ main{
 
   object-fit:cover;
 
-  /*
-   * Camera should NEVER receive
-   * touch events.
-   */
   pointer-events:none;
 
-  user-select:none;
+  z-index:0;
 }
 
 
@@ -209,32 +214,60 @@ main{
   top:50%;
 
   transform:
-    translate(-50%,-50%)
-    rotate(0deg)
-    scale(1);
+    translate(-50%,-50%);
 
   background:transparent;
 
   --poster-color:transparent;
   --progress-bar-color:transparent;
 
-  display:none;
-
-  /*
-   * VERY IMPORTANT:
-   *
-   * Pizza doesn't receive touches.
-   * #cam receives them instead.
-   */
   pointer-events:none;
 
-  user-select:none;
-  -webkit-user-select:none;
+  z-index:2;
+
+  display:none;
 }
 
 
 /* =====================================================
-   CLOSE
+   FULL SCREEN GESTURE LAYER
+
+   IMPORTANT:
+   model-viewer does NOT receive touch events.
+
+   This layer receives all gestures.
+===================================================== */
+
+#gestureLayer{
+
+  position:absolute;
+
+  inset:0;
+
+  width:100%;
+  height:100%;
+
+  z-index:4;
+
+  background:transparent;
+
+  touch-action:none;
+
+  user-select:none;
+  -webkit-user-select:none;
+
+  -webkit-touch-callout:none;
+
+  cursor:grab;
+}
+
+#gestureLayer:active{
+  cursor:grabbing;
+}
+
+
+/* =====================================================
+   CLOSE BUTTON
 ===================================================== */
 
 #camx{
@@ -257,13 +290,11 @@ main{
   font-weight:700;
 
   cursor:pointer;
-
-  touch-action:manipulation;
 }
 
 
 /* =====================================================
-   PLACE / MOVE BUTTON
+   PLACE BUTTON
 ===================================================== */
 
 #placeBtn{
@@ -286,7 +317,7 @@ main{
 
   border-radius:999px;
 
-  padding:13px 23px;
+  padding:12px 22px;
 
   font-size:.95rem;
 
@@ -296,14 +327,12 @@ main{
 
   cursor:pointer;
 
-  touch-action:manipulation;
-
-  -webkit-tap-highlight-color:transparent;
+  white-space:nowrap;
 }
 
 
 /* =====================================================
-   TIP
+   CAMERA TIP
 ===================================================== */
 
 #camtip{
@@ -315,55 +344,35 @@ main{
   left:0;
   right:0;
 
-  padding:0 15px;
-
   text-align:center;
 
   color:#fff;
 
   font-size:.9rem;
 
-  text-shadow:0 1px 4px #000;
+  text-shadow:
+    0 1px 4px #000;
 
-  z-index:15;
+  z-index:20;
 
   pointer-events:none;
 }
 
-
-@media(max-width:600px){
-
-  #fallback-model{
-    width:250px;
-    height:250px;
-  }
-
-  #placeBtn{
-    bottom:70px;
-    padding:14px 24px;
-    font-size:1rem;
-  }
-
-  #camx{
-    top:16px;
-    right:16px;
-    padding:11px 17px;
-  }
-
-}
-
 </style>
+
 </head>
 
 
 <body>
+
 
 <header>
 
   <h1>🍕 Our Menu (v3)</h1>
 
   <p>
-    See the dish on your table through your camera. No app needed.
+    See the dish on your table through your camera.
+    No app needed.
   </p>
 
 </header>
@@ -378,6 +387,9 @@ main{
 
 <div id="cam">
 
+
+  <!-- CAMERA -->
+
   <video
     id="camv"
     autoplay
@@ -386,31 +398,52 @@ main{
   </video>
 
 
+  <!-- PIZZA -->
+
   <model-viewer
     id="fallback-model"
     interaction-prompt="none"
     shadow-intensity="1">
+
   </model-viewer>
 
+
+  <!-- =================================================
+       FULL SCREEN TOUCH LAYER
+
+       ALL mobile gestures happen here.
+  ================================================== -->
+
+  <div id="gestureLayer"></div>
+
+
+  <!-- PLACE / MOVE -->
 
   <button id="placeBtn">
     ✓ Place Pizza
   </button>
 
 
+  <!-- CLOSE -->
+
   <button id="camx">
     ✕ Close
   </button>
 
 
+  <!-- TIP -->
+
   <div id="camtip">
     Drag • Pinch • Rotate, then tap Place Pizza
   </div>
 
+
 </div>
 
 
+
 <script>
+
 
 /* =====================================================
    MENU
@@ -436,7 +469,9 @@ const ITEMS = [
 const PATHS = [
 
   'pizza.glb',
+
   'assets/pizza.glb',
+
   'models/pizza.glb'
 
 ];
@@ -451,6 +486,7 @@ document.getElementById('menu').innerHTML =
 ITEMS.map((item,index) => `
 
   <article class="card">
+
 
     <model-viewer
 
@@ -478,7 +514,10 @@ ITEMS.map((item,index) => `
 
       interaction-prompt="auto"
 
-      loading="lazy">
+      loading="lazy"
+
+    >
+
 
       <button
         slot="ar-button"
@@ -488,6 +527,7 @@ ITEMS.map((item,index) => `
 
       </button>
 
+
     </model-viewer>
 
 
@@ -495,6 +535,7 @@ ITEMS.map((item,index) => `
 
 
     <div class="info">
+
 
       <div class="row">
 
@@ -522,7 +563,9 @@ ITEMS.map((item,index) => `
 
       </button>
 
+
     </div>
+
 
   </article>
 
@@ -537,8 +580,10 @@ document
 .querySelectorAll('.card')
 .forEach((card,index) => {
 
+
   const mv =
     card.querySelector('model-viewer');
+
 
   let pathIndex = 0;
 
@@ -546,6 +591,7 @@ document
   mv.addEventListener(
     'error',
     () => {
+
 
       pathIndex++;
 
@@ -562,8 +608,10 @@ document
         const note =
           card.querySelector('.note');
 
+
         note.style.display =
           'block';
+
 
         note.textContent =
           'pizza.glb not found in your repo.';
@@ -573,6 +621,10 @@ document
     }
   );
 
+
+  /* =================================================
+     CAMERA BUTTON
+  ================================================= */
 
   card
   .querySelector('.camopen')
@@ -595,23 +647,34 @@ document
 const cam =
   document.getElementById('cam');
 
+
 const camv =
   document.getElementById('camv');
+
 
 const fallbackModel =
   document.getElementById(
     'fallback-model'
   );
 
+
+const gestureLayer =
+  document.getElementById(
+    'gestureLayer'
+  );
+
+
 const placeBtn =
   document.getElementById(
     'placeBtn'
   );
 
+
 const camtip =
   document.getElementById(
     'camtip'
   );
+
 
 let stream = null;
 
@@ -620,14 +683,45 @@ let stream = null;
    PIZZA STATE
 ===================================================== */
 
-let pizzaLocked = false;
-
 let pizzaX = 0;
+
 let pizzaY = 0;
 
 let pizzaScale = 1;
 
 let pizzaRotation = 0;
+
+let pizzaLocked = false;
+
+
+/* =====================================================
+   GESTURE STATE
+===================================================== */
+
+let gesture = null;
+
+
+/* =====================================================
+   UPDATE PIZZA
+===================================================== */
+
+function updatePizza(){
+
+  fallbackModel.style.left =
+    pizzaX + 'px';
+
+
+  fallbackModel.style.top =
+    pizzaY + 'px';
+
+
+  fallbackModel.style.transform =
+
+    `translate(-50%,-50%)
+     rotate(${pizzaRotation}deg)
+     scale(${pizzaScale})`;
+
+}
 
 
 /* =====================================================
@@ -636,21 +730,32 @@ let pizzaRotation = 0;
 
 async function openAR(src){
 
+
+  /*
+   * First try REAL WebXR AR.
+   *
+   * This is the only mode that can provide
+   * proper world tracking in the browser.
+   */
+
   const webxrSupported =
     await checkWebXR();
 
 
   if(webxrSupported){
 
+
     const models =
       document.querySelectorAll(
-        'model-viewer'
+        '.card model-viewer'
       );
 
 
     for(const model of models){
 
+
       if(model.src === src){
+
 
         try{
 
@@ -676,16 +781,23 @@ async function openAR(src){
   }
 
 
+  /*
+   * WebXR unavailable.
+   *
+   * Use camera fallback.
+   */
+
   openCameraFallback(src);
 
 }
 
 
 /* =====================================================
-   WEBXR CHECK
+   CHECK WEBXR
 ===================================================== */
 
 async function checkWebXR(){
+
 
   if(!navigator.xr){
 
@@ -696,9 +808,10 @@ async function checkWebXR(){
 
   try{
 
-    return await navigator.xr.isSessionSupported(
-      'immersive-ar'
-    );
+    return await
+      navigator.xr.isSessionSupported(
+        'immersive-ar'
+      );
 
   }
 
@@ -724,6 +837,77 @@ async function openCameraFallback(src){
 
   try{
 
+
+    /*
+     * Stop previous camera first.
+     */
+
+    if(stream){
+
+      stream
+        .getTracks()
+        .forEach(
+          track => track.stop()
+        );
+
+    }
+
+
+    /*
+     * Reset pizza.
+     */
+
+    pizzaX =
+      window.innerWidth / 2;
+
+
+    pizzaY =
+      window.innerHeight / 2;
+
+
+    pizzaScale =
+      1;
+
+
+    pizzaRotation =
+      0;
+
+
+    pizzaLocked =
+      false;
+
+
+    gesture =
+      null;
+
+
+    placeBtn.textContent =
+      '✓ Place Pizza';
+
+
+    camtip.textContent =
+      'Drag • Pinch • Rotate, then tap Place Pizza';
+
+
+    /*
+     * Camera permission.
+     */
+
+    if(
+      !navigator.mediaDevices ||
+      !navigator.mediaDevices.getUserMedia
+    ){
+
+      alert(
+        'Camera is not available. ' +
+        'Please use HTTPS and a modern browser.'
+      );
+
+      return;
+
+    }
+
+
     stream =
       await navigator.mediaDevices.getUserMedia({
 
@@ -747,55 +931,36 @@ async function openCameraFallback(src){
 
 
     /*
-     * Center pizza
+     * Show camera BEFORE model.
      */
 
-    pizzaX =
-      window.innerWidth / 2;
-
-    pizzaY =
-      window.innerHeight / 2;
-
-
-    pizzaScale =
-      1;
-
-    pizzaRotation =
-      0;
-
-    pizzaLocked =
-      false;
-
-
-    updatePizza();
-
-
-    placeBtn.textContent =
-      '✓ Place Pizza';
+    cam.style.display =
+      'block';
 
 
     fallbackModel.style.display =
       'block';
 
-    cam.style.display =
-      'block';
 
     placeBtn.style.display =
       'block';
 
 
-    camtip.textContent =
-      'Drag • Pinch • Rotate, then tap Place Pizza';
+    updatePizza();
+
 
   }
 
   catch(error){
 
-    console.error(error);
+    console.error(
+      'Camera error:',
+      error
+    );
 
 
     alert(
-      'Camera could not start. ' +
+      'Camera could not start.\n\n' +
       'Please allow camera permission ' +
       'and make sure this website uses HTTPS.'
     );
@@ -806,150 +971,75 @@ async function openCameraFallback(src){
 
 
 /* =====================================================
-   UPDATE PIZZA
+   TOUCH HELPERS
 ===================================================== */
 
-function updatePizza(){
+function getTouchCenter(touches){
 
-  fallbackModel.style.left =
-    pizzaX + 'px';
-
-  fallbackModel.style.top =
-    pizzaY + 'px';
-
-  fallbackModel.style.transform =
-
-    `
-      translate(-50%,-50%)
-      rotate(${pizzaRotation}deg)
-      scale(${pizzaScale})
-    `;
-
-}
-
-
-/* =====================================================
-   MOBILE TOUCH GESTURES
-===================================================== */
-
-/*
- * This is deliberately native Touch Events.
- *
- * We DO NOT use:
- *
- * pointerdown
- * pointermove
- * pointerup
- *
- * on mobile.
- *
- * #cam receives the touches directly.
- */
-
-
-let activeTouches = [];
-
-let gesture = null;
-
-
-/* =====================================================
-   TOUCH POINT
-===================================================== */
-
-function getTouchPoint(touch){
+  const a = touches[0];
+  const b = touches[1];
 
   return {
 
-    x:touch.clientX,
+    x:
+      (a.clientX + b.clientX) / 2,
 
-    y:touch.clientY
+    y:
+      (a.clientY + b.clientY) / 2
 
   };
 
 }
 
 
-/* =====================================================
-   CENTER
-===================================================== */
+function getTouchDistance(touches){
 
-function getTouchCenter(a,b){
-
-  return {
-
-    x:(a.x + b.x) / 2,
-
-    y:(a.y + b.y) / 2
-
-  };
-
-}
-
-
-/* =====================================================
-   DISTANCE
-===================================================== */
-
-function getTouchDistance(a,b){
+  const a = touches[0];
+  const b = touches[1];
 
   const dx =
-    b.x - a.x;
+    b.clientX - a.clientX;
 
   const dy =
-    b.y - a.y;
+    b.clientY - a.clientY;
 
-  return Math.sqrt(
-    dx * dx +
-    dy * dy
-  );
+  return Math.hypot(dx,dy);
 
 }
 
 
-/* =====================================================
-   ANGLE
-===================================================== */
+function getTouchAngle(touches){
 
-function getTouchAngle(a,b){
+  const a = touches[0];
+  const b = touches[1];
 
-  return Math.atan2(
+  const dx =
+    b.clientX - a.clientX;
 
-    b.y - a.y,
+  const dy =
+    b.clientY - a.clientY;
 
-    b.x - a.x
-
-  ) * 180 / Math.PI;
+  return Math.atan2(dy,dx);
 
 }
 
 
 /* =====================================================
    TOUCH START
+
+   1 finger:
+   MOVE
+
+   2 fingers:
+   MOVE + PINCH + ROTATE
 ===================================================== */
 
-cam.addEventListener(
+gestureLayer.addEventListener(
 
   'touchstart',
 
-  function(event){
+  event => {
 
-    /*
-     * Don't interfere with buttons.
-     */
-
-    if(
-      event.target === placeBtn ||
-      event.target === document.getElementById('camx')
-    ){
-
-      return;
-
-    }
-
-
-    /*
-     * Locked pizza cannot be changed.
-     */
 
     if(pizzaLocked){
 
@@ -961,77 +1051,83 @@ cam.addEventListener(
     event.preventDefault();
 
 
-    activeTouches =
-      Array.from(
-        event.touches
-      ).map(getTouchPoint);
+    const touches =
+      event.touches;
 
 
     /*
      * ONE FINGER
      */
 
-    if(activeTouches.length === 1){
-
-      const p =
-        activeTouches[0];
+    if(touches.length === 1){
 
 
       gesture = {
 
         type:'move',
 
-        startX:p.x,
+        startX:
+          touches[0].clientX,
 
-        startY:p.y,
+        startY:
+          touches[0].clientY,
 
-        pizzaX:pizzaX,
+        pizzaX:
+          pizzaX,
 
-        pizzaY:pizzaY
+        pizzaY:
+          pizzaY
 
       };
+
+
+      return;
 
     }
 
 
     /*
-     * TWO FINGERS
+     * TWO OR MORE FINGERS
      */
 
-    else if(activeTouches.length >= 2){
-
-      const a =
-        activeTouches[0];
-
-      const b =
-        activeTouches[1];
+    if(touches.length >= 2){
 
 
       const center =
-        getTouchCenter(a,b);
+        getTouchCenter(touches);
 
 
       gesture = {
 
         type:'transform',
 
-        centerX:center.x,
 
-        centerY:center.y,
+        centerX:
+          center.x,
+
+        centerY:
+          center.y,
+
 
         distance:
-          getTouchDistance(a,b),
+          getTouchDistance(touches),
+
 
         angle:
-          getTouchAngle(a,b),
+          getTouchAngle(touches),
 
-        pizzaX:pizzaX,
 
-        pizzaY:pizzaY,
+        pizzaX:
+          pizzaX,
 
-        pizzaScale:pizzaScale,
+        pizzaY:
+          pizzaY,
 
-        pizzaRotation:pizzaRotation
+        pizzaScale:
+          pizzaScale,
+
+        pizzaRotation:
+          pizzaRotation
 
       };
 
@@ -1050,13 +1146,21 @@ cam.addEventListener(
    TOUCH MOVE
 ===================================================== */
 
-cam.addEventListener(
+gestureLayer.addEventListener(
 
   'touchmove',
 
-  function(event){
+  event => {
+
 
     if(pizzaLocked){
+
+      return;
+
+    }
+
+
+    if(!gesture){
 
       return;
 
@@ -1066,30 +1170,21 @@ cam.addEventListener(
     event.preventDefault();
 
 
-    activeTouches =
-      Array.from(
-        event.touches
-      ).map(getTouchPoint);
+    const touches =
+      event.touches;
 
 
     /*
-     * ================================================
-     * ONE FINGER → MOVE
-     * ================================================
+     * ONE FINGER = MOVE
      */
 
     if(
 
-      activeTouches.length === 1 &&
+      gesture.type === 'move' &&
 
-      gesture &&
-
-      gesture.type === 'move'
+      touches.length === 1
 
     ){
-
-      const p =
-        activeTouches[0];
 
 
       pizzaX =
@@ -1097,7 +1192,7 @@ cam.addEventListener(
         gesture.pizzaX +
 
         (
-          p.x -
+          touches[0].clientX -
           gesture.startX
         );
 
@@ -1107,7 +1202,7 @@ cam.addEventListener(
         gesture.pizzaY +
 
         (
-          p.y -
+          touches[0].clientY -
           gesture.startY
         );
 
@@ -1121,30 +1216,26 @@ cam.addEventListener(
 
 
     /*
-     * ================================================
-     * TWO FINGERS → MOVE + PINCH + ROTATE
-     * ================================================
+     * TWO FINGERS
+     *
+     * MOVE
+     * PINCH
+     * ROTATE
      */
 
-    if(
-
-      activeTouches.length >= 2 &&
-
-      gesture &&
-
-      gesture.type === 'transform'
-
-    ){
-
-      const a =
-        activeTouches[0];
-
-      const b =
-        activeTouches[1];
+    if(touches.length >= 2){
 
 
       const center =
-        getTouchCenter(a,b);
+        getTouchCenter(touches);
+
+
+      const distance =
+        getTouchDistance(touches);
+
+
+      const angle =
+        getTouchAngle(touches);
 
 
       /*
@@ -1172,54 +1263,39 @@ cam.addEventListener(
 
 
       /*
-       * PINCH
+       * SCALE
        */
 
-      const distance =
-        getTouchDistance(a,b);
+      const scaleRatio =
+
+        distance /
+        gesture.distance;
 
 
-      if(
-        gesture.distance > 0
-      ){
+      pizzaScale =
 
-        pizzaScale =
-
-          gesture.pizzaScale *
-
-          (
-            distance /
-            gesture.distance
-          );
-
-      }
+        gesture.pizzaScale *
+        scaleRatio;
 
 
       /*
-       * Limit size
+       * LIMIT SCALE
        */
 
       pizzaScale =
 
         Math.max(
-
           0.35,
-
           Math.min(
             2.5,
             pizzaScale
           )
-
         );
 
 
       /*
        * ROTATION
        */
-
-      const angle =
-        getTouchAngle(a,b);
-
 
       pizzaRotation =
 
@@ -1228,7 +1304,10 @@ cam.addEventListener(
         (
           angle -
           gesture.angle
-        );
+        ) *
+
+        180 /
+        Math.PI;
 
 
       updatePizza();
@@ -1248,33 +1327,21 @@ cam.addEventListener(
    TOUCH END
 ===================================================== */
 
-cam.addEventListener(
+gestureLayer.addEventListener(
 
   'touchend',
 
-  function(event){
-
-    if(pizzaLocked){
-
-      return;
-
-    }
+  event => {
 
 
     event.preventDefault();
 
 
-    activeTouches =
-      Array.from(
-        event.touches
-      ).map(getTouchPoint);
-
-
     /*
-     * NO FINGERS
+     * ALL FINGERS RELEASED
      */
 
-    if(activeTouches.length === 0){
+    if(event.touches.length === 0){
 
       gesture = null;
 
@@ -1284,29 +1351,29 @@ cam.addEventListener(
 
 
     /*
-     * ONE FINGER REMAINS
+     * TWO FINGERS -> ONE FINGER
      *
-     * Restart move gesture
-     * without jumping.
+     * Start a fresh drag.
+     * This prevents the pizza from jumping.
      */
 
-    if(activeTouches.length === 1){
-
-      const p =
-        activeTouches[0];
-
+    if(event.touches.length === 1){
 
       gesture = {
 
         type:'move',
 
-        startX:p.x,
+        startX:
+          event.touches[0].clientX,
 
-        startY:p.y,
+        startY:
+          event.touches[0].clientY,
 
-        pizzaX:pizzaX,
+        pizzaX:
+          pizzaX,
 
-        pizzaY:pizzaY
+        pizzaY:
+          pizzaY
 
       };
 
@@ -1325,13 +1392,11 @@ cam.addEventListener(
    TOUCH CANCEL
 ===================================================== */
 
-cam.addEventListener(
+gestureLayer.addEventListener(
 
   'touchcancel',
 
-  function(){
-
-    activeTouches = [];
+  () => {
 
     gesture = null;
 
@@ -1348,18 +1413,27 @@ cam.addEventListener(
    DESKTOP MOUSE SUPPORT
 ===================================================== */
 
-let mouseDragging = false;
+let mouseDown = false;
 
 let mouseStartX = 0;
+
 let mouseStartY = 0;
 
 let mousePizzaX = 0;
+
 let mousePizzaY = 0;
 
 
-cam.addEventListener(
+/* =====================================================
+   MOUSE DOWN
+===================================================== */
+
+gestureLayer.addEventListener(
+
   'mousedown',
-  function(event){
+
+  event => {
+
 
     if(pizzaLocked){
 
@@ -1368,21 +1442,16 @@ cam.addEventListener(
     }
 
 
-    if(
-      event.target === placeBtn ||
-      event.target === document.getElementById('camx')
-    ){
-
-      return;
-
-    }
+    event.preventDefault();
 
 
-    mouseDragging = true;
+    mouseDown =
+      true;
 
 
     mouseStartX =
       event.clientX;
+
 
     mouseStartY =
       event.clientY;
@@ -1391,21 +1460,38 @@ cam.addEventListener(
     mousePizzaX =
       pizzaX;
 
+
     mousePizzaY =
       pizzaY;
 
+
+    gestureLayer.style.cursor =
+      'grabbing';
+
   }
+
 );
 
 
-window.addEventListener(
-  'mousemove',
-  function(event){
+/* =====================================================
+   MOUSE MOVE
+===================================================== */
 
-    if(
-      !mouseDragging ||
-      pizzaLocked
-    ){
+window.addEventListener(
+
+  'mousemove',
+
+  event => {
+
+
+    if(!mouseDown){
+
+      return;
+
+    }
+
+
+    if(pizzaLocked){
 
       return;
 
@@ -1413,7 +1499,9 @@ window.addEventListener(
 
 
     pizzaX =
+
       mousePizzaX +
+
       (
         event.clientX -
         mouseStartX
@@ -1421,7 +1509,9 @@ window.addEventListener(
 
 
     pizzaY =
+
       mousePizzaY +
+
       (
         event.clientY -
         mouseStartY
@@ -1431,16 +1521,30 @@ window.addEventListener(
     updatePizza();
 
   }
+
 );
 
 
-window.addEventListener(
-  'mouseup',
-  function(){
+/* =====================================================
+   MOUSE UP
+===================================================== */
 
-    mouseDragging = false;
+window.addEventListener(
+
+  'mouseup',
+
+  () => {
+
+
+    mouseDown =
+      false;
+
+
+    gestureLayer.style.cursor =
+      'grab';
 
   }
+
 );
 
 
@@ -1452,28 +1556,26 @@ placeBtn.addEventListener(
 
   'click',
 
-  function(event){
+  event => {
 
-    event.preventDefault();
+
+    /*
+     * Prevent gesture layer
+     * from seeing this click.
+     */
 
     event.stopPropagation();
 
 
-    /*
-     * ================================================
-     * FIX PIZZA
-     * ================================================
-     */
-
-    if(!pizzaLocked){
-
-      pizzaLocked =
-        true;
+    pizzaLocked =
+      !pizzaLocked;
 
 
-      activeTouches = [];
+    gesture =
+      null;
 
-      gesture = null;
+
+    if(pizzaLocked){
 
 
       placeBtn.textContent =
@@ -1484,27 +1586,26 @@ placeBtn.addEventListener(
         '✓ Pizza fixed · Tap Move Pizza to reposition';
 
 
-      return;
+      gestureLayer.style.cursor =
+        'default';
 
     }
 
-
-    /*
-     * ================================================
-     * UNLOCK
-     * ================================================
-     */
-
-    pizzaLocked =
-      false;
+    else{
 
 
-    placeBtn.textContent =
-      '✓ Place Pizza';
+      placeBtn.textContent =
+        '✓ Place Pizza';
 
 
-    camtip.textContent =
-      'Drag • Pinch • Rotate, then tap Place Pizza';
+      camtip.textContent =
+        'Drag • Pinch • Rotate, then tap Place Pizza';
+
+
+      gestureLayer.style.cursor =
+        'grab';
+
+    }
 
   }
 
@@ -1512,7 +1613,7 @@ placeBtn.addEventListener(
 
 
 /* =====================================================
-   CLOSE
+   CLOSE CAMERA
 ===================================================== */
 
 document
@@ -1521,9 +1622,7 @@ document
 
   'click',
 
-  function(event){
-
-    event.preventDefault();
+  event => {
 
     event.stopPropagation();
 
@@ -1534,7 +1633,16 @@ document
 );
 
 
+/* =====================================================
+   CLOSE FUNCTION
+===================================================== */
+
 function closeCam(){
+
+
+  /*
+   * Stop camera tracks.
+   */
 
   if(stream){
 
@@ -1547,9 +1655,20 @@ function closeCam(){
   }
 
 
-  stream = null;
+  stream =
+    null;
 
-  camv.srcObject = null;
+
+  camv.srcObject =
+    null;
+
+
+  /*
+   * Hide camera.
+   */
+
+  cam.style.display =
+    'none';
 
 
   fallbackModel.style.display =
@@ -1560,33 +1679,74 @@ function closeCam(){
     'none';
 
 
-  cam.style.display =
-    'none';
+  /*
+   * Reset interaction.
+   */
+
+  gesture =
+    null;
+
+
+  mouseDown =
+    false;
 
 
   pizzaLocked =
     false;
 
-
-  activeTouches = [];
-
-  gesture = null;
-
-  mouseDragging = false;
-
 }
 
 
 /* =====================================================
-   PAGE CLEANUP
+   CLEANUP
 ===================================================== */
 
 window.addEventListener(
+
   'pagehide',
+
   closeCam
+
+);
+
+
+/* =====================================================
+   PREVENT PAGE SCROLL WHILE CAMERA IS OPEN
+===================================================== */
+
+document.addEventListener(
+
+  'touchmove',
+
+  event => {
+
+    if(
+      cam.style.display === 'block'
+    ){
+
+      if(
+        event.target.closest(
+          '#gestureLayer'
+        )
+      ){
+
+        event.preventDefault();
+
+      }
+
+    }
+
+  },
+
+  {
+    passive:false
+  }
+
 );
 
 </script>
 
+
 </body>
+
 </html>
