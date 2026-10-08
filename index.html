@@ -2,296 +2,373 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-<title>AR Menu v6</title>
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, viewport-fit=cover"
+>
+
+<title>AR Menu v7</title>
+
+<!-- Normal menu 3D preview -->
+<script type="module"
+src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js">
+</script>
 
 <style>
-  *{box-sizing:border-box}
-
-  body{
-    margin:0;
-    font-family:system-ui,sans-serif;
-    background:#fff8f0;
-    color:#2b1d14
-  }
-
-  header{
-    padding:26px 16px 6px;
-    text-align:center
-  }
-
-  h1{
-    margin:0;
-    font-size:1.6rem
-  }
-
-  header p{
-    margin:6px 0 0;
-    color:#8a7566;
-    font-size:.92rem
-  }
-
-  main{
-    max-width:900px;
-    margin:0 auto;
-    padding:16px;
-    display:grid;
-    gap:18px;
-    grid-template-columns:repeat(auto-fill,minmax(280px,1fr))
-  }
-
-  .card{
-    background:#fff;
-    border-radius:18px;
-    overflow:hidden;
-    box-shadow:0 4px 16px #0002
-  }
-
-  .card model-viewer{
-    width:100%;
-    height:270px;
-    background:#fff3e6
-  }
-
-  .info{
-    padding:14px 16px 16px
-  }
-
-  .row{
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline
-  }
-
-  .row h2{
-    margin:0;
-    font-size:1.1rem
-  }
-
-  .price{
-    font-weight:700;
-    color:#d9381e
-  }
-
-  .info p{
-    margin:6px 0 10px;
-    color:#8a7566;
-    font-size:.9rem
-  }
-
-  .btn{
-    background:#d9381e;
-    color:#fff;
-    border:0;
-    border-radius:999px;
-    padding:11px 18px;
-    font-size:.95rem;
-    font-weight:600;
-    width:100%;
-    cursor:pointer
-  }
-
-  .ar-btn{
-    position:absolute;
-    bottom:12px;
-    right:12px;
-    background:#2b1d14;
-    color:#fff;
-    border:0;
-    border-radius:999px;
-    padding:10px 16px;
-    font-size:.9rem;
-    font-weight:600
-  }
-
-  .note{
-    margin:8px 16px 0;
-    font-size:.8rem;
-    color:#b00020;
-    display:none
-  }
 
-  /* =========================================
-     REAL WEBXR AR
-  ========================================= */
+*{
+  box-sizing:border-box
+}
+
+body{
+  margin:0;
+  font-family:system-ui,sans-serif;
+  background:#fff8f0;
+  color:#2b1d14
+}
+
+header{
+  padding:26px 16px 6px;
+  text-align:center
+}
+
+h1{
+  margin:0;
+  font-size:1.6rem
+}
+
+header p{
+  margin:6px 0 0;
+  color:#8a7566;
+  font-size:.92rem
+}
+
+main{
+  max-width:900px;
+  margin:0 auto;
+  padding:16px;
+  display:grid;
+  gap:18px;
+  grid-template-columns:
+    repeat(auto-fill,minmax(280px,1fr))
+}
+
+.card{
+  background:#fff;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 4px 16px #0002
+}
+
+.card model-viewer{
+  width:100%;
+  height:270px;
+  background:#fff3e6
+}
+
+.info{
+  padding:14px 16px 16px
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline
+}
+
+.row h2{
+  margin:0;
+  font-size:1.1rem
+}
+
+.price{
+  font-weight:700;
+  color:#d9381e
+}
+
+.info p{
+  margin:6px 0 10px;
+  color:#8a7566;
+  font-size:.9rem
+}
+
+.btn{
+  background:#d9381e;
+  color:#fff;
+  border:0;
+  border-radius:999px;
+  padding:11px 18px;
+  font-size:.95rem;
+  font-weight:600;
+  width:100%;
+  cursor:pointer
+}
 
-  #ar{
-    position:fixed;
-    inset:0;
-    z-index:9999;
-    display:none;
-    background:#000;
-    overflow:hidden;
-  }
+.note{
+  margin:8px 16px 0;
+  font-size:.8rem;
+  color:#b00020;
+  display:none
+}
 
-  #ar canvas{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-  }
 
-  #ar-close{
-    position:absolute;
-    top:calc(14px + env(safe-area-inset-top));
-    right:14px;
-    z-index:10;
+/* =========================================
+   REAL AR SCREEN
+========================================= */
 
-    background:#fff;
-    color:#2b1d14;
+#ar{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:none;
+  background:transparent;
+  overflow:hidden;
+}
 
-    border:0;
-    border-radius:999px;
+#ar canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+}
 
-    padding:10px 16px;
 
-    font-weight:700;
-    font-size:.95rem;
+/* =========================================
+   CLOSE
+========================================= */
 
-    cursor:pointer;
-  }
+#ar-close{
+  position:absolute;
 
-  #ar-place{
-    position:absolute;
-    left:50%;
-    bottom:calc(28px + env(safe-area-inset-bottom));
-    transform:translateX(-50%);
+  top:calc(
+    14px + env(safe-area-inset-top)
+  );
 
-    z-index:10;
+  right:14px;
 
-    background:#d9381e;
-    color:#fff;
+  z-index:20;
 
-    border:0;
-    border-radius:999px;
+  background:#fff;
+  color:#2b1d14;
 
-    padding:13px 24px;
+  border:0;
+  border-radius:999px;
 
-    font-size:.95rem;
-    font-weight:700;
+  padding:10px 16px;
 
-    display:none;
-  }
+  font-size:.95rem;
+  font-weight:700;
 
-  #ar-tip{
-    position:absolute;
+  cursor:pointer;
 
-    left:20px;
-    right:20px;
+  box-shadow:0 3px 12px #0003;
+}
 
-    bottom:calc(82px + env(safe-area-inset-bottom));
 
-    z-index:10;
+/* =========================================
+   PLACE BUTTON
+========================================= */
 
-    text-align:center;
+#ar-place{
 
-    color:#fff;
+  position:absolute;
 
-    font-size:.9rem;
+  left:50%;
 
-    text-shadow:
-      0 1px 5px #000,
-      0 1px 10px #000;
+  bottom:
+    calc(
+      25px +
+      env(safe-area-inset-bottom)
+    );
 
-    pointer-events:none;
-  }
+  transform:translateX(-50%);
 
-  #ar-reticle{
-    position:absolute;
+  z-index:20;
 
-    left:50%;
-    top:50%;
+  background:#d9381e;
 
-    width:70px;
-    height:70px;
+  color:#fff;
 
-    margin-left:-35px;
-    margin-top:-35px;
+  border:0;
 
-    border:2px solid rgba(255,255,255,.9);
+  border-radius:999px;
 
-    border-radius:50%;
+  padding:13px 25px;
 
-    display:none;
+  font-size:.95rem;
 
-    z-index:5;
+  font-weight:700;
 
-    pointer-events:none;
-  }
+  display:none;
 
-  #ar-reticle::after{
-    content:"";
+  box-shadow:0 4px 15px #0004;
 
-    position:absolute;
+}
 
-    left:50%;
-    top:50%;
 
-    width:6px;
-    height:6px;
+/* =========================================
+   TIP
+========================================= */
 
-    margin:-3px;
+#ar-tip{
 
-    background:#fff;
+  position:absolute;
 
-    border-radius:50%;
-  }
+  left:20px;
+  right:20px;
 
-  #ar-message{
-    position:absolute;
+  bottom:
+    calc(
+      82px +
+      env(safe-area-inset-bottom)
+    );
 
-    left:20px;
-    right:20px;
+  z-index:20;
 
-    top:50%;
+  text-align:center;
 
-    transform:translateY(-50%);
+  color:#fff;
 
-    z-index:20;
+  font-size:.9rem;
 
-    background:#fff;
+  text-shadow:
+    0 1px 4px #000,
+    0 1px 8px #000;
 
-    color:#2b1d14;
+  pointer-events:none;
 
-    padding:20px;
+}
 
-    border-radius:18px;
 
-    text-align:center;
+/* =========================================
+   RETICLE
+========================================= */
 
-    box-shadow:0 8px 30px #0005;
+#reticle{
 
-    display:none;
-  }
+  position:absolute;
 
-  #ar-message h3{
-    margin:0 0 8px;
-  }
+  left:50%;
+  top:50%;
 
-  #ar-message p{
-    margin:0;
+  width:70px;
+  height:70px;
 
-    color:#8a7566;
+  transform:
+    translate(-50%,-50%);
 
-    font-size:.9rem;
-  }
+  z-index:10;
+
+  border:
+    2px solid
+    rgba(255,255,255,.9);
+
+  border-radius:50%;
+
+  display:none;
+
+  pointer-events:none;
+
+}
+
+#reticle::after{
+
+  content:"";
+
+  position:absolute;
+
+  width:6px;
+  height:6px;
+
+  left:50%;
+  top:50%;
+
+  transform:
+    translate(-50%,-50%);
+
+  border-radius:50%;
+
+  background:#fff;
+
+}
+
+
+/* =========================================
+   ERROR
+========================================= */
+
+#ar-error{
+
+  position:absolute;
+
+  left:20px;
+  right:20px;
+
+  top:50%;
+
+  transform:
+    translateY(-50%);
+
+  z-index:30;
+
+  background:#fff;
+
+  border-radius:18px;
+
+  padding:22px;
+
+  text-align:center;
+
+  box-shadow:0 8px 30px #0005;
+
+  display:none;
+
+}
+
+#ar-error h3{
+
+  margin:0 0 8px;
+
+}
+
+#ar-error p{
+
+  margin:0;
+
+  color:#8a7566;
+
+  font-size:.9rem;
+
+  line-height:1.5;
+
+}
+
 </style>
 </head>
 
+
 <body>
 
+
 <header>
-  <h1>🍕 Our Menu (v3)</h1>
-  <p>See the dish on your table through your camera. No app needed.</p>
+
+  <h1>
+    🍕 Our Menu (v3)
+  </h1>
+
+  <p>
+    See the dish on your table through your camera. No app needed.
+  </p>
+
 </header>
+
 
 <main id="menu"></main>
 
 
 <!-- =========================================
-     REAL WEBXR AR SCREEN
+     AR UI
 ========================================= -->
 
 <div id="ar">
@@ -300,51 +377,60 @@
     ✕ Close
   </button>
 
-  <div id="ar-reticle"></div>
+
+  <div id="reticle"></div>
+
 
   <button id="ar-place">
     ✓ Place Pizza
   </button>
 
+
   <div id="ar-tip">
-    Move your phone slowly to detect the table
+    Move your phone slowly to find a table
   </div>
 
-  <div id="ar-message">
-    <h3 id="ar-message-title">
+
+  <div id="ar-error">
+
+    <h3 id="error-title">
       AR unavailable
     </h3>
 
-    <p id="ar-message-text">
-      This device or browser does not support
-      browser-based world-tracked AR.
+    <p id="error-text">
+      Your browser could not start
+      world-tracked AR.
     </p>
+
   </div>
 
 </div>
 
 
-<!-- =========================================
-     THREE.JS
-========================================= -->
 
 <script type="importmap">
 {
   "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+    "three":
+      "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+
+    "three/addons/":
+      "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
   }
 }
 </script>
 
 
+
 <script type="module">
 
 import * as THREE from
-  'three';
+  "three";
 
-import { GLTFLoader } from
-  'three/addons/loaders/GLTFLoader.js';
+import {
+  GLTFLoader
+} from
+  "three/addons/loaders/GLTFLoader.js";
 
 
 /* =====================================================
@@ -369,38 +455,45 @@ const ITEMS = [
 
 
 const PATHS = [
-  'pizza.glb',
-  'assets/pizza.glb',
-  'models/pizza.glb'
+
+  "pizza.glb",
+
+  "assets/pizza.glb",
+
+  "models/pizza.glb"
+
 ];
 
 
 /* =====================================================
-   MENU UI
+   MENU HTML
 ===================================================== */
 
-document.getElementById('menu').innerHTML =
+document.getElementById("menu").innerHTML =
+
 ITEMS.map((item,index) => `
 
   <article class="card">
 
     <model-viewer
+
+      id="preview-${index}"
+
       src="${PATHS[0]}"
+
       alt="${item.name}"
 
       camera-controls
+
       auto-rotate
+
       shadow-intensity="1"
+
       touch-action="pan-y"
+
       loading="lazy"
 
-      style="
-        width:100%;
-        height:270px;
-        background:#fff3e6;
-      "
-    >
-    </model-viewer>
+    ></model-viewer>
 
 
     <div class="note"></div>
@@ -420,9 +513,11 @@ ITEMS.map((item,index) => `
 
       </div>
 
+
       <p>
         ${item.desc}
       </p>
+
 
       <button
         class="btn camopen"
@@ -436,44 +531,48 @@ ITEMS.map((item,index) => `
 
   </article>
 
-`).join('');
+`).join("");
 
 
 /* =====================================================
-   NORMAL MODEL PATH FALLBACK
+   NORMAL MODEL FALLBACK
 ===================================================== */
 
 document
-.querySelectorAll('.card')
+.querySelectorAll(".card")
 .forEach((card,index) => {
 
-  const mv =
-    card.querySelector('model-viewer');
+  const model =
+    card.querySelector("model-viewer");
 
   let pathIndex = 0;
 
-  mv.addEventListener(
-    'error',
+
+  model.addEventListener(
+    "error",
     () => {
 
       pathIndex++;
 
-      if(pathIndex < PATHS.length){
+      if(
+        pathIndex <
+        PATHS.length
+      ){
 
-        mv.src =
+        model.src =
           PATHS[pathIndex];
 
       }
       else{
 
         const note =
-          card.querySelector('.note');
+          card.querySelector(".note");
 
         note.style.display =
-          'block';
+          "block";
 
         note.textContent =
-          'pizza.glb not found in your repo.';
+          "pizza.glb not found.";
 
       }
 
@@ -482,77 +581,86 @@ document
 
 
   card
-    .querySelector('.camopen')
-    .addEventListener(
-      'click',
-      () => {
+  .querySelector(".camopen")
+  .addEventListener(
+    "click",
+    () => {
 
-        startAR(PATHS[0]);
+      startAR(PATHS[0]);
 
-      }
-    );
+    }
+  );
 
 });
 
 
 /* =====================================================
-   AR VARIABLES
+   AR ELEMENTS
 ===================================================== */
 
 const ar =
-  document.getElementById('ar');
-
-const canvas =
-  document.createElement('canvas');
-
-const arTip =
-  document.getElementById('ar-tip');
-
-const arPlace =
-  document.getElementById('ar-place');
+  document.getElementById("ar");
 
 const arClose =
-  document.getElementById('ar-close');
+  document.getElementById("ar-close");
 
-const arReticle =
-  document.getElementById('ar-reticle');
+const arPlace =
+  document.getElementById("ar-place");
 
-const arMessage =
-  document.getElementById('ar-message');
+const arTip =
+  document.getElementById("ar-tip");
 
-const arMessageTitle =
-  document.getElementById('ar-message-title');
+const reticle =
+  document.getElementById("reticle");
 
-const arMessageText =
-  document.getElementById('ar-message-text');
+const arError =
+  document.getElementById("ar-error");
 
+const errorTitle =
+  document.getElementById("error-title");
 
-let renderer;
-
-let scene;
-
-let camera;
-
-let controller;
-
-let reticle;
-
-let pizza = null;
-
-let xrSession = null;
-
-let hitTestSource = null;
-
-let hitTestSourceRequested = false;
-
-let placed = false;
+const errorText =
+  document.getElementById("error-text");
 
 
 /* =====================================================
-   THREE.JS SETUP
+   THREE VARIABLES
 ===================================================== */
 
-function setupThree(){
+let renderer = null;
+
+let scene = null;
+
+let camera = null;
+
+let controller = null;
+
+let pizza = null;
+
+let reticleMesh = null;
+
+let xrSession = null;
+
+let referenceSpace = null;
+
+let viewerSpace = null;
+
+let hitTestSource = null;
+
+let hitTestRequested = false;
+
+let currentHit = null;
+
+let pizzaPlaced = false;
+
+let pizzaAnchor = null;
+
+
+/* =====================================================
+   THREE INITIALIZATION
+===================================================== */
+
+function initializeThree(){
 
   scene =
     new THREE.Scene();
@@ -562,16 +670,24 @@ function setupThree(){
     new THREE.PerspectiveCamera();
 
 
+  const canvas =
+    document.createElement("canvas");
+
+
   renderer =
     new THREE.WebGLRenderer({
 
-      canvas:canvas,
+      canvas,
 
       alpha:true,
 
       antialias:true
 
     });
+
+
+  renderer.xr.enabled =
+    true;
 
 
   renderer.setPixelRatio(
@@ -588,10 +704,6 @@ function setupThree(){
   );
 
 
-  renderer.xr.enabled =
-    true;
-
-
   renderer.outputColorSpace =
     THREE.SRGBColorSpace;
 
@@ -600,18 +712,23 @@ function setupThree(){
     true;
 
 
+  ar.appendChild(canvas);
+
+
   /* -----------------------------------------
-     LIGHTING
+     LIGHT
   ----------------------------------------- */
 
-  const ambient =
+  const hemisphere =
     new THREE.HemisphereLight(
       0xffffff,
-      0x888888,
+      0x777777,
       2
     );
 
-  scene.add(ambient);
+  scene.add(
+    hemisphere
+  );
 
 
   const directional =
@@ -622,59 +739,63 @@ function setupThree(){
 
   directional.position.set(
     2,
-    4,
+    5,
     2
   );
 
   directional.castShadow =
     true;
 
-  scene.add(directional);
+  scene.add(
+    directional
+  );
 
 
   /* -----------------------------------------
      RETICLE
   ----------------------------------------- */
 
-  const ringGeometry =
+  const geometry =
     new THREE.RingGeometry(
       0.08,
-      0.10,
+      0.1,
       32
     );
 
 
-  ringGeometry.rotateX(
+  geometry.rotateX(
     -Math.PI / 2
   );
 
 
-  const ringMaterial =
+  const material =
     new THREE.MeshBasicMaterial({
       color:0xffffff
     });
 
 
-  reticle =
+  reticleMesh =
     new THREE.Mesh(
-      ringGeometry,
-      ringMaterial
+      geometry,
+      material
     );
 
 
-  reticle.matrixAutoUpdate =
+  reticleMesh.matrixAutoUpdate =
     false;
 
 
-  reticle.visible =
+  reticleMesh.visible =
     false;
 
 
-  scene.add(reticle);
+  scene.add(
+    reticleMesh
+  );
 
 
   /* -----------------------------------------
-     XR CONTROLLER
+     TOUCH / SELECT
   ----------------------------------------- */
 
   controller =
@@ -682,42 +803,30 @@ function setupThree(){
 
 
   controller.addEventListener(
-    'select',
-    onSelect
+    "select",
+    placePizza
   );
 
 
-  scene.add(controller);
-
-
-  ar.appendChild(canvas);
+  scene.add(
+    controller
+  );
 
 }
 
 
 /* =====================================================
-   LOAD PIZZA
+   LOAD MODEL
 ===================================================== */
 
-async function loadPizza(src){
-
-  if(pizza){
-
-    scene.remove(
-      pizza
-    );
-
-    pizza = null;
-
-  }
-
-
-  const loader =
-    new GLTFLoader();
-
+function loadPizza(src){
 
   return new Promise(
     (resolve,reject) => {
+
+      const loader =
+        new GLTFLoader();
+
 
       loader.load(
 
@@ -729,18 +838,11 @@ async function loadPizza(src){
             gltf.scene;
 
 
-          /*
-           * IMPORTANT
-           *
-           * We don't put the pizza
-           * relative to the camera.
-           *
-           * Its position will later
-           * come from the WebXR hit-test
-           * world coordinates.
-           */
-
           pizza.visible =
+            false;
+
+
+          pizza.matrixAutoUpdate =
             false;
 
 
@@ -768,9 +870,7 @@ async function loadPizza(src){
           );
 
 
-          resolve(
-            pizza
-          );
+          resolve();
 
         },
 
@@ -794,9 +894,11 @@ async function loadPizza(src){
    CHECK WEBXR
 ===================================================== */
 
-async function supportsAR(){
+async function canUseAR(){
 
-  if(!navigator.xr){
+  if(
+    !navigator.xr
+  ){
 
     return false;
 
@@ -807,13 +909,11 @@ async function supportsAR(){
 
     return await
       navigator.xr.isSessionSupported(
-        'immersive-ar'
+        "immersive-ar"
       );
 
   }
-  catch(error){
-
-    console.error(error);
+  catch{
 
     return false;
 
@@ -828,13 +928,20 @@ async function supportsAR(){
 
 async function startAR(src){
 
+  hideError();
+
+
   const supported =
-    await supportsAR();
+    await canUseAR();
 
 
   if(!supported){
 
-    showUnsupported();
+    showError(
+      "Browser AR unavailable",
+
+      "This browser is not exposing immersive AR. Try the latest Chrome on a supported Android device."
+    );
 
     return;
 
@@ -843,41 +950,80 @@ async function startAR(src){
 
   try{
 
-    setupThree();
+    initializeThree();
 
 
     await loadPizza(src);
 
 
+    /*
+     * IMPORTANT:
+     *
+     * hit-test is required.
+     *
+     * local-floor is OPTIONAL.
+     *
+     * anchors are OPTIONAL.
+     *
+     * This makes the session less restrictive.
+     */
+
     xrSession =
       await navigator.xr.requestSession(
-        'immersive-ar',
+        "immersive-ar",
         {
 
           requiredFeatures:[
-            'hit-test',
-            'local-floor'
+            "hit-test"
           ],
 
           optionalFeatures:[
-            'dom-overlay',
-            'anchors',
-            'plane-detection'
-          ]
+            "local-floor",
+            "anchors",
+            "dom-overlay"
+          ],
+
+          domOverlay:{
+            root:ar
+          }
 
         }
       );
 
 
     xrSession.addEventListener(
-      'end',
-      onSessionEnd
+      "end",
+      endAR
     );
 
 
-    renderer.xr.setReferenceSpaceType(
-      'local-floor'
-    );
+    /*
+     * Try local-floor first.
+     * Fall back to local.
+     */
+
+    try{
+
+      referenceSpace =
+        await xrSession.requestReferenceSpace(
+          "local-floor"
+        );
+
+    }
+    catch{
+
+      referenceSpace =
+        await xrSession.requestReferenceSpace(
+          "local"
+        );
+
+    }
+
+
+    viewerSpace =
+      await xrSession.requestReferenceSpace(
+        "viewer"
+      );
 
 
     await renderer.xr.setSession(
@@ -886,162 +1032,155 @@ async function startAR(src){
 
 
     ar.style.display =
-      'block';
+      "block";
 
 
-    arReticle.style.display =
-      'block';
+    reticle.style.display =
+      "block";
 
 
     arTip.textContent =
-      'Move your phone slowly to find a surface';
-
-
-    placed =
-      false;
+      "Move your phone slowly to find a table";
 
 
     arPlace.style.display =
-      'none';
+      "none";
 
 
-    hitTestSourceRequested =
+    pizzaPlaced =
       false;
 
 
-    hitTestSource =
+    currentHit =
       null;
 
 
+    hitTestRequested =
+      false;
+
+
     renderer.setAnimationLoop(
-      renderAR
+      render
     );
+
 
   }
   catch(error){
 
     console.error(
-      'Could not start WebXR:',
+      "WebXR error:",
       error
     );
 
 
-    if(
-      xrSession
-    ){
+    showError(
+      "AR could not start",
 
-      try{
-        await xrSession.end();
-      }
-      catch(e){}
-    }
-
-
-    showUnsupported();
-
-  }
-
-}
-
-
-/* =====================================================
-   HIT TEST
-===================================================== */
-
-async function requestHitTestSource(
-  frame
-){
-
-  if(
-    hitTestSourceRequested
-  ){
-
-    return;
-
-  }
-
-
-  const session =
-    renderer.xr.getSession();
-
-
-  const viewerSpace =
-    await session.requestReferenceSpace(
-      'viewer'
+      error.name +
+      ": " +
+      (error.message ||
+       "Unknown error")
     );
 
 
-  hitTestSource =
-    await session.requestHitTestSource({
-      space:viewerSpace
-    });
+    cleanup();
 
-
-  hitTestSourceRequested =
-    true;
-
-
-  session.addEventListener(
-    'end',
-    () => {
-
-      hitTestSourceRequested =
-        false;
-
-      hitTestSource =
-        null;
-
-    }
-  );
+  }
 
 }
 
 
 /* =====================================================
-   RENDER LOOP
+   REQUEST HIT TEST
 ===================================================== */
 
-function renderAR(
-  timestamp,
-  frame
-){
+async function requestHitTest(){
 
-  if(!frame){
+  if(
+    hitTestRequested ||
+    !xrSession ||
+    !viewerSpace
+  ){
 
     return;
 
   }
 
 
-  const session =
-    renderer.xr.getSession();
+  hitTestRequested =
+    true;
 
 
-  requestHitTestSource(
-    frame
-  );
+  try{
 
+    hitTestSource =
+      await xrSession.requestHitTestSource({
+
+        space:viewerSpace
+
+      });
+
+  }
+  catch(error){
+
+    console.error(
+      "Hit test failed:",
+      error
+    );
+
+    hitTestSource =
+      null;
+
+  }
+
+}
+
+
+/* =====================================================
+   AR FRAME
+===================================================== */
+
+function render(
+  time,
+  frame
+){
 
   if(
+    !frame ||
+    !xrSession
+  ){
+
+    return;
+
+  }
+
+
+  requestHitTest();
+
+
+  /*
+   * ======================================
+   * BEFORE PLACEMENT
+   * ======================================
+   */
+
+  if(
+    !pizzaPlaced &&
     hitTestSource
   ){
 
-    const referenceSpace =
-      renderer.xr.getReferenceSpace();
-
-
-    const hitResults =
+    const results =
       frame.getHitTestResults(
         hitTestSource
       );
 
 
     if(
-      hitResults.length > 0
+      results.length > 0
     ){
 
       const hit =
-        hitResults[0];
+        results[0];
 
 
       const pose =
@@ -1052,77 +1191,100 @@ function renderAR(
 
       if(pose){
 
+        currentHit =
+          hit;
+
+
         /*
-         * Reticle follows the REAL
-         * detected surface.
+         * Reticle = real surface
          */
 
-        reticle.visible =
-          !placed;
+        reticleMesh.visible =
+          true;
 
 
-        reticle.matrix.fromArray(
+        reticleMesh.matrix.fromArray(
           pose.transform.matrix
         );
 
 
         /*
-         * If the pizza has NOT been
-         * placed yet, preview it at
-         * the detected real-world
-         * position.
+         * Preview pizza at surface.
          */
 
-        if(
-          pizza &&
-          !placed
-        ){
-
-          pizza.matrixAutoUpdate =
-            false;
-
-          pizza.matrix.fromArray(
-            pose.transform.matrix
-          );
-
-          pizza.visible =
-            true;
-
-        }
+        pizza.visible =
+          true;
 
 
-        if(
-          !placed
-        ){
+        pizza.matrix.fromArray(
+          pose.transform.matrix
+        );
 
-          arTip.textContent =
-            'Tap the screen to place the pizza';
 
-          arPlace.style.display =
-            'block';
+        arPlace.style.display =
+          "block";
 
-        }
+
+        arTip.textContent =
+          "Tap the table to place the pizza";
 
       }
 
     }
     else{
 
-      reticle.visible =
+      currentHit =
+        null;
+
+
+      reticleMesh.visible =
         false;
 
 
-      if(
-        !placed
-      ){
+      pizza.visible =
+        false;
 
-        arTip.textContent =
-          'Move your phone slowly to find a surface';
 
-        arPlace.style.display =
-          'none';
+      arPlace.style.display =
+        "none";
 
-      }
+
+      arTip.textContent =
+        "Move your phone slowly to find a table";
+
+    }
+
+  }
+
+
+  /*
+   * ======================================
+   * AFTER PLACEMENT
+   * ======================================
+   *
+   * NEVER update pizza from camera.
+   */
+
+  if(
+    pizzaPlaced &&
+    pizzaAnchor
+  ){
+
+    const anchorPose =
+      frame.getPose(
+        pizzaAnchor.anchorSpace,
+        referenceSpace
+      );
+
+
+    if(anchorPose){
+
+      pizza.matrix.fromArray(
+        anchorPose.transform.matrix
+      );
+
+      pizza.visible =
+        true;
 
     }
 
@@ -1138,14 +1300,15 @@ function renderAR(
 
 
 /* =====================================================
-   USER TAPS SCREEN
+   PLACE PIZZA
 ===================================================== */
 
-function onSelect(){
+async function placePizza(){
 
   if(
-    !pizza ||
-    !reticle.visible
+    pizzaPlaced ||
+    !currentHit ||
+    !referenceSpace
   ){
 
     return;
@@ -1153,113 +1316,150 @@ function onSelect(){
   }
 
 
-  /*
-   * CRITICAL PART
-   *
-   * Copy the current WORLD-SPACE
-   * reticle transform.
-   *
-   * After this point the pizza is
-   * NOT attached to the camera.
-   */
+  try{
 
-  pizza.matrix.copy(
-    reticle.matrix
-  );
+    /*
+     * ======================================
+     * CREATE REAL WORLD ANCHOR
+     * ======================================
+     */
 
+    if(
+      typeof currentHit.createAnchor ===
+      "function"
+    ){
 
-  pizza.matrixAutoUpdate =
-    false;
+      try{
 
+        pizzaAnchor =
+          await currentHit.createAnchor();
 
-  pizza.visible =
-    true;
+      }
+      catch(error){
 
+        console.log(
+          "Anchor creation unavailable:",
+          error
+        );
 
-  placed =
-    true;
+        pizzaAnchor =
+          null;
 
+      }
 
-  reticle.visible =
-    false;
-
-
-  arPlace.style.display =
-    'none';
-
-
-  arTip.textContent =
-    '🍕 Pizza placed — move around it';
+    }
 
 
-  /*
-   * The pizza's matrix is now
-   * independent of the camera.
-   *
-   * WebXR's tracking system keeps
-   * the world coordinate system
-   * stable while the user moves.
-   */
+    /*
+     * If anchors are supported,
+     * continuously use the anchor.
+     *
+     * If not, keep the hit-test pose
+     * in the XR reference space.
+     */
+
+    if(
+      pizzaAnchor
+    ){
+
+      pizzaPlaced =
+        true;
+
+
+      reticleMesh.visible =
+        false;
+
+
+      arPlace.style.display =
+        "none";
+
+
+      arTip.textContent =
+        "🍕 Placed — walk around it";
+
+
+    }
+    else{
+
+      /*
+       * Fallback for browsers that support
+       * hit-test but don't expose anchors.
+       *
+       * The transform is still in the
+       * XR world reference space.
+       */
+
+      const pose =
+        currentHit.getPose(
+          referenceSpace
+        );
+
+
+      if(
+        pose
+      ){
+
+        pizza.matrix.fromArray(
+          pose.transform.matrix
+        );
+
+
+        pizza.matrixAutoUpdate =
+          false;
+
+
+        pizza.visible =
+          true;
+
+
+        pizzaPlaced =
+          true;
+
+
+        reticleMesh.visible =
+          false;
+
+
+        arPlace.style.display =
+          "none";
+
+
+        arTip.textContent =
+          "🍕 Placed — walk around it";
+
+      }
+
+    }
+
+  }
+  catch(error){
+
+    console.error(
+      "Placement error:",
+      error
+    );
+
+  }
 
 }
 
 
 /* =====================================================
-   MANUAL PLACE BUTTON
+   PLACE BUTTON
 ===================================================== */
 
 arPlace.addEventListener(
-  'click',
-  () => {
-
-    if(
-      !pizza ||
-      !reticle.visible
-    ){
-
-      return;
-
-    }
-
-
-    pizza.matrix.copy(
-      reticle.matrix
-    );
-
-
-    pizza.matrixAutoUpdate =
-      false;
-
-
-    pizza.visible =
-      true;
-
-
-    placed =
-      true;
-
-
-    reticle.visible =
-      false;
-
-
-    arPlace.style.display =
-      'none';
-
-
-    arTip.textContent =
-      '🍕 Pizza placed — move around it';
-
-  }
+  "click",
+  placePizza
 );
 
 
 /* =====================================================
-   CLOSE AR
+   CLOSE
 ===================================================== */
 
 arClose.addEventListener(
-  'click',
+  "click",
   async () => {
 
     if(
@@ -1287,105 +1487,147 @@ arClose.addEventListener(
    SESSION END
 ===================================================== */
 
-function onSessionEnd(){
+function endAR(){
 
-  renderer.setAnimationLoop(
-    null
-  );
+  cleanup();
+
+}
+
+
+/* =====================================================
+   CLEANUP
+===================================================== */
+
+function cleanup(){
+
+  if(
+    renderer
+  ){
+
+    renderer.setAnimationLoop(
+      null
+    );
+
+  }
 
 
   if(
-    pizza
+    pizzaAnchor
+  ){
+
+    try{
+
+      pizzaAnchor.delete();
+
+    }
+    catch{}
+
+  }
+
+
+  pizzaAnchor =
+    null;
+
+
+  hitTestSource =
+    null;
+
+
+  hitTestRequested =
+    false;
+
+
+  currentHit =
+    null;
+
+
+  pizzaPlaced =
+    false;
+
+
+  xrSession =
+    null;
+
+
+  if(
+    pizza &&
+    scene
   ){
 
     scene.remove(
       pizza
     );
 
-    pizza = null;
-
   }
 
 
-  hitTestSource =
+  pizza =
     null;
 
-  hitTestSourceRequested =
-    false;
-
-  xrSession =
-    null;
 
   ar.style.display =
-    'none';
+    "none";
 
-  arReticle.style.display =
-    'none';
 
   arPlace.style.display =
-    'none';
+    "none";
+
+
+  reticle.style.display =
+    "none";
+
+
+  arError.style.display =
+    "none";
 
 }
 
 
 /* =====================================================
-   UNSUPPORTED DEVICE
+   ERROR
 ===================================================== */
 
-function showUnsupported(){
+function showError(
+  title,
+  message
+){
 
   ar.style.display =
-    'block';
+    "block";
 
 
-  arMessage.style.display =
-    'block';
+  arError.style.display =
+    "block";
 
 
-  arMessageTitle.textContent =
-    'AR is not supported here';
+  errorTitle.textContent =
+    title;
 
 
-  arMessageText.textContent =
-    'This browser does not provide world-tracked AR. Please try a browser/device with WebXR AR support. No app installation is required.';
+  errorText.textContent =
+    message;
 
 
   arTip.textContent =
-    '';
+    "";
 
 
-  arReticle.style.display =
-    'none';
+  reticle.style.display =
+    "none";
 
 
   arPlace.style.display =
-    'none';
+    "none";
 
 }
 
 
-/* =====================================================
-   CLOSE UNSUPPORTED SCREEN
-===================================================== */
+function hideError(){
 
-arClose.addEventListener(
-  'click',
-  () => {
+  arError.style.display =
+    "none";
 
-    if(
-      !xrSession
-    ){
-
-      ar.style.display =
-        'none';
-
-      arMessage.style.display =
-        'none';
-
-    }
-
-  }
-);
+}
 
 
 /* =====================================================
@@ -1393,33 +1635,23 @@ arClose.addEventListener(
 ===================================================== */
 
 window.addEventListener(
-  'resize',
+  "resize",
   () => {
 
     if(
-      !renderer ||
-      !camera
+      renderer
     ){
 
-      return;
+      renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+      );
 
     }
-
-
-    renderer.setSize(
-      window.innerWidth,
-      window.innerHeight
-    );
 
   }
 );
 
-</script>
-
-
-<!-- model-viewer is only used for the normal menu preview -->
-<script type="module"
-src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js">
 </script>
 
 </body>
