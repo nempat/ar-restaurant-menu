@@ -123,7 +123,8 @@
     z-index:99;
     background:#000;
     display:none;
-    overflow:hidden
+    overflow:hidden;
+    touch-action:none;
   }
 
   #cam video{
@@ -138,20 +139,37 @@
     position:absolute;
     width:280px;
     height:280px;
+
     left:50%;
     top:50%;
-    transform:
-      translate(-50%,-50%);
+
+    transform:translate(-50%,-50%);
+
     background:transparent;
+
     --poster-color:transparent;
     --progress-bar-color:transparent;
+
+    display:none;
+
+    /* IMPORTANT:
+       We handle dragging ourselves. */
+    touch-action:none;
+    user-select:none;
+    -webkit-user-select:none;
+
+    cursor:grab;
+  }
+
+  #fallback-model.dragging{
+    cursor:grabbing;
   }
 
   #camx{
     position:absolute;
     top:14px;
     right:14px;
-    z-index:5;
+    z-index:10;
     background:#fff;
     border:0;
     border-radius:999px;
@@ -169,7 +187,8 @@
     color:#fff;
     font-size:.9rem;
     text-shadow:0 1px 4px #000;
-    z-index:5
+    z-index:5;
+    pointer-events:none;
   }
 
   #placeBtn{
@@ -177,7 +196,7 @@
     bottom:65px;
     left:50%;
     transform:translateX(-50%);
-    z-index:6;
+    z-index:10;
     background:#d9381e;
     color:#fff;
     border:0;
@@ -185,12 +204,8 @@
     padding:12px 22px;
     font-size:.95rem;
     font-weight:700;
-    display:none
-  }
-
-  /* Hide fallback model until camera starts */
-  #fallback-model{
-    display:none
+    display:none;
+    cursor:pointer;
   }
 </style>
 </head>
@@ -220,7 +235,6 @@
 
   <model-viewer
     id="fallback-model"
-    camera-controls
     interaction-prompt="none"
     shadow-intensity="1"
     touch-action="none">
@@ -289,20 +303,6 @@ ITEMS.map((item,index) => `
       alt="${item.name}"
 
       ar
-
-      /*
-       * IMPORTANT:
-       *
-       * Only WebXR.
-       *
-       * We intentionally DO NOT include:
-       *
-       * scene-viewer
-       * quick-look
-       *
-       * because those can send the user
-       * into another AR application.
-       */
 
       ar-modes="webxr"
 
@@ -465,9 +465,6 @@ async function openAR(src){
 
   /*
    * First try REAL WebXR AR.
-   *
-   * This is the only mode that can provide
-   * proper world tracking directly in the browser.
    */
 
   const webxrSupported =
@@ -475,11 +472,6 @@ async function openAR(src){
 
 
   if(webxrSupported){
-
-    /*
-     * Find the first model-viewer
-     * containing this model.
-     */
 
     const models =
       document.querySelectorAll(
@@ -517,12 +509,7 @@ async function openAR(src){
   /*
    * WebXR unavailable.
    *
-   * Use universal browser camera fallback.
-   *
-   * IMPORTANT:
-   *
-   * This fallback does NOT claim to have
-   * real-world tracking.
+   * Use camera fallback.
    */
 
   openCameraFallback(src);
@@ -594,12 +581,33 @@ async function openCameraFallback(src){
       src;
 
 
+    /*
+     * Reset pizza position
+     * every time camera opens.
+     */
+
+    fallbackModel.style.left =
+      '50%';
+
+    fallbackModel.style.top =
+      '50%';
+
+    fallbackModel.style.transform =
+      'translate(-50%,-50%)';
+
+
     fallbackModel.style.display =
       'block';
 
 
     placeBtn.style.display =
       'block';
+
+
+    document.getElementById(
+      'camtip'
+    ).textContent =
+      'Move the pizza to where you want it, then tap Place Pizza';
 
 
     cam.style.display =
@@ -624,20 +632,234 @@ async function openCameraFallback(src){
 
 
 /* =====================================================
+   DRAG PIZZA
+===================================================== */
+
+let dragging = false;
+
+let dragPointerId = null;
+
+let startX = 0;
+let startY = 0;
+
+let startLeft = 0;
+let startTop = 0;
+
+
+/*
+ * Convert the current pizza position
+ * into actual pixel coordinates.
+ */
+
+function getPizzaPosition(){
+
+  const rect =
+    fallbackModel.getBoundingClientRect();
+
+  return {
+
+    left:
+      rect.left +
+      rect.width / 2,
+
+    top:
+      rect.top +
+      rect.height / 2
+
+  };
+
+}
+
+
+/*
+ * START DRAG
+ */
+
+fallbackModel.addEventListener(
+  'pointerdown',
+  (event) => {
+
+    if(
+      fallbackModel.style.display === 'none'
+    ){
+
+      return;
+
+    }
+
+
+    event.preventDefault();
+
+    dragging = true;
+
+    dragPointerId =
+      event.pointerId;
+
+    startX =
+      event.clientX;
+
+    startY =
+      event.clientY;
+
+
+    const pos =
+      getPizzaPosition();
+
+    startLeft =
+      pos.left;
+
+    startTop =
+      pos.top;
+
+
+    fallbackModel.classList.add(
+      'dragging'
+    );
+
+
+    fallbackModel.setPointerCapture(
+      event.pointerId
+    );
+
+  },
+  {passive:false}
+);
+
+
+/*
+ * MOVE
+ */
+
+fallbackModel.addEventListener(
+  'pointermove',
+  (event) => {
+
+    if(
+      !dragging ||
+      event.pointerId !== dragPointerId
+    ){
+
+      return;
+
+    }
+
+
+    event.preventDefault();
+
+
+    const dx =
+      event.clientX -
+      startX;
+
+    const dy =
+      event.clientY -
+      startY;
+
+
+    let newLeft =
+      startLeft + dx;
+
+    let newTop =
+      startTop + dy;
+
+
+    /*
+     * Keep pizza inside screen.
+     */
+
+    const rect =
+      fallbackModel.getBoundingClientRect();
+
+    const halfW =
+      rect.width / 2;
+
+    const halfH =
+      rect.height / 2;
+
+
+    newLeft =
+      Math.max(
+        halfW,
+        Math.min(
+          window.innerWidth - halfW,
+          newLeft
+        )
+      );
+
+
+    newTop =
+      Math.max(
+        halfH,
+        Math.min(
+          window.innerHeight - halfH,
+          newTop
+        )
+      );
+
+
+    /*
+     * Switch from percentage positioning
+     * to exact pixel positioning.
+     */
+
+    fallbackModel.style.left =
+      newLeft + 'px';
+
+    fallbackModel.style.top =
+      newTop + 'px';
+
+    fallbackModel.style.transform =
+      'translate(-50%,-50%)';
+
+  },
+  {passive:false}
+);
+
+
+/*
+ * END DRAG
+ */
+
+function stopDragging(event){
+
+  if(
+    event.pointerId !== dragPointerId
+  ){
+
+    return;
+
+  }
+
+
+  dragging = false;
+
+  dragPointerId = null;
+
+  fallbackModel.classList.remove(
+    'dragging'
+  );
+
+}
+
+
+fallbackModel.addEventListener(
+  'pointerup',
+  stopDragging
+);
+
+fallbackModel.addEventListener(
+  'pointercancel',
+  stopDragging
+);
+
+
+/* =====================================================
    PLACE BUTTON
 ===================================================== */
 
 placeBtn.addEventListener(
   'click',
   () => {
-
-    /*
-     * In fallback mode this simply
-     * freezes the model's current screen
-     * position.
-     *
-     * It is NOT real-world AR tracking.
-     */
 
     placeBtn.style.display =
       'none';
@@ -646,8 +868,7 @@ placeBtn.addEventListener(
     document.getElementById(
       'camtip'
     ).textContent =
-      'Pizza placed · Move it again by dragging';
-
+      'Pizza placed · Drag the pizza to move it again';
 
   }
 );
@@ -687,6 +908,10 @@ function closeCam(){
 
   placeBtn.style.display =
     'none';
+
+  dragging = false;
+
+  dragPointerId = null;
 
   cam.style.display =
     'none';
