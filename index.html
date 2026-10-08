@@ -2,436 +2,246 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AR Menu v5</title>
 
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1, viewport-fit=cover"
->
-
-<title>AR Menu v7</title>
-
-<!-- Normal menu 3D preview -->
 <script type="module"
-src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js">
+  src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js">
 </script>
 
 <style>
-
-*{
-  box-sizing:border-box
-}
-
-body{
-  margin:0;
-  font-family:system-ui,sans-serif;
-  background:#fff8f0;
-  color:#2b1d14
-}
-
-header{
-  padding:26px 16px 6px;
-  text-align:center
-}
-
-h1{
-  margin:0;
-  font-size:1.6rem
-}
-
-header p{
-  margin:6px 0 0;
-  color:#8a7566;
-  font-size:.92rem
-}
-
-main{
-  max-width:900px;
-  margin:0 auto;
-  padding:16px;
-  display:grid;
-  gap:18px;
-  grid-template-columns:
-    repeat(auto-fill,minmax(280px,1fr))
-}
-
-.card{
-  background:#fff;
-  border-radius:18px;
-  overflow:hidden;
-  box-shadow:0 4px 16px #0002
-}
-
-.card model-viewer{
-  width:100%;
-  height:270px;
-  background:#fff3e6
-}
-
-.info{
-  padding:14px 16px 16px
-}
-
-.row{
-  display:flex;
-  justify-content:space-between;
-  align-items:baseline
-}
-
-.row h2{
-  margin:0;
-  font-size:1.1rem
-}
-
-.price{
-  font-weight:700;
-  color:#d9381e
-}
-
-.info p{
-  margin:6px 0 10px;
-  color:#8a7566;
-  font-size:.9rem
-}
-
-.btn{
-  background:#d9381e;
-  color:#fff;
-  border:0;
-  border-radius:999px;
-  padding:11px 18px;
-  font-size:.95rem;
-  font-weight:600;
-  width:100%;
-  cursor:pointer
-}
-
-.note{
-  margin:8px 16px 0;
-  font-size:.8rem;
-  color:#b00020;
-  display:none
-}
-
-
-/* =========================================
-   REAL AR SCREEN
-========================================= */
-
-#ar{
-  position:fixed;
-  inset:0;
-  z-index:9999;
-  display:none;
-  background:transparent;
-  overflow:hidden;
-}
-
-#ar canvas{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-}
-
-
-/* =========================================
-   CLOSE
-========================================= */
-
-#ar-close{
-  position:absolute;
-
-  top:calc(
-    14px + env(safe-area-inset-top)
-  );
-
-  right:14px;
-
-  z-index:20;
-
-  background:#fff;
-  color:#2b1d14;
-
-  border:0;
-  border-radius:999px;
-
-  padding:10px 16px;
-
-  font-size:.95rem;
-  font-weight:700;
-
-  cursor:pointer;
-
-  box-shadow:0 3px 12px #0003;
-}
-
-
-/* =========================================
-   PLACE BUTTON
-========================================= */
-
-#ar-place{
-
-  position:absolute;
-
-  left:50%;
-
-  bottom:
-    calc(
-      25px +
-      env(safe-area-inset-bottom)
-    );
-
-  transform:translateX(-50%);
-
-  z-index:20;
-
-  background:#d9381e;
-
-  color:#fff;
-
-  border:0;
-
-  border-radius:999px;
-
-  padding:13px 25px;
-
-  font-size:.95rem;
-
-  font-weight:700;
-
-  display:none;
-
-  box-shadow:0 4px 15px #0004;
-
-}
-
-
-/* =========================================
-   TIP
-========================================= */
-
-#ar-tip{
-
-  position:absolute;
-
-  left:20px;
-  right:20px;
-
-  bottom:
-    calc(
-      82px +
-      env(safe-area-inset-bottom)
-    );
-
-  z-index:20;
-
-  text-align:center;
-
-  color:#fff;
-
-  font-size:.9rem;
-
-  text-shadow:
-    0 1px 4px #000,
-    0 1px 8px #000;
-
-  pointer-events:none;
-
-}
-
-
-/* =========================================
-   RETICLE
-========================================= */
-
-#reticle{
-
-  position:absolute;
-
-  left:50%;
-  top:50%;
-
-  width:70px;
-  height:70px;
-
-  transform:
-    translate(-50%,-50%);
-
-  z-index:10;
-
-  border:
-    2px solid
-    rgba(255,255,255,.9);
-
-  border-radius:50%;
-
-  display:none;
-
-  pointer-events:none;
-
-}
-
-#reticle::after{
-
-  content:"";
-
-  position:absolute;
-
-  width:6px;
-  height:6px;
-
-  left:50%;
-  top:50%;
-
-  transform:
-    translate(-50%,-50%);
-
-  border-radius:50%;
-
-  background:#fff;
-
-}
-
-
-/* =========================================
-   ERROR
-========================================= */
-
-#ar-error{
-
-  position:absolute;
-
-  left:20px;
-  right:20px;
-
-  top:50%;
-
-  transform:
-    translateY(-50%);
-
-  z-index:30;
-
-  background:#fff;
-
-  border-radius:18px;
-
-  padding:22px;
-
-  text-align:center;
-
-  box-shadow:0 8px 30px #0005;
-
-  display:none;
-
-}
-
-#ar-error h3{
-
-  margin:0 0 8px;
-
-}
-
-#ar-error p{
-
-  margin:0;
-
-  color:#8a7566;
-
-  font-size:.9rem;
-
-  line-height:1.5;
-
-}
-
+  *{box-sizing:border-box}
+
+  body{
+    margin:0;
+    font-family:system-ui,sans-serif;
+    background:#fff8f0;
+    color:#2b1d14
+  }
+
+  header{
+    padding:26px 16px 6px;
+    text-align:center
+  }
+
+  h1{
+    margin:0;
+    font-size:1.6rem
+  }
+
+  header p{
+    margin:6px 0 0;
+    color:#8a7566;
+    font-size:.92rem
+  }
+
+  main{
+    max-width:900px;
+    margin:0 auto;
+    padding:16px;
+    display:grid;
+    gap:18px;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr))
+  }
+
+  .card{
+    background:#fff;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 4px 16px #0002
+  }
+
+  .card model-viewer{
+    width:100%;
+    height:270px;
+    background:#fff3e6
+  }
+
+  .info{
+    padding:14px 16px 16px
+  }
+
+  .row{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline
+  }
+
+  .row h2{
+    margin:0;
+    font-size:1.1rem
+  }
+
+  .price{
+    font-weight:700;
+    color:#d9381e
+  }
+
+  .info p{
+    margin:6px 0 10px;
+    color:#8a7566;
+    font-size:.9rem
+  }
+
+  .btn{
+    background:#d9381e;
+    color:#fff;
+    border:0;
+    border-radius:999px;
+    padding:11px 18px;
+    font-size:.95rem;
+    font-weight:600;
+    width:100%;
+    cursor:pointer
+  }
+
+  .ar-btn{
+    position:absolute;
+    bottom:12px;
+    right:12px;
+    background:#2b1d14;
+    color:#fff;
+    border:0;
+    border-radius:999px;
+    padding:10px 16px;
+    font-size:.9rem;
+    font-weight:600
+  }
+
+  .note{
+    margin:8px 16px 0;
+    font-size:.8rem;
+    color:#b00020;
+    display:none
+  }
+
+  /* ================= CAMERA FALLBACK ================= */
+
+  #cam{
+    position:fixed;
+    inset:0;
+    z-index:99;
+    background:#000;
+    display:none;
+    overflow:hidden
+  }
+
+  #cam video{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover
+  }
+
+  #fallback-model{
+    position:absolute;
+    width:280px;
+    height:280px;
+    left:50%;
+    top:50%;
+    transform:
+      translate(-50%,-50%);
+    background:transparent;
+    --poster-color:transparent;
+    --progress-bar-color:transparent;
+  }
+
+  #camx{
+    position:absolute;
+    top:14px;
+    right:14px;
+    z-index:5;
+    background:#fff;
+    border:0;
+    border-radius:999px;
+    padding:10px 16px;
+    font-weight:700;
+    cursor:pointer
+  }
+
+  #camtip{
+    position:absolute;
+    bottom:22px;
+    left:0;
+    right:0;
+    text-align:center;
+    color:#fff;
+    font-size:.9rem;
+    text-shadow:0 1px 4px #000;
+    z-index:5
+  }
+
+  #placeBtn{
+    position:absolute;
+    bottom:65px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:6;
+    background:#d9381e;
+    color:#fff;
+    border:0;
+    border-radius:999px;
+    padding:12px 22px;
+    font-size:.95rem;
+    font-weight:700;
+    display:none
+  }
+
+  /* Hide fallback model until camera starts */
+  #fallback-model{
+    display:none
+  }
 </style>
 </head>
 
-
 <body>
 
-
 <header>
-
-  <h1>
-    🍕 Our Menu (v3)
-  </h1>
-
-  <p>
-    See the dish on your table through your camera. No app needed.
-  </p>
-
+  <h1>🍕 Our Menu (v3)</h1>
+  <p>See the dish on your table through your camera. No app needed.</p>
 </header>
-
 
 <main id="menu"></main>
 
 
-<!-- =========================================
-     AR UI
-========================================= -->
+<!-- ==================================================
+     CAMERA FALLBACK
+     ================================================== -->
 
-<div id="ar">
+<div id="cam">
 
-  <button id="ar-close">
-    ✕ Close
-  </button>
+  <video
+    id="camv"
+    autoplay
+    playsinline
+    muted>
+  </video>
 
+  <model-viewer
+    id="fallback-model"
+    camera-controls
+    interaction-prompt="none"
+    shadow-intensity="1"
+    touch-action="none">
+  </model-viewer>
 
-  <div id="reticle"></div>
-
-
-  <button id="ar-place">
+  <button id="placeBtn">
     ✓ Place Pizza
   </button>
 
+  <button id="camx">
+    ✕ Close
+  </button>
 
-  <div id="ar-tip">
-    Move your phone slowly to find a table
-  </div>
-
-
-  <div id="ar-error">
-
-    <h3 id="error-title">
-      AR unavailable
-    </h3>
-
-    <p id="error-text">
-      Your browser could not start
-      world-tracked AR.
-    </p>
-
+  <div id="camtip">
+    Move the pizza to where you want it, then tap Place Pizza
   </div>
 
 </div>
 
 
-
-<script type="importmap">
-{
-  "imports": {
-    "three":
-      "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
-
-    "three/addons/":
-      "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
-  }
-}
-</script>
-
-
-
-<script type="module">
-
-import * as THREE from
-  "three";
-
-import {
-  GLTFLoader
-} from
-  "three/addons/loaders/GLTFLoader.js";
-
+<script>
 
 /* =====================================================
    MENU
@@ -455,33 +265,50 @@ const ITEMS = [
 
 
 const PATHS = [
-
-  "pizza.glb",
-
-  "assets/pizza.glb",
-
-  "models/pizza.glb"
-
+  'pizza.glb',
+  'assets/pizza.glb',
+  'models/pizza.glb'
 ];
 
 
 /* =====================================================
-   MENU HTML
+   CREATE MENU
 ===================================================== */
 
-document.getElementById("menu").innerHTML =
-
+document.getElementById('menu').innerHTML =
 ITEMS.map((item,index) => `
 
   <article class="card">
 
     <model-viewer
 
-      id="preview-${index}"
+      id="model-${index}"
 
       src="${PATHS[0]}"
 
       alt="${item.name}"
+
+      ar
+
+      /*
+       * IMPORTANT:
+       *
+       * Only WebXR.
+       *
+       * We intentionally DO NOT include:
+       *
+       * scene-viewer
+       * quick-look
+       *
+       * because those can send the user
+       * into another AR application.
+       */
+
+      ar-modes="webxr"
+
+      ar-placement="floor"
+
+      ar-scale="fixed"
 
       camera-controls
 
@@ -491,9 +318,21 @@ ITEMS.map((item,index) => `
 
       touch-action="pan-y"
 
+      interaction-prompt="auto"
+
       loading="lazy"
 
-    ></model-viewer>
+    >
+
+      <button
+        slot="ar-button"
+        class="ar-btn">
+
+        📱 Place on surface
+
+      </button>
+
+    </model-viewer>
 
 
     <div class="note"></div>
@@ -531,48 +370,45 @@ ITEMS.map((item,index) => `
 
   </article>
 
-`).join("");
+`).join('');
 
 
 /* =====================================================
-   NORMAL MODEL FALLBACK
+   MODEL FALLBACK
 ===================================================== */
 
 document
-.querySelectorAll(".card")
+.querySelectorAll('.card')
 .forEach((card,index) => {
 
-  const model =
-    card.querySelector("model-viewer");
+  const mv =
+    card.querySelector('model-viewer');
 
   let pathIndex = 0;
 
 
-  model.addEventListener(
-    "error",
+  mv.addEventListener(
+    'error',
     () => {
 
       pathIndex++;
 
-      if(
-        pathIndex <
-        PATHS.length
-      ){
+      if(pathIndex < PATHS.length){
 
-        model.src =
+        mv.src =
           PATHS[pathIndex];
 
       }
       else{
 
         const note =
-          card.querySelector(".note");
+          card.querySelector('.note');
 
         note.style.display =
-          "block";
+          'block';
 
         note.textContent =
-          "pizza.glb not found.";
+          'pizza.glb not found in your repo.';
 
       }
 
@@ -580,13 +416,17 @@ document
   );
 
 
+  /* =================================================
+     CAMERA BUTTON
+  ================================================= */
+
   card
-  .querySelector(".camopen")
+  .querySelector('.camopen')
   .addEventListener(
-    "click",
+    'click',
     () => {
 
-      startAR(PATHS[0]);
+      openAR(mv.src);
 
     }
   );
@@ -595,297 +435,97 @@ document
 
 
 /* =====================================================
-   AR ELEMENTS
+   CAMERA ELEMENTS
 ===================================================== */
 
-const ar =
-  document.getElementById("ar");
+const cam =
+  document.getElementById('cam');
 
-const arClose =
-  document.getElementById("ar-close");
+const camv =
+  document.getElementById('camv');
 
-const arPlace =
-  document.getElementById("ar-place");
+const fallbackModel =
+  document.getElementById(
+    'fallback-model'
+  );
 
-const arTip =
-  document.getElementById("ar-tip");
+const placeBtn =
+  document.getElementById(
+    'placeBtn'
+  );
 
-const reticle =
-  document.getElementById("reticle");
-
-const arError =
-  document.getElementById("ar-error");
-
-const errorTitle =
-  document.getElementById("error-title");
-
-const errorText =
-  document.getElementById("error-text");
+let stream = null;
 
 
 /* =====================================================
-   THREE VARIABLES
+   OPEN AR
 ===================================================== */
 
-let renderer = null;
+async function openAR(src){
 
-let scene = null;
+  /*
+   * First try REAL WebXR AR.
+   *
+   * This is the only mode that can provide
+   * proper world tracking directly in the browser.
+   */
 
-let camera = null;
+  const webxrSupported =
+    await checkWebXR();
 
-let controller = null;
 
-let pizza = null;
+  if(webxrSupported){
 
-let reticleMesh = null;
+    /*
+     * Find the first model-viewer
+     * containing this model.
+     */
 
-let xrSession = null;
+    const models =
+      document.querySelectorAll(
+        'model-viewer'
+      );
 
-let referenceSpace = null;
 
-let viewerSpace = null;
+    for(const model of models){
 
-let hitTestSource = null;
+      if(model.src === src){
 
-let hitTestRequested = false;
+        try{
 
-let currentHit = null;
+          await model.activateAR();
 
-let pizzaPlaced = false;
+          return;
 
-let pizzaAnchor = null;
+        }
+        catch(error){
 
-
-/* =====================================================
-   THREE INITIALIZATION
-===================================================== */
-
-function initializeThree(){
-
-  scene =
-    new THREE.Scene();
-
-
-  camera =
-    new THREE.PerspectiveCamera();
-
-
-  const canvas =
-    document.createElement("canvas");
-
-
-  renderer =
-    new THREE.WebGLRenderer({
-
-      canvas,
-
-      alpha:true,
-
-      antialias:true
-
-    });
-
-
-  renderer.xr.enabled =
-    true;
-
-
-  renderer.setPixelRatio(
-    Math.min(
-      window.devicePixelRatio || 1,
-      2
-    )
-  );
-
-
-  renderer.setSize(
-    window.innerWidth,
-    window.innerHeight
-  );
-
-
-  renderer.outputColorSpace =
-    THREE.SRGBColorSpace;
-
-
-  renderer.shadowMap.enabled =
-    true;
-
-
-  ar.appendChild(canvas);
-
-
-  /* -----------------------------------------
-     LIGHT
-  ----------------------------------------- */
-
-  const hemisphere =
-    new THREE.HemisphereLight(
-      0xffffff,
-      0x777777,
-      2
-    );
-
-  scene.add(
-    hemisphere
-  );
-
-
-  const directional =
-    new THREE.DirectionalLight(
-      0xffffff,
-      3
-    );
-
-  directional.position.set(
-    2,
-    5,
-    2
-  );
-
-  directional.castShadow =
-    true;
-
-  scene.add(
-    directional
-  );
-
-
-  /* -----------------------------------------
-     RETICLE
-  ----------------------------------------- */
-
-  const geometry =
-    new THREE.RingGeometry(
-      0.08,
-      0.1,
-      32
-    );
-
-
-  geometry.rotateX(
-    -Math.PI / 2
-  );
-
-
-  const material =
-    new THREE.MeshBasicMaterial({
-      color:0xffffff
-    });
-
-
-  reticleMesh =
-    new THREE.Mesh(
-      geometry,
-      material
-    );
-
-
-  reticleMesh.matrixAutoUpdate =
-    false;
-
-
-  reticleMesh.visible =
-    false;
-
-
-  scene.add(
-    reticleMesh
-  );
-
-
-  /* -----------------------------------------
-     TOUCH / SELECT
-  ----------------------------------------- */
-
-  controller =
-    renderer.xr.getController(0);
-
-
-  controller.addEventListener(
-    "select",
-    placePizza
-  );
-
-
-  scene.add(
-    controller
-  );
-
-}
-
-
-/* =====================================================
-   LOAD MODEL
-===================================================== */
-
-function loadPizza(src){
-
-  return new Promise(
-    (resolve,reject) => {
-
-      const loader =
-        new GLTFLoader();
-
-
-      loader.load(
-
-        src,
-
-        gltf => {
-
-          pizza =
-            gltf.scene;
-
-
-          pizza.visible =
-            false;
-
-
-          pizza.matrixAutoUpdate =
-            false;
-
-
-          pizza.traverse(
-            object => {
-
-              if(
-                object.isMesh
-              ){
-
-                object.castShadow =
-                  true;
-
-                object.receiveShadow =
-                  true;
-
-              }
-
-            }
+          console.log(
+            'WebXR failed:',
+            error
           );
-
-
-          scene.add(
-            pizza
-          );
-
-
-          resolve();
-
-        },
-
-        undefined,
-
-        error => {
-
-          reject(error);
 
         }
 
-      );
+      }
 
     }
-  );
+
+  }
+
+
+  /*
+   * WebXR unavailable.
+   *
+   * Use universal browser camera fallback.
+   *
+   * IMPORTANT:
+   *
+   * This fallback does NOT claim to have
+   * real-world tracking.
+   */
+
+  openCameraFallback(src);
 
 }
 
@@ -894,11 +534,9 @@ function loadPizza(src){
    CHECK WEBXR
 ===================================================== */
 
-async function canUseAR(){
+async function checkWebXR(){
 
-  if(
-    !navigator.xr
-  ){
+  if(!navigator.xr){
 
     return false;
 
@@ -907,183 +545,19 @@ async function canUseAR(){
 
   try{
 
-    return await
-      navigator.xr.isSessionSupported(
-        "immersive-ar"
-      );
-
-  }
-  catch{
-
-    return false;
-
-  }
-
-}
-
-
-/* =====================================================
-   START AR
-===================================================== */
-
-async function startAR(src){
-
-  hideError();
-
-
-  const supported =
-    await canUseAR();
-
-
-  if(!supported){
-
-    showError(
-      "Browser AR unavailable",
-
-      "This browser is not exposing immersive AR. Try the latest Chrome on a supported Android device."
+    return await navigator.xr.isSessionSupported(
+      'immersive-ar'
     );
-
-    return;
-
-  }
-
-
-  try{
-
-    initializeThree();
-
-
-    await loadPizza(src);
-
-
-    /*
-     * IMPORTANT:
-     *
-     * hit-test is required.
-     *
-     * local-floor is OPTIONAL.
-     *
-     * anchors are OPTIONAL.
-     *
-     * This makes the session less restrictive.
-     */
-
-    xrSession =
-      await navigator.xr.requestSession(
-        "immersive-ar",
-        {
-
-          requiredFeatures:[
-            "hit-test"
-          ],
-
-          optionalFeatures:[
-            "local-floor",
-            "anchors",
-            "dom-overlay"
-          ],
-
-          domOverlay:{
-            root:ar
-          }
-
-        }
-      );
-
-
-    xrSession.addEventListener(
-      "end",
-      endAR
-    );
-
-
-    /*
-     * Try local-floor first.
-     * Fall back to local.
-     */
-
-    try{
-
-      referenceSpace =
-        await xrSession.requestReferenceSpace(
-          "local-floor"
-        );
-
-    }
-    catch{
-
-      referenceSpace =
-        await xrSession.requestReferenceSpace(
-          "local"
-        );
-
-    }
-
-
-    viewerSpace =
-      await xrSession.requestReferenceSpace(
-        "viewer"
-      );
-
-
-    await renderer.xr.setSession(
-      xrSession
-    );
-
-
-    ar.style.display =
-      "block";
-
-
-    reticle.style.display =
-      "block";
-
-
-    arTip.textContent =
-      "Move your phone slowly to find a table";
-
-
-    arPlace.style.display =
-      "none";
-
-
-    pizzaPlaced =
-      false;
-
-
-    currentHit =
-      null;
-
-
-    hitTestRequested =
-      false;
-
-
-    renderer.setAnimationLoop(
-      render
-    );
-
 
   }
   catch(error){
 
-    console.error(
-      "WebXR error:",
+    console.log(
+      'WebXR detection failed:',
       error
     );
 
-
-    showError(
-      "AR could not start",
-
-      error.name +
-      ": " +
-      (error.message ||
-       "Unknown error")
-    );
-
-
-    cleanup();
+    return false;
 
   }
 
@@ -1091,352 +565,57 @@ async function startAR(src){
 
 
 /* =====================================================
-   REQUEST HIT TEST
+   CAMERA FALLBACK
 ===================================================== */
 
-async function requestHitTest(){
-
-  if(
-    hitTestRequested ||
-    !xrSession ||
-    !viewerSpace
-  ){
-
-    return;
-
-  }
-
-
-  hitTestRequested =
-    true;
-
+async function openCameraFallback(src){
 
   try{
 
-    hitTestSource =
-      await xrSession.requestHitTestSource({
+    stream =
+      await navigator.mediaDevices.getUserMedia({
 
-        space:viewerSpace
+        video:{
+          facingMode:{
+            ideal:'environment'
+          }
+        },
+
+        audio:false
 
       });
 
-  }
-  catch(error){
 
-    console.error(
-      "Hit test failed:",
-      error
-    );
+    camv.srcObject =
+      stream;
 
-    hitTestSource =
-      null;
 
-  }
+    fallbackModel.src =
+      src;
 
-}
 
+    fallbackModel.style.display =
+      'block';
 
-/* =====================================================
-   AR FRAME
-===================================================== */
 
-function render(
-  time,
-  frame
-){
+    placeBtn.style.display =
+      'block';
 
-  if(
-    !frame ||
-    !xrSession
-  ){
 
-    return;
+    cam.style.display =
+      'block';
 
-  }
-
-
-  requestHitTest();
-
-
-  /*
-   * ======================================
-   * BEFORE PLACEMENT
-   * ======================================
-   */
-
-  if(
-    !pizzaPlaced &&
-    hitTestSource
-  ){
-
-    const results =
-      frame.getHitTestResults(
-        hitTestSource
-      );
-
-
-    if(
-      results.length > 0
-    ){
-
-      const hit =
-        results[0];
-
-
-      const pose =
-        hit.getPose(
-          referenceSpace
-        );
-
-
-      if(pose){
-
-        currentHit =
-          hit;
-
-
-        /*
-         * Reticle = real surface
-         */
-
-        reticleMesh.visible =
-          true;
-
-
-        reticleMesh.matrix.fromArray(
-          pose.transform.matrix
-        );
-
-
-        /*
-         * Preview pizza at surface.
-         */
-
-        pizza.visible =
-          true;
-
-
-        pizza.matrix.fromArray(
-          pose.transform.matrix
-        );
-
-
-        arPlace.style.display =
-          "block";
-
-
-        arTip.textContent =
-          "Tap the table to place the pizza";
-
-      }
-
-    }
-    else{
-
-      currentHit =
-        null;
-
-
-      reticleMesh.visible =
-        false;
-
-
-      pizza.visible =
-        false;
-
-
-      arPlace.style.display =
-        "none";
-
-
-      arTip.textContent =
-        "Move your phone slowly to find a table";
-
-    }
-
-  }
-
-
-  /*
-   * ======================================
-   * AFTER PLACEMENT
-   * ======================================
-   *
-   * NEVER update pizza from camera.
-   */
-
-  if(
-    pizzaPlaced &&
-    pizzaAnchor
-  ){
-
-    const anchorPose =
-      frame.getPose(
-        pizzaAnchor.anchorSpace,
-        referenceSpace
-      );
-
-
-    if(anchorPose){
-
-      pizza.matrix.fromArray(
-        anchorPose.transform.matrix
-      );
-
-      pizza.visible =
-        true;
-
-    }
-
-  }
-
-
-  renderer.render(
-    scene,
-    camera
-  );
-
-}
-
-
-/* =====================================================
-   PLACE PIZZA
-===================================================== */
-
-async function placePizza(){
-
-  if(
-    pizzaPlaced ||
-    !currentHit ||
-    !referenceSpace
-  ){
-
-    return;
-
-  }
-
-
-  try{
-
-    /*
-     * ======================================
-     * CREATE REAL WORLD ANCHOR
-     * ======================================
-     */
-
-    if(
-      typeof currentHit.createAnchor ===
-      "function"
-    ){
-
-      try{
-
-        pizzaAnchor =
-          await currentHit.createAnchor();
-
-      }
-      catch(error){
-
-        console.log(
-          "Anchor creation unavailable:",
-          error
-        );
-
-        pizzaAnchor =
-          null;
-
-      }
-
-    }
-
-
-    /*
-     * If anchors are supported,
-     * continuously use the anchor.
-     *
-     * If not, keep the hit-test pose
-     * in the XR reference space.
-     */
-
-    if(
-      pizzaAnchor
-    ){
-
-      pizzaPlaced =
-        true;
-
-
-      reticleMesh.visible =
-        false;
-
-
-      arPlace.style.display =
-        "none";
-
-
-      arTip.textContent =
-        "🍕 Placed — walk around it";
-
-
-    }
-    else{
-
-      /*
-       * Fallback for browsers that support
-       * hit-test but don't expose anchors.
-       *
-       * The transform is still in the
-       * XR world reference space.
-       */
-
-      const pose =
-        currentHit.getPose(
-          referenceSpace
-        );
-
-
-      if(
-        pose
-      ){
-
-        pizza.matrix.fromArray(
-          pose.transform.matrix
-        );
-
-
-        pizza.matrixAutoUpdate =
-          false;
-
-
-        pizza.visible =
-          true;
-
-
-        pizzaPlaced =
-          true;
-
-
-        reticleMesh.visible =
-          false;
-
-
-        arPlace.style.display =
-          "none";
-
-
-        arTip.textContent =
-          "🍕 Placed — walk around it";
-
-      }
-
-    }
 
   }
   catch(error){
 
-    console.error(
-      "Placement error:",
-      error
+    console.error(error);
+
+
+    alert(
+      'Camera could not start. ' +
+      'Please allow camera permission ' +
+      'and make sure this website uses HTTPS.'
     );
 
   }
@@ -1448,9 +627,29 @@ async function placePizza(){
    PLACE BUTTON
 ===================================================== */
 
-arPlace.addEventListener(
-  "click",
-  placePizza
+placeBtn.addEventListener(
+  'click',
+  () => {
+
+    /*
+     * In fallback mode this simply
+     * freezes the model's current screen
+     * position.
+     *
+     * It is NOT real-world AR tracking.
+     */
+
+    placeBtn.style.display =
+      'none';
+
+
+    document.getElementById(
+      'camtip'
+    ).textContent =
+      'Pizza placed · Move it again by dragging';
+
+
+  }
 );
 
 
@@ -1458,198 +657,50 @@ arPlace.addEventListener(
    CLOSE
 ===================================================== */
 
-arClose.addEventListener(
-  "click",
-  async () => {
-
-    if(
-      xrSession
-    ){
-
-      try{
-
-        await xrSession.end();
-
-      }
-      catch(error){
-
-        console.log(error);
-
-      }
-
-    }
-
-  }
+document
+.getElementById('camx')
+.addEventListener(
+  'click',
+  closeCam
 );
 
 
-/* =====================================================
-   SESSION END
-===================================================== */
+function closeCam(){
 
-function endAR(){
+  if(stream){
 
-  cleanup();
-
-}
-
-
-/* =====================================================
-   CLEANUP
-===================================================== */
-
-function cleanup(){
-
-  if(
-    renderer
-  ){
-
-    renderer.setAnimationLoop(
-      null
-    );
+    stream
+      .getTracks()
+      .forEach(
+        track => track.stop()
+      );
 
   }
 
 
-  if(
-    pizzaAnchor
-  ){
+  stream = null;
 
-    try{
+  camv.srcObject = null;
 
-      pizzaAnchor.delete();
+  fallbackModel.style.display =
+    'none';
 
-    }
-    catch{}
+  placeBtn.style.display =
+    'none';
 
-  }
-
-
-  pizzaAnchor =
-    null;
-
-
-  hitTestSource =
-    null;
-
-
-  hitTestRequested =
-    false;
-
-
-  currentHit =
-    null;
-
-
-  pizzaPlaced =
-    false;
-
-
-  xrSession =
-    null;
-
-
-  if(
-    pizza &&
-    scene
-  ){
-
-    scene.remove(
-      pizza
-    );
-
-  }
-
-
-  pizza =
-    null;
-
-
-  ar.style.display =
-    "none";
-
-
-  arPlace.style.display =
-    "none";
-
-
-  reticle.style.display =
-    "none";
-
-
-  arError.style.display =
-    "none";
+  cam.style.display =
+    'none';
 
 }
 
 
 /* =====================================================
-   ERROR
-===================================================== */
-
-function showError(
-  title,
-  message
-){
-
-  ar.style.display =
-    "block";
-
-
-  arError.style.display =
-    "block";
-
-
-  errorTitle.textContent =
-    title;
-
-
-  errorText.textContent =
-    message;
-
-
-  arTip.textContent =
-    "";
-
-
-  reticle.style.display =
-    "none";
-
-
-  arPlace.style.display =
-    "none";
-
-}
-
-
-function hideError(){
-
-  arError.style.display =
-    "none";
-
-}
-
-
-/* =====================================================
-   RESIZE
+   CLEANUP WHEN PAGE CLOSES
 ===================================================== */
 
 window.addEventListener(
-  "resize",
-  () => {
-
-    if(
-      renderer
-    ){
-
-      renderer.setSize(
-        window.innerWidth,
-        window.innerHeight
-      );
-
-    }
-
-  }
+  'pagehide',
+  closeCam
 );
 
 </script>
