@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AR Menu</title>
+<title>AR Menu v2</title>
 <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
 <style>
   *{box-sizing:border-box}
@@ -20,54 +20,59 @@
   .price{font-weight:700;color:#d9381e}
   .info p{margin:6px 0 0;color:#8a7566;font-size:.9rem}
   .ar-btn{position:absolute;bottom:12px;right:12px;background:#d9381e;color:#fff;border:0;border-radius:999px;padding:11px 18px;font-size:.95rem;font-weight:600}
-  .note{display:none;margin:10px 16px 0;padding:8px 10px;background:#fff0d6;border-radius:8px;font-size:.8rem}
+  .note{margin:8px 16px 0;font-size:.8rem;color:#b00020}
+  #status{text-align:center;font-size:.8rem;color:#8a7566;padding:8px}
 </style>
 </head>
 <body>
 <header>
-  <h1>🍕 Our Menu</h1>
+  <h1>🍕 Our Menu (v2)</h1>
   <p>Tap “View in your space” to place the dish on your table. No app needed.</p>
 </header>
 <main id="menu"></main>
+<p id="status">Loading…</p>
 
 <script>
 // ===== EDIT YOUR MENU HERE =====
 const ITEMS = [
-  {name:"Margherita Pizza", price:"₹349", desc:"Tomato, mozzarella, fresh basil.", model:"assets/pizza.glb"},
-  {name:"Farmhouse Pizza",  price:"₹429", desc:"Loaded with veggies and cheese.",  model:"assets/pizza.glb"}
+  {name:"Margherita Pizza", price:"₹349", desc:"Tomato, mozzarella, fresh basil."},
+  {name:"Farmhouse Pizza",  price:"₹429", desc:"Loaded with veggies and cheese."}
 ];
+// Model locations to try, in order
+const PATHS = ['pizza.glb','assets/pizza.glb','models/pizza.glb'];
 // ================================
 
 document.getElementById('menu').innerHTML = ITEMS.map(i => `
   <article class="card">
-    <model-viewer src="${i.model}" alt="${i.name}"
+    <model-viewer src="${PATHS[0]}" alt="${i.name}"
       ar ar-modes="webxr scene-viewer quick-look" ar-scale="auto" ar-placement="floor"
       camera-controls auto-rotate shadow-intensity="1" touch-action="pan-y">
       <button slot="ar-button" class="ar-btn">📱 View in your space</button>
     </model-viewer>
-    <div class="note">AR isn't supported in this browser. On Android use Chrome; on iPhone use Safari.</div>
+    <div class="note" style="display:none"></div>
     <div class="info">
       <div class="row"><h2>${i.name}</h2><span class="price">${i.price}</span></div>
       <p>${i.desc}</p>
     </div>
   </article>`).join('');
 
-// If the model file isn't found, try other common locations automatically
-const FALLBACKS = ['assets/pizza.glb','models/pizza.glb','pizza.glb'];
 document.querySelectorAll('model-viewer').forEach(mv => {
-  let tried = 0;
+  let n = 1;
   mv.addEventListener('error', () => {
-    if (tried < FALLBACKS.length) { mv.src = FALLBACKS[tried++]; }
-    else mv.parentElement.querySelector('.note').textContent = 'Model file not found. Upload pizza.glb to the assets folder in your repo.', mv.parentElement.querySelector('.note').style.display = 'block';
+    if (n < PATHS.length) { mv.src = PATHS[n++]; return; }
+    const note = mv.parentElement.querySelector('.note');
+    note.style.display = 'block';
+    note.textContent = 'pizza.glb not found. Upload it to the main folder of your repo.';
   });
 });
 
-// Show a hint if AR can't start on this device/browser
-document.querySelectorAll('model-viewer').forEach(mv => {
-  mv.addEventListener('load', () => {
-    if (!mv.canActivateAR) mv.parentElement.querySelector('.note').style.display = 'block';
-  });
-});
+setTimeout(() => {
+  const ok = customElements.get('model-viewer');
+  const mv = document.querySelector('model-viewer');
+  document.getElementById('status').textContent = !ok
+    ? 'Viewer script blocked: try another browser or network'
+    : (mv.canActivateAR ? 'AR ready ✅' : '3D ready (AR not available in this browser)');
+}, 2500);
 </script>
 </body>
 </html>
