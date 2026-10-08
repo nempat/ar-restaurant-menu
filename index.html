@@ -1,41 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+>
+
 <title>AR Menu v5</title>
 
-<script type="module"
+
+<script
+  type="module"
   src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js">
 </script>
+
 
 <style>
 
 *{
-  box-sizing:border-box
+  box-sizing:border-box;
+}
+
+html,
+body{
+  margin:0;
+  padding:0;
+  width:100%;
+  min-height:100%;
 }
 
 body{
-  margin:0;
   font-family:system-ui,sans-serif;
   background:#fff8f0;
-  color:#2b1d14
+  color:#2b1d14;
 }
 
 header{
   padding:26px 16px 6px;
-  text-align:center
+  text-align:center;
 }
 
 h1{
   margin:0;
-  font-size:1.6rem
+  font-size:1.6rem;
 }
 
 header p{
   margin:6px 0 0;
   color:#8a7566;
-  font-size:.92rem
+  font-size:.92rem;
 }
 
 main{
@@ -44,49 +60,47 @@ main{
   padding:16px;
   display:grid;
   gap:18px;
-  grid-template-columns:repeat(
-    auto-fill,
-    minmax(280px,1fr)
-  )
+  grid-template-columns:
+    repeat(auto-fill,minmax(280px,1fr));
 }
 
 .card{
   background:#fff;
   border-radius:18px;
   overflow:hidden;
-  box-shadow:0 4px 16px #0002
+  box-shadow:0 4px 16px #0002;
 }
 
 .card model-viewer{
   width:100%;
   height:270px;
-  background:#fff3e6
+  background:#fff3e6;
 }
 
 .info{
-  padding:14px 16px 16px
+  padding:14px 16px 16px;
 }
 
 .row{
   display:flex;
   justify-content:space-between;
-  align-items:baseline
+  align-items:baseline;
 }
 
 .row h2{
   margin:0;
-  font-size:1.1rem
+  font-size:1.1rem;
 }
 
 .price{
   font-weight:700;
-  color:#d9381e
+  color:#d9381e;
 }
 
 .info p{
   margin:6px 0 10px;
   color:#8a7566;
-  font-size:.9rem
+  font-size:.9rem;
 }
 
 .btn{
@@ -98,7 +112,7 @@ main{
   font-size:.95rem;
   font-weight:600;
   width:100%;
-  cursor:pointer
+  cursor:pointer;
 }
 
 .ar-btn{
@@ -111,14 +125,14 @@ main{
   border-radius:999px;
   padding:10px 16px;
   font-size:.9rem;
-  font-weight:600
+  font-weight:600;
 }
 
 .note{
   margin:8px 16px 0;
   font-size:.8rem;
   color:#b00020;
-  display:none
+  display:none;
 }
 
 
@@ -127,26 +141,61 @@ main{
 ===================================================== */
 
 #cam{
-  position:fixed;
-  inset:0;
-  z-index:99;
-  background:#000;
-  display:none;
-  overflow:hidden;
-  touch-action:none;
-}
 
-#cam video{
-  position:absolute;
+  position:fixed;
+
   inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
+
+  width:100vw;
+  height:100dvh;
+
+  z-index:99;
+
+  background:#000;
+
+  display:none;
+
+  overflow:hidden;
+
+  /*
+   * VERY IMPORTANT FOR MOBILE
+   */
+  touch-action:none;
+
+  overscroll-behavior:none;
+
+  -webkit-user-select:none;
+  user-select:none;
+
+  -webkit-touch-callout:none;
 }
 
 
 /* =====================================================
-   FALLBACK MODEL
+   CAMERA VIDEO
+===================================================== */
+
+#cam video{
+
+  position:absolute;
+
+  inset:0;
+
+  width:100%;
+  height:100%;
+
+  object-fit:cover;
+
+  pointer-events:none;
+
+  user-select:none;
+
+  -webkit-user-select:none;
+}
+
+
+/* =====================================================
+   PIZZA
 ===================================================== */
 
 #fallback-model{
@@ -161,7 +210,8 @@ main{
 
   transform:
     translate(-50%,-50%)
-    rotate(0deg);
+    rotate(0deg)
+    scale(1);
 
   background:transparent;
 
@@ -170,37 +220,86 @@ main{
 
   display:none;
 
+  /*
+   * DON'T let model-viewer handle
+   * touch gestures.
+   */
+  pointer-events:none;
+
   touch-action:none;
 
   user-select:none;
+
   -webkit-user-select:none;
-
-  cursor:grab;
-}
-
-#fallback-model.dragging{
-  cursor:grabbing;
 }
 
 
 /* =====================================================
-   CLOSE
+   CLOSE BUTTON
 ===================================================== */
 
 #camx{
+
   position:absolute;
+
   top:14px;
   right:14px;
-  z-index:10;
+
+  z-index:20;
 
   background:#fff;
+
   border:0;
+
   border-radius:999px;
 
   padding:10px 16px;
 
   font-weight:700;
-  cursor:pointer
+
+  cursor:pointer;
+
+  touch-action:manipulation;
+}
+
+
+/* =====================================================
+   PLACE BUTTON
+===================================================== */
+
+#placeBtn{
+
+  position:absolute;
+
+  bottom:65px;
+
+  left:50%;
+
+  transform:translateX(-50%);
+
+  z-index:20;
+
+  background:#d9381e;
+
+  color:#fff;
+
+  border:0;
+
+  border-radius:999px;
+
+  padding:13px 23px;
+
+  font-size:.95rem;
+
+  font-weight:700;
+
+  display:none;
+
+  cursor:pointer;
+
+  touch-action:manipulation;
+
+  -webkit-tap-highlight-color:transparent;
 }
 
 
@@ -209,9 +308,11 @@ main{
 ===================================================== */
 
 #camtip{
+
   position:absolute;
 
   bottom:22px;
+
   left:0;
   right:0;
 
@@ -223,47 +324,50 @@ main{
 
   text-shadow:0 1px 4px #000;
 
-  z-index:5;
+  z-index:15;
 
-  pointer-events:none
+  pointer-events:none;
+
+  padding:0 15px;
 }
 
 
 /* =====================================================
-   PLACE / MOVE
+   MOBILE
 ===================================================== */
 
-#placeBtn{
+@media(max-width:600px){
 
-  position:absolute;
+  #fallback-model{
 
-  bottom:65px;
-  left:50%;
+    width:250px;
+    height:250px;
 
-  transform:translateX(-50%);
+  }
 
-  z-index:10;
+  #placeBtn{
 
-  background:#d9381e;
+    bottom:70px;
 
-  color:#fff;
+    padding:14px 24px;
 
-  border:0;
+    font-size:1rem;
 
-  border-radius:999px;
+  }
 
-  padding:12px 22px;
+  #camx{
 
-  font-size:.95rem;
+    top:16px;
+    right:16px;
 
-  font-weight:700;
+    padding:11px 17px;
 
-  display:none;
+  }
 
-  cursor:pointer
 }
 
 </style>
+
 </head>
 
 
@@ -301,10 +405,15 @@ main{
 
 
   <model-viewer
+
     id="fallback-model"
+
     interaction-prompt="none"
+
     shadow-intensity="1"
+
     touch-action="none">
+
   </model-viewer>
 
 
@@ -320,12 +429,13 @@ main{
 
   <div id="camtip">
 
-    Move the pizza to where you want it,
+    Drag • Pinch • Rotate,
     then tap Place Pizza
 
   </div>
 
 </div>
+
 
 
 <script>
@@ -354,7 +464,9 @@ const ITEMS = [
 const PATHS = [
 
   'pizza.glb',
+
   'assets/pizza.glb',
+
   'models/pizza.glb'
 
 ];
@@ -396,9 +508,7 @@ ITEMS.map((item,index) => `
 
       interaction-prompt="auto"
 
-      loading="lazy"
-
-    >
+      loading="lazy">
 
       <button
         slot="ar-button"
@@ -528,6 +638,7 @@ const placeBtn =
     'placeBtn'
   );
 
+
 let stream = null;
 
 
@@ -537,17 +648,25 @@ let stream = null;
 
 let pizzaLocked = false;
 
-let dragging = false;
-
 
 /*
- * Current pizza transform
+ * Pizza position
  */
 
 let pizzaX = 0;
 let pizzaY = 0;
 
+
+/*
+ * Pizza size
+ */
+
 let pizzaScale = 1;
+
+
+/*
+ * Pizza rotation
+ */
 
 let pizzaRotation = 0;
 
@@ -581,6 +700,7 @@ async function openAR(src){
           return;
 
         }
+
         catch(error){
 
           console.log(
@@ -597,13 +717,17 @@ async function openAR(src){
   }
 
 
+  /*
+   * Browser camera fallback
+   */
+
   openCameraFallback(src);
 
 }
 
 
 /* =====================================================
-   WEBXR CHECK
+   CHECK WEBXR
 ===================================================== */
 
 async function checkWebXR(){
@@ -622,6 +746,7 @@ async function checkWebXR(){
     );
 
   }
+
   catch(error){
 
     console.log(
@@ -667,7 +792,7 @@ async function openCameraFallback(src){
 
 
     /*
-     * Reset transform
+     * Center pizza
      */
 
     pizzaX =
@@ -676,8 +801,10 @@ async function openCameraFallback(src){
     pizzaY =
       window.innerHeight / 2;
 
+
     pizzaScale =
       1;
+
 
     pizzaRotation =
       0;
@@ -685,17 +812,6 @@ async function openCameraFallback(src){
 
     pizzaLocked =
       false;
-
-
-    dragging =
-      false;
-
-
-    /*
-     * Apply transform
-     */
-
-    updatePizza();
 
 
     /*
@@ -706,13 +822,26 @@ async function openCameraFallback(src){
       '✓ Place Pizza';
 
 
+    /*
+     * Apply position
+     */
+
+    updatePizza();
+
+
+    /*
+     * Show camera
+     */
+
+    cam.style.display =
+      'block';
+
+
     fallbackModel.style.display =
       'block';
 
-    placeBtn.style.display =
-      'block';
 
-    cam.style.display =
+    placeBtn.style.display =
       'block';
 
 
@@ -740,7 +869,7 @@ async function openCameraFallback(src){
 
 
 /* =====================================================
-   APPLY PIZZA TRANSFORM
+   UPDATE PIZZA
 ===================================================== */
 
 function updatePizza(){
@@ -748,10 +877,13 @@ function updatePizza(){
   fallbackModel.style.left =
     pizzaX + 'px';
 
+
   fallbackModel.style.top =
     pizzaY + 'px';
 
+
   fallbackModel.style.transform =
+
     `
       translate(-50%,-50%)
       rotate(${pizzaRotation}deg)
@@ -762,28 +894,31 @@ function updatePizza(){
 
 
 /* =====================================================
-   POINTER TRACKING
+   TOUCH STATE
 ===================================================== */
 
 /*
- * We use Pointer Events so:
+ * IMPORTANT:
  *
- * 1 finger  = move
- * 2 fingers = pinch + rotate
+ * These listeners are attached to #cam,
+ * NOT model-viewer.
+ *
+ * This makes mobile Chrome much
+ * more reliable.
  */
 
-const pointers =
+const touches =
   new Map();
 
 
-let gestureStart = null;
+let gesture = null;
 
 
 /* =====================================================
-   DISTANCE BETWEEN TWO FINGERS
+   DISTANCE
 ===================================================== */
 
-function distance(a,b){
+function getDistance(a,b){
 
   const dx =
     b.x - a.x;
@@ -800,24 +935,27 @@ function distance(a,b){
 
 
 /* =====================================================
-   ANGLE BETWEEN TWO FINGERS
+   ANGLE
 ===================================================== */
 
-function angle(a,b){
+function getAngle(a,b){
 
   return Math.atan2(
+
     b.y - a.y,
+
     b.x - a.x
+
   ) * 180 / Math.PI;
 
 }
 
 
 /* =====================================================
-   GET CENTER OF FINGERS
+   CENTER
 ===================================================== */
 
-function center(a,b){
+function getCenter(a,b){
 
   return {
 
@@ -833,17 +971,31 @@ function center(a,b){
 
 
 /* =====================================================
-   POINTER DOWN
+   TOUCH START
 ===================================================== */
 
-fallbackModel.addEventListener(
+cam.addEventListener(
 
   'pointerdown',
 
-  event => {
+  function(event){
 
     /*
-     * Locked = no editing
+     * Don't handle buttons.
+     */
+
+    if(
+      event.target === placeBtn ||
+      event.target === document.getElementById('camx')
+    ){
+
+      return;
+
+    }
+
+
+    /*
+     * Don't edit locked pizza.
      */
 
     if(pizzaLocked){
@@ -856,52 +1008,34 @@ fallbackModel.addEventListener(
     event.preventDefault();
 
 
-    pointers.set(
+    touches.set(
+
       event.pointerId,
+
       {
         x:event.clientX,
         y:event.clientY
       }
-    );
 
-
-    fallbackModel.classList.add(
-      'dragging'
     );
 
 
     /*
-     * Capture pointer
+     * ONE FINGER
      */
 
-    try{
-
-      fallbackModel.setPointerCapture(
-        event.pointerId
-      );
-
-    }
-    catch(error){}
-
-
-    /*
-     * FIRST FINGER
-     *
-     * Start moving.
-     */
-
-    if(pointers.size === 1){
+    if(touches.size === 1){
 
       const p =
-        [...pointers.values()][0];
+        [...touches.values()][0];
 
 
-      gestureStart = {
+      gesture = {
 
         type:'move',
 
-        pointerX:p.x,
-        pointerY:p.y,
+        startX:p.x,
+        startY:p.y,
 
         pizzaX:pizzaX,
         pizzaY:pizzaY
@@ -912,15 +1046,13 @@ fallbackModel.addEventListener(
 
 
     /*
-     * SECOND FINGER
-     *
-     * Start pinch + rotation.
+     * TWO FINGERS
      */
 
-    if(pointers.size === 2){
+    else if(touches.size === 2){
 
       const pts =
-        [...pointers.values()];
+        [...touches.values()];
 
 
       const a =
@@ -931,10 +1063,10 @@ fallbackModel.addEventListener(
 
 
       const c =
-        center(a,b);
+        getCenter(a,b);
 
 
-      gestureStart = {
+      gesture = {
 
         type:'transform',
 
@@ -942,17 +1074,18 @@ fallbackModel.addEventListener(
         centerY:c.y,
 
         distance:
-          distance(a,b),
+          getDistance(a,b),
 
         angle:
-          angle(a,b),
+          getAngle(a,b),
 
         pizzaX:pizzaX,
         pizzaY:pizzaY,
 
         pizzaScale:pizzaScale,
 
-        pizzaRotation:pizzaRotation
+        pizzaRotation:
+          pizzaRotation
 
       };
 
@@ -968,14 +1101,14 @@ fallbackModel.addEventListener(
 
 
 /* =====================================================
-   POINTER MOVE
+   TOUCH MOVE
 ===================================================== */
 
-fallbackModel.addEventListener(
+cam.addEventListener(
 
   'pointermove',
 
-  event => {
+  function(event){
 
     if(pizzaLocked){
 
@@ -984,7 +1117,7 @@ fallbackModel.addEventListener(
     }
 
 
-    if(!pointers.has(
+    if(!touches.has(
       event.pointerId
     )){
 
@@ -997,58 +1130,63 @@ fallbackModel.addEventListener(
 
 
     /*
-     * Update pointer.
+     * Update finger
      */
 
-    pointers.set(
+    touches.set(
+
       event.pointerId,
+
       {
         x:event.clientX,
         y:event.clientY
       }
+
     );
 
 
     /*
-     * ONE FINGER
-     *
-     * MOVE
+     * ================================================
+     * ONE FINGER → MOVE
+     * ================================================
      */
 
     if(
-      pointers.size === 1 &&
-      gestureStart &&
-      gestureStart.type === 'move'
+
+      touches.size === 1 &&
+
+      gesture &&
+
+      gesture.type === 'move'
+
     ){
 
       const p =
-        [...pointers.values()][0];
-
-
-      const dx =
-        p.x -
-        gestureStart.pointerX;
-
-
-      const dy =
-        p.y -
-        gestureStart.pointerY;
+        [...touches.values()][0];
 
 
       pizzaX =
-        gestureStart.pizzaX +
-        dx;
+
+        gesture.pizzaX +
+
+        (
+          p.x -
+          gesture.startX
+        );
 
 
       pizzaY =
-        gestureStart.pizzaY +
-        dy;
 
+        gesture.pizzaY +
 
-      keepPizzaInsideScreen();
+        (
+          p.y -
+          gesture.startY
+        );
 
 
       updatePizza();
+
 
       return;
 
@@ -1056,19 +1194,23 @@ fallbackModel.addEventListener(
 
 
     /*
+     * ================================================
      * TWO FINGERS
-     *
-     * PINCH + ROTATE + MOVE
+     * ================================================
      */
 
     if(
-      pointers.size === 2 &&
-      gestureStart &&
-      gestureStart.type === 'transform'
+
+      touches.size === 2 &&
+
+      gesture &&
+
+      gesture.type === 'transform'
+
     ){
 
       const pts =
-        [...pointers.values()];
+        [...touches.values()];
 
 
       const a =
@@ -1079,29 +1221,30 @@ fallbackModel.addEventListener(
 
 
       const c =
-        center(a,b);
+        getCenter(a,b);
 
 
       /*
        * MOVE
-       *
-       * Move using the center
-       * of the two fingers.
        */
 
       pizzaX =
-        gestureStart.pizzaX +
+
+        gesture.pizzaX +
+
         (
           c.x -
-          gestureStart.centerX
+          gesture.centerX
         );
 
 
       pizzaY =
-        gestureStart.pizzaY +
+
+        gesture.pizzaY +
+
         (
           c.y -
-          gestureStart.centerY
+          gesture.centerY
         );
 
 
@@ -1109,35 +1252,41 @@ fallbackModel.addEventListener(
        * PINCH
        */
 
-      const newDistance =
-        distance(a,b);
+      const currentDistance =
+        getDistance(a,b);
 
 
       if(
-        gestureStart.distance > 0
+        gesture.distance > 0
       ){
 
         pizzaScale =
-          gestureStart.pizzaScale *
+
+          gesture.pizzaScale *
+
           (
-            newDistance /
-            gestureStart.distance
+            currentDistance /
+            gesture.distance
           );
 
       }
 
 
       /*
-       * Limit size.
+       * Limit scale
        */
 
       pizzaScale =
+
         Math.max(
+
           0.35,
+
           Math.min(
             2.5,
             pizzaScale
           )
+
         );
 
 
@@ -1145,19 +1294,18 @@ fallbackModel.addEventListener(
        * ROTATE
        */
 
-      const newAngle =
-        angle(a,b);
+      const currentAngle =
+        getAngle(a,b);
 
 
       pizzaRotation =
-        gestureStart.pizzaRotation +
+
+        gesture.pizzaRotation +
+
         (
-          newAngle -
-          gestureStart.angle
+          currentAngle -
+          gesture.angle
         );
-
-
-      keepPizzaInsideScreen();
 
 
       updatePizza();
@@ -1174,29 +1322,23 @@ fallbackModel.addEventListener(
 
 
 /* =====================================================
-   POINTER UP
+   TOUCH END
 ===================================================== */
 
 function pointerEnd(event){
 
-  pointers.delete(
+  touches.delete(
     event.pointerId
   );
 
 
   /*
-   * No fingers left.
+   * No fingers
    */
 
-  if(pointers.size === 0){
+  if(touches.size === 0){
 
-    gestureStart = null;
-
-    dragging = false;
-
-    fallbackModel.classList.remove(
-      'dragging'
-    );
+    gesture = null;
 
     return;
 
@@ -1206,22 +1348,22 @@ function pointerEnd(event){
   /*
    * One finger remains.
    *
-   * Start a fresh move gesture
-   * so there isn't a jump.
+   * Start a fresh drag
+   * without jumping.
    */
 
-  if(pointers.size === 1){
+  if(touches.size === 1){
 
     const p =
-      [...pointers.values()][0];
+      [...touches.values()][0];
 
 
-    gestureStart = {
+    gesture = {
 
       type:'move',
 
-      pointerX:p.x,
-      pointerY:p.y,
+      startX:p.x,
+      startY:p.y,
 
       pizzaX:pizzaX,
       pizzaY:pizzaY
@@ -1233,80 +1375,36 @@ function pointerEnd(event){
 }
 
 
-fallbackModel.addEventListener(
+cam.addEventListener(
   'pointerup',
   pointerEnd
 );
 
-fallbackModel.addEventListener(
+
+cam.addEventListener(
   'pointercancel',
   pointerEnd
 );
 
-fallbackModel.addEventListener(
-  'pointerleave',
-  event => {
-
-    /*
-     * Don't delete pointer here.
-     *
-     * Pointer capture may still
-     * be active.
-     */
-
-  }
-);
-
 
 /* =====================================================
-   KEEP PIZZA INSIDE SCREEN
-===================================================== */
-
-function keepPizzaInsideScreen(){
-
-  const baseSize =
-    280 * pizzaScale;
-
-
-  const half =
-    baseSize / 2;
-
-
-  pizzaX =
-    Math.max(
-      half,
-      Math.min(
-        window.innerWidth - half,
-        pizzaX
-      )
-    );
-
-
-  pizzaY =
-    Math.max(
-      half,
-      Math.min(
-        window.innerHeight - half,
-        pizzaY
-      )
-    );
-
-}
-
-
-/* =====================================================
-   PLACE / MOVE BUTTON
+   PLACE / MOVE
 ===================================================== */
 
 placeBtn.addEventListener(
 
   'click',
 
-  () => {
+  function(event){
+
+    event.preventDefault();
+
+    event.stopPropagation();
+
 
     /*
      * ================================================
-     * MOVABLE → LOCK
+     * PLACE
      * ================================================
      */
 
@@ -1316,34 +1414,10 @@ placeBtn.addEventListener(
         true;
 
 
-      pointers.clear();
+      touches.clear();
 
-      gestureStart =
+      gesture =
         null;
-
-
-      dragging =
-        false;
-
-
-      fallbackModel.classList.remove(
-        'dragging'
-      );
-
-
-      /*
-       * IMPORTANT:
-       *
-       * We DON'T change:
-       *
-       * pizzaX
-       * pizzaY
-       * pizzaScale
-       * pizzaRotation
-       *
-       * Therefore everything remains
-       * exactly where the user left it.
-       */
 
 
       placeBtn.textContent =
@@ -1363,7 +1437,7 @@ placeBtn.addEventListener(
 
     /*
      * ================================================
-     * LOCKED → UNLOCK
+     * MOVE AGAIN
      * ================================================
      */
 
@@ -1392,8 +1466,19 @@ placeBtn.addEventListener(
 document
 .getElementById('camx')
 .addEventListener(
+
   'click',
-  closeCam
+
+  function(event){
+
+    event.preventDefault();
+
+    event.stopPropagation();
+
+    closeCam();
+
+  }
+
 );
 
 
@@ -1410,7 +1495,8 @@ function closeCam(){
   }
 
 
-  stream = null;
+  stream =
+    null;
 
 
   camv.srcObject =
@@ -1429,14 +1515,10 @@ function closeCam(){
     false;
 
 
-  dragging =
-    false;
+  touches.clear();
 
 
-  pointers.clear();
-
-
-  gestureStart =
+  gesture =
     null;
 
 
@@ -1457,19 +1539,35 @@ window.addEventListener(
 
 
 /* =====================================================
-   RESIZE
+   SCREEN ROTATION / RESIZE
 ===================================================== */
 
 window.addEventListener(
   'resize',
-  () => {
+  function(){
 
     if(
-      fallbackModel.style.display !==
-      'none'
+      cam.style.display !== 'none'
     ){
 
-      keepPizzaInsideScreen();
+      /*
+       * Keep pizza roughly in
+       * the same relative position.
+       */
+
+      pizzaX =
+        Math.min(
+          pizzaX,
+          window.innerWidth
+        );
+
+
+      pizzaY =
+        Math.min(
+          pizzaY,
+          window.innerHeight
+        );
+
 
       updatePizza();
 
