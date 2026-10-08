@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AR Menu v2</title>
+<title>AR Menu v3</title>
 <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
 <style>
   *{box-sizing:border-box}
@@ -13,24 +13,36 @@
   header p{margin:6px 0 0;color:#8a7566;font-size:.92rem}
   main{max-width:900px;margin:0 auto;padding:16px;display:grid;gap:18px;grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
   .card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 4px 16px #0002}
-  model-viewer{width:100%;height:270px;background:#fff3e6}
+  .card model-viewer{width:100%;height:270px;background:#fff3e6}
   .info{padding:14px 16px 16px}
   .row{display:flex;justify-content:space-between;align-items:baseline}
   .row h2{margin:0;font-size:1.1rem}
   .price{font-weight:700;color:#d9381e}
-  .info p{margin:6px 0 0;color:#8a7566;font-size:.9rem}
-  .ar-btn{position:absolute;bottom:12px;right:12px;background:#d9381e;color:#fff;border:0;border-radius:999px;padding:11px 18px;font-size:.95rem;font-weight:600}
+  .info p{margin:6px 0 10px;color:#8a7566;font-size:.9rem}
+  .btn{background:#d9381e;color:#fff;border:0;border-radius:999px;padding:11px 18px;font-size:.95rem;font-weight:600;width:100%}
+  .ar-btn{position:absolute;bottom:12px;right:12px;background:#2b1d14;color:#fff;border:0;border-radius:999px;padding:10px 16px;font-size:.9rem;font-weight:600}
   .note{margin:8px 16px 0;font-size:.8rem;color:#b00020}
-  #status{text-align:center;font-size:.8rem;color:#8a7566;padding:8px}
+  /* camera overlay */
+  #cam{position:fixed;inset:0;z-index:99;background:#000;display:none}
+  #cam video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  #cam model-viewer{position:absolute;inset:0;width:100%;height:100%;background:transparent;--poster-color:transparent}
+  #camx{position:absolute;top:14px;right:14px;z-index:5;background:#fff;border:0;border-radius:999px;padding:10px 16px;font-weight:700}
+  #camtip{position:absolute;bottom:22px;left:0;right:0;text-align:center;color:#fff;font-size:.9rem;text-shadow:0 1px 4px #000;z-index:5}
 </style>
 </head>
 <body>
 <header>
-  <h1>🍕 Our Menu (v2)</h1>
-  <p>Tap “View in your space” to place the dish on your table. No app needed.</p>
+  <h1>🍕 Our Menu (v3)</h1>
+  <p>See the dish on your table through your camera. No app needed.</p>
 </header>
 <main id="menu"></main>
-<p id="status">Loading…</p>
+
+<div id="cam">
+  <video id="camv" autoplay playsinline muted></video>
+  <model-viewer id="camm" camera-controls auto-rotate interaction-prompt="none" shadow-intensity="1" touch-action="none"></model-viewer>
+  <button id="camx">✕ Close</button>
+  <div id="camtip">Drag to rotate · Pinch to resize</div>
+</div>
 
 <script>
 // ===== EDIT YOUR MENU HERE =====
@@ -38,7 +50,6 @@ const ITEMS = [
   {name:"Margherita Pizza", price:"₹349", desc:"Tomato, mozzarella, fresh basil."},
   {name:"Farmhouse Pizza",  price:"₹429", desc:"Loaded with veggies and cheese."}
 ];
-// Model locations to try, in order
 const PATHS = ['pizza.glb','assets/pizza.glb','models/pizza.glb'];
 // ================================
 
@@ -47,32 +58,51 @@ document.getElementById('menu').innerHTML = ITEMS.map(i => `
     <model-viewer src="${PATHS[0]}" alt="${i.name}"
       ar ar-modes="webxr scene-viewer quick-look" ar-scale="auto" ar-placement="floor"
       camera-controls auto-rotate shadow-intensity="1" touch-action="pan-y">
-      <button slot="ar-button" class="ar-btn">📱 View in your space</button>
+      <button slot="ar-button" class="ar-btn">📱 Place on surface</button>
     </model-viewer>
     <div class="note" style="display:none"></div>
     <div class="info">
       <div class="row"><h2>${i.name}</h2><span class="price">${i.price}</span></div>
       <p>${i.desc}</p>
+      <button class="btn camopen">📷 View with camera</button>
     </div>
   </article>`).join('');
 
-document.querySelectorAll('model-viewer').forEach(mv => {
+document.querySelectorAll('.card').forEach(card => {
+  const mv = card.querySelector('model-viewer');
   let n = 1;
   mv.addEventListener('error', () => {
     if (n < PATHS.length) { mv.src = PATHS[n++]; return; }
-    const note = mv.parentElement.querySelector('.note');
+    const note = card.querySelector('.note');
     note.style.display = 'block';
-    note.textContent = 'pizza.glb not found. Upload it to the main folder of your repo.';
+    note.textContent = 'pizza.glb not found in your repo.';
   });
+  card.querySelector('.camopen').addEventListener('click', () => openCam(mv.src));
 });
 
-setTimeout(() => {
-  const ok = customElements.get('model-viewer');
-  const mv = document.querySelector('model-viewer');
-  document.getElementById('status').textContent = !ok
-    ? 'Viewer script blocked: try another browser or network'
-    : (mv.canActivateAR ? 'AR ready ✅' : '3D ready (AR not available in this browser)');
-}, 2500);
+// ---- camera view (works in any phone browser, no app) ----
+const cam = document.getElementById('cam');
+const camv = document.getElementById('camv');
+const camm = document.getElementById('camm');
+let stream = null;
+
+async function openCam(src) {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' } }, audio: false
+    });
+    camv.srcObject = stream;
+    camm.src = src;
+    cam.style.display = 'block';
+  } catch (e) {
+    alert('Camera could not start. Please allow camera permission for this site and make sure you opened it over https.');
+  }
+}
+function closeCam() {
+  if (stream) stream.getTracks().forEach(t => t.stop());
+  stream = null; camv.srcObject = null; cam.style.display = 'none';
+}
+document.getElementById('camx').addEventListener('click', closeCam);
 </script>
 </body>
 </html>
