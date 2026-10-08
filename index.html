@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AR Menu v4</title>
+<title>AR Menu v5</title>
 
 <script type="module"
   src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js">
@@ -105,14 +105,91 @@
     border-radius:999px;
     padding:10px 16px;
     font-size:.9rem;
-    font-weight:600;
-    cursor:pointer
+    font-weight:600
   }
 
   .note{
     margin:8px 16px 0;
     font-size:.8rem;
     color:#b00020;
+    display:none
+  }
+
+  /* ================= CAMERA FALLBACK ================= */
+
+  #cam{
+    position:fixed;
+    inset:0;
+    z-index:99;
+    background:#000;
+    display:none;
+    overflow:hidden
+  }
+
+  #cam video{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover
+  }
+
+  #fallback-model{
+    position:absolute;
+    width:280px;
+    height:280px;
+    left:50%;
+    top:50%;
+    transform:
+      translate(-50%,-50%);
+    background:transparent;
+    --poster-color:transparent;
+    --progress-bar-color:transparent;
+  }
+
+  #camx{
+    position:absolute;
+    top:14px;
+    right:14px;
+    z-index:5;
+    background:#fff;
+    border:0;
+    border-radius:999px;
+    padding:10px 16px;
+    font-weight:700;
+    cursor:pointer
+  }
+
+  #camtip{
+    position:absolute;
+    bottom:22px;
+    left:0;
+    right:0;
+    text-align:center;
+    color:#fff;
+    font-size:.9rem;
+    text-shadow:0 1px 4px #000;
+    z-index:5
+  }
+
+  #placeBtn{
+    position:absolute;
+    bottom:65px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:6;
+    background:#d9381e;
+    color:#fff;
+    border:0;
+    border-radius:999px;
+    padding:12px 22px;
+    font-size:.95rem;
+    font-weight:700;
+    display:none
+  }
+
+  /* Hide fallback model until camera starts */
+  #fallback-model{
     display:none
   }
 </style>
@@ -127,29 +204,65 @@
 
 <main id="menu"></main>
 
+
+<!-- ==================================================
+     CAMERA FALLBACK
+     ================================================== -->
+
+<div id="cam">
+
+  <video
+    id="camv"
+    autoplay
+    playsinline
+    muted>
+  </video>
+
+  <model-viewer
+    id="fallback-model"
+    camera-controls
+    interaction-prompt="none"
+    shadow-intensity="1"
+    touch-action="none">
+  </model-viewer>
+
+  <button id="placeBtn">
+    ✓ Place Pizza
+  </button>
+
+  <button id="camx">
+    ✕ Close
+  </button>
+
+  <div id="camtip">
+    Move the pizza to where you want it, then tap Place Pizza
+  </div>
+
+</div>
+
+
 <script>
 
-// ======================================================
-// MENU
-// ======================================================
+/* =====================================================
+   MENU
+===================================================== */
 
 const ITEMS = [
+
   {
     name:"Margherita Pizza",
     price:"₹349",
     desc:"Tomato, mozzarella, fresh basil."
   },
+
   {
     name:"Farmhouse Pizza",
     price:"₹429",
     desc:"Loaded with veggies and cheese."
   }
+
 ];
 
-
-// ======================================================
-// POSSIBLE MODEL LOCATIONS
-// ======================================================
 
 const PATHS = [
   'pizza.glb',
@@ -158,32 +271,44 @@ const PATHS = [
 ];
 
 
-// ======================================================
-// CREATE MENU
-// ======================================================
+/* =====================================================
+   CREATE MENU
+===================================================== */
 
-document.getElementById('menu').innerHTML = ITEMS.map((item, index) => `
+document.getElementById('menu').innerHTML =
+ITEMS.map((item,index) => `
 
   <article class="card">
 
     <model-viewer
+
       id="model-${index}"
 
       src="${PATHS[0]}"
 
       alt="${item.name}"
 
-      /* ---------- REAL AR ---------- */
-
       ar
 
-      ar-modes="webxr scene-viewer quick-look"
+      /*
+       * IMPORTANT:
+       *
+       * Only WebXR.
+       *
+       * We intentionally DO NOT include:
+       *
+       * scene-viewer
+       * quick-look
+       *
+       * because those can send the user
+       * into another AR application.
+       */
+
+      ar-modes="webxr"
 
       ar-placement="floor"
 
       ar-scale="fixed"
-
-      /* ----------------------------- */
 
       camera-controls
 
@@ -197,28 +322,29 @@ document.getElementById('menu').innerHTML = ITEMS.map((item, index) => `
 
       loading="lazy"
 
-      style="
-        --poster-color:#fff3e6;
-        position:relative;
-      "
     >
 
       <button
         slot="ar-button"
-        class="ar-btn"
-      >
+        class="ar-btn">
+
         📱 Place on surface
+
       </button>
 
     </model-viewer>
 
+
     <div class="note"></div>
+
 
     <div class="info">
 
       <div class="row">
 
-        <h2>${item.name}</h2>
+        <h2>
+          ${item.name}
+        </h2>
 
         <span class="price">
           ${item.price}
@@ -226,15 +352,18 @@ document.getElementById('menu').innerHTML = ITEMS.map((item, index) => `
 
       </div>
 
+
       <p>
         ${item.desc}
       </p>
 
+
       <button
         class="btn camopen"
-        data-index="${index}"
-      >
+        data-index="${index}">
+
         📷 View with camera
+
       </button>
 
     </div>
@@ -244,111 +373,335 @@ document.getElementById('menu').innerHTML = ITEMS.map((item, index) => `
 `).join('');
 
 
-// ======================================================
-// MODEL ERROR / FALLBACK
-// ======================================================
+/* =====================================================
+   MODEL FALLBACK
+===================================================== */
 
-document.querySelectorAll('.card').forEach((card, index) => {
+document
+.querySelectorAll('.card')
+.forEach((card,index) => {
 
-  const mv = card.querySelector('model-viewer');
+  const mv =
+    card.querySelector('model-viewer');
 
   let pathIndex = 0;
 
-  mv.addEventListener('error', () => {
-
-    pathIndex++;
-
-    if (pathIndex < PATHS.length) {
-
-      mv.src = PATHS[pathIndex];
-
-    } else {
-
-      const note = card.querySelector('.note');
-
-      note.style.display = 'block';
-
-      note.textContent =
-        'pizza.glb not found in your repo.';
-
-    }
-
-  });
-
-
-  // ====================================================
-  // CAMERA BUTTON
-  // ====================================================
-
-  card.querySelector('.camopen').addEventListener(
-    'click',
-    async () => {
-
-      /*
-       * IMPORTANT:
-       *
-       * We do NOT use getUserMedia().
-       *
-       * Instead we trigger model-viewer's
-       * native AR experience.
-       *
-       * This allows the browser to use
-       * world tracking / surface detection.
-       */
-
-      if (!mv.canActivateAR) {
-
-        alert(
-          'AR is not supported on this device/browser. ' +
-          'Please try Chrome on a supported Android device.'
-        );
-
-        return;
-      }
-
-      try {
-
-        await mv.activateAR();
-
-      } catch (error) {
-
-        console.error(
-          'AR could not start:',
-          error
-        );
-
-        alert(
-          'Could not start AR. ' +
-          'Please allow camera access and make sure the site is HTTPS.'
-        );
-
-      }
-
-    }
-  );
-
-});
-
-
-// ======================================================
-// OPTIONAL: AR STATUS EVENTS
-// ======================================================
-
-document.querySelectorAll('model-viewer').forEach(mv => {
 
   mv.addEventListener(
-    'ar-status',
-    event => {
+    'error',
+    () => {
 
-      console.log(
-        'AR status:',
-        event.detail.status
-      );
+      pathIndex++;
+
+      if(pathIndex < PATHS.length){
+
+        mv.src =
+          PATHS[pathIndex];
+
+      }
+      else{
+
+        const note =
+          card.querySelector('.note');
+
+        note.style.display =
+          'block';
+
+        note.textContent =
+          'pizza.glb not found in your repo.';
+
+      }
+
+    }
+  );
+
+
+  /* =================================================
+     CAMERA BUTTON
+  ================================================= */
+
+  card
+  .querySelector('.camopen')
+  .addEventListener(
+    'click',
+    () => {
+
+      openAR(mv.src);
 
     }
   );
 
 });
+
+
+/* =====================================================
+   CAMERA ELEMENTS
+===================================================== */
+
+const cam =
+  document.getElementById('cam');
+
+const camv =
+  document.getElementById('camv');
+
+const fallbackModel =
+  document.getElementById(
+    'fallback-model'
+  );
+
+const placeBtn =
+  document.getElementById(
+    'placeBtn'
+  );
+
+let stream = null;
+
+
+/* =====================================================
+   OPEN AR
+===================================================== */
+
+async function openAR(src){
+
+  /*
+   * First try REAL WebXR AR.
+   *
+   * This is the only mode that can provide
+   * proper world tracking directly in the browser.
+   */
+
+  const webxrSupported =
+    await checkWebXR();
+
+
+  if(webxrSupported){
+
+    /*
+     * Find the first model-viewer
+     * containing this model.
+     */
+
+    const models =
+      document.querySelectorAll(
+        'model-viewer'
+      );
+
+
+    for(const model of models){
+
+      if(model.src === src){
+
+        try{
+
+          await model.activateAR();
+
+          return;
+
+        }
+        catch(error){
+
+          console.log(
+            'WebXR failed:',
+            error
+          );
+
+        }
+
+      }
+
+    }
+
+  }
+
+
+  /*
+   * WebXR unavailable.
+   *
+   * Use universal browser camera fallback.
+   *
+   * IMPORTANT:
+   *
+   * This fallback does NOT claim to have
+   * real-world tracking.
+   */
+
+  openCameraFallback(src);
+
+}
+
+
+/* =====================================================
+   CHECK WEBXR
+===================================================== */
+
+async function checkWebXR(){
+
+  if(!navigator.xr){
+
+    return false;
+
+  }
+
+
+  try{
+
+    return await navigator.xr.isSessionSupported(
+      'immersive-ar'
+    );
+
+  }
+  catch(error){
+
+    console.log(
+      'WebXR detection failed:',
+      error
+    );
+
+    return false;
+
+  }
+
+}
+
+
+/* =====================================================
+   CAMERA FALLBACK
+===================================================== */
+
+async function openCameraFallback(src){
+
+  try{
+
+    stream =
+      await navigator.mediaDevices.getUserMedia({
+
+        video:{
+          facingMode:{
+            ideal:'environment'
+          }
+        },
+
+        audio:false
+
+      });
+
+
+    camv.srcObject =
+      stream;
+
+
+    fallbackModel.src =
+      src;
+
+
+    fallbackModel.style.display =
+      'block';
+
+
+    placeBtn.style.display =
+      'block';
+
+
+    cam.style.display =
+      'block';
+
+
+  }
+  catch(error){
+
+    console.error(error);
+
+
+    alert(
+      'Camera could not start. ' +
+      'Please allow camera permission ' +
+      'and make sure this website uses HTTPS.'
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   PLACE BUTTON
+===================================================== */
+
+placeBtn.addEventListener(
+  'click',
+  () => {
+
+    /*
+     * In fallback mode this simply
+     * freezes the model's current screen
+     * position.
+     *
+     * It is NOT real-world AR tracking.
+     */
+
+    placeBtn.style.display =
+      'none';
+
+
+    document.getElementById(
+      'camtip'
+    ).textContent =
+      'Pizza placed · Move it again by dragging';
+
+
+  }
+);
+
+
+/* =====================================================
+   CLOSE
+===================================================== */
+
+document
+.getElementById('camx')
+.addEventListener(
+  'click',
+  closeCam
+);
+
+
+function closeCam(){
+
+  if(stream){
+
+    stream
+      .getTracks()
+      .forEach(
+        track => track.stop()
+      );
+
+  }
+
+
+  stream = null;
+
+  camv.srcObject = null;
+
+  fallbackModel.style.display =
+    'none';
+
+  placeBtn.style.display =
+    'none';
+
+  cam.style.display =
+    'none';
+
+}
+
+
+/* =====================================================
+   CLEANUP WHEN PAGE CLOSES
+===================================================== */
+
+window.addEventListener(
+  'pagehide',
+  closeCam
+);
 
 </script>
 
