@@ -2,24 +2,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#fffaf1" />
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fffaf1">
   <title>Oven & Co. — AR Menu</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
 
-  <script type="module"
-    src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js">
-  </script>
+  <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
 
   <style>
     :root {
       --cream: #fffaf1;
-      --paper: #ffffff;
+      --paper: #fff;
       --red: #d94432;
       --red-dark: #b93225;
       --ink: #28251f;
@@ -27,12 +24,10 @@
       --green: #537b43;
       --yellow: #f6d17d;
       --border: #eee6d9;
-      --shadow: 0 12px 35px rgba(66, 44, 18, .07);
+      --shadow: 0 12px 35px rgba(66,44,18,.07);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html {
       scroll-behavior: smooth;
@@ -47,10 +42,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    button {
-      font: inherit;
-      -webkit-tap-highlight-color: transparent;
-    }
+    button { font: inherit; -webkit-tap-highlight-color: transparent; }
 
     button:focus-visible {
       outline: 3px solid #f3b84c;
@@ -60,17 +52,15 @@
     .page {
       width: 100%;
       max-width: 1120px;
-      margin: 0 auto;
-      padding: 0 22px 50px;
+      margin: auto;
+      padding: 0 22px 45px;
     }
-
-    /* Header */
 
     .topbar {
       min-height: 76px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
       border-bottom: 1px solid var(--border);
     }
@@ -131,8 +121,6 @@
       border-radius: 50%;
     }
 
-    /* Hero */
-
     .hero {
       padding: 46px 0 30px;
       text-align: center;
@@ -140,8 +128,6 @@
 
     .eyebrow {
       display: inline-flex;
-      align-items: center;
-      gap: 7px;
       padding: 8px 13px;
       border-radius: 30px;
       background: #fff0d4;
@@ -161,13 +147,11 @@
       line-height: 1.08;
     }
 
-    .hero h1 span {
-      color: var(--red);
-    }
+    .hero h1 span { color: var(--red); }
 
     .hero p {
       max-width: 440px;
-      margin: 0 auto;
+      margin: auto;
       padding: 0 8px;
       color: var(--muted);
       font-size: 15px;
@@ -201,8 +185,6 @@
       white-space: nowrap;
     }
 
-    /* Menu cards */
-
     .menu-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -216,25 +198,24 @@
       border-radius: 23px;
       background: var(--paper);
       box-shadow: var(--shadow);
-      transition: transform .2s ease, box-shadow .2s ease;
     }
 
     .dish-visual {
       position: relative;
       height: 245px;
       overflow: hidden;
-      background:
-        radial-gradient(ellipse at 50% 55%, #fff2d6 0, #fff8eb 55%, #fffdf8 100%);
+      background: radial-gradient(ellipse at center, #fff0d4 0%, #fff8eb 58%, #fffdf8 100%);
     }
 
     .dish-visual model-viewer {
       display: block;
       width: 100%;
       height: 100%;
-      background-color: transparent;
+      background: transparent;
       --poster-color: transparent;
       --progress-bar-color: var(--red);
-      --progress-mask: transparent;
+      /* Pull the camera back to show a smaller model */
+      --camera-orbit: 0deg 75deg 130%;
     }
 
     .dish-tag {
@@ -254,9 +235,7 @@
       backdrop-filter: blur(8px);
     }
 
-    .dish-content {
-      padding: 19px;
-    }
+    .dish-content { padding: 19px; }
 
     .dish-title-row {
       display: flex;
@@ -309,9 +288,7 @@
       transition: background .2s, transform .2s;
     }
 
-    .btn:active {
-      transform: scale(.97);
-    }
+    .btn:active { transform: scale(.97); }
 
     .btn-primary {
       background: var(--red);
@@ -319,9 +296,7 @@
       box-shadow: 0 5px 12px #d9443223;
     }
 
-    .btn-primary:hover {
-      background: var(--red-dark);
-    }
+    .btn-primary:hover { background: var(--red-dark); }
 
     .btn-secondary {
       border-color: var(--border);
@@ -329,9 +304,7 @@
       color: var(--ink);
     }
 
-    .btn-secondary:hover {
-      background: #fff3e5;
-    }
+    .btn-secondary:hover { background: #fff3e5; }
 
     .ar-hint {
       margin-top: 11px;
@@ -339,8 +312,6 @@
       font-size: 11px;
       text-align: center;
     }
-
-    /* Footer */
 
     .footer {
       padding: 35px 10px 0;
@@ -350,11 +321,9 @@
       text-align: center;
     }
 
-    .footer strong {
-      color: var(--ink);
-    }
+    .footer strong { color: var(--ink); }
 
-    /* Camera overlay */
+    /* Full-screen mobile camera view */
 
     .camera-modal {
       position: fixed;
@@ -367,9 +336,7 @@
       overscroll-behavior: contain;
     }
 
-    .camera-modal.active {
-      display: flex;
-    }
+    .camera-modal.active { display: flex; }
 
     .camera-topbar {
       position: relative;
@@ -382,10 +349,7 @@
       background: linear-gradient(#0009, transparent);
     }
 
-    .camera-title {
-      font-size: 15px;
-      font-weight: 800;
-    }
+    .camera-title { font-size: 15px; font-weight: 800; }
 
     .camera-subtitle {
       margin-top: 3px;
@@ -432,7 +396,7 @@
       height: 100%;
       background: transparent;
       --poster-color: transparent;
-      touch-action: pan-y;
+      touch-action: none;
     }
 
     .camera-tip {
@@ -483,16 +447,9 @@
       line-height: 1.5;
     }
 
-    /* Small phones */
-
     @media (max-width: 600px) {
-      .page {
-        padding: 0 15px 30px;
-      }
-
-      .topbar {
-        min-height: 68px;
-      }
+      .page { padding: 0 15px 30px; }
+      .topbar { min-height: 68px; }
 
       .brand-mark {
         width: 38px;
@@ -501,24 +458,10 @@
         border-radius: 12px;
       }
 
-      .brand-name {
-        font-size: 18px;
-      }
-
-      .brand-caption {
-        font-size: 9px;
-        letter-spacing: 1px;
-      }
-
-      .open-label {
-        gap: 6px;
-        padding: 8px 9px;
-        font-size: 10px;
-      }
-
-      .hero {
-        padding: 34px 0 22px;
-      }
+      .brand-name { font-size: 18px; }
+      .brand-caption { font-size: 9px; letter-spacing: 1px; }
+      .open-label { gap: 6px; padding: 8px 9px; font-size: 10px; }
+      .hero { padding: 34px 0 22px; }
 
       .hero h1 {
         margin-top: 15px;
@@ -526,82 +469,25 @@
         letter-spacing: -1.2px;
       }
 
-      .hero p {
-        max-width: 330px;
-        font-size: 13px;
-      }
-
-      .section-heading {
-        margin-top: 18px;
-      }
-
-      .section-heading h2 {
-        font-size: 24px;
-      }
-
-      .menu-grid {
-        grid-template-columns: 1fr;
-        gap: 17px;
-      }
-
-      .dish-card {
-        border-radius: 20px;
-      }
-
-      .dish-visual {
-        height: clamp(220px, 68vw, 310px);
-      }
-
-      .dish-content {
-        padding: 17px;
-      }
-
-      .dish-title {
-        font-size: 23px;
-      }
-
-      .dish-price {
-        font-size: 20px;
-      }
-
-      .dish-description {
-        min-height: auto;
-        margin: 9px 0 15px;
-        font-size: 13px;
-      }
-
-      .btn {
-        min-height: 49px;
-        font-size: 13px;
-      }
-
-      .footer {
-        padding-top: 28px;
-      }
+      .hero p { max-width: 330px; font-size: 13px; }
+      .section-heading { margin-top: 18px; }
+      .section-heading h2 { font-size: 24px; }
+      .menu-grid { grid-template-columns: 1fr; gap: 17px; }
+      .dish-card { border-radius: 20px; }
+      .dish-visual { height: clamp(220px, 68vw, 310px); }
+      .dish-content { padding: 17px; }
+      .dish-title { font-size: 23px; }
+      .dish-description { min-height: auto; margin: 9px 0 15px; font-size: 13px; }
+      .btn { min-height: 49px; font-size: 13px; }
+      .footer { padding-top: 28px; }
     }
 
     @media (max-width: 350px) {
-      .page {
-        padding-right: 11px;
-        padding-left: 11px;
-      }
-
-      .brand-name {
-        font-size: 16px;
-      }
-
-      .open-label {
-        font-size: 9px;
-      }
-
-      .dish-actions {
-        gap: 7px;
-      }
-
-      .btn {
-        padding: 11px 6px;
-        font-size: 12px;
-      }
+      .page { padding-right: 11px; padding-left: 11px; }
+      .brand-name { font-size: 16px; }
+      .open-label { font-size: 9px; }
+      .dish-actions { gap: 7px; }
+      .btn { padding: 11px 6px; font-size: 12px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -623,17 +509,13 @@
           <div class="brand-caption">Fresh from our oven</div>
         </div>
       </div>
-
-      <div class="open-label">
-        <span class="open-dot"></span>
-        Made with love
-      </div>
+      <div class="open-label"><span class="open-dot"></span> Made with love</div>
     </header>
 
     <section class="hero">
       <div class="eyebrow">✦ A little taste of Italy</div>
       <h1>Good food.<br><span>Great moments.</span></h1>
-      <p>Explore our favourites and see your pizza in 3D before you order.</p>
+      <p>Explore our favourites and see your food in 3D before you order.</p>
     </section>
 
     <section aria-labelledby="menu-heading">
@@ -646,13 +528,12 @@
       </div>
 
       <div class="menu-grid">
-        <!-- Margherita Pizza -->
+        <!-- Pizza -->
         <article class="dish-card">
           <div class="dish-visual">
             <div class="dish-tag">✦ Classic favourite</div>
-
             <model-viewer
-              id="pizza1"
+              id="pizzaModel"
               data-model="pizza.glb"
               alt="3D model of a Margherita pizza"
               camera-controls
@@ -673,34 +554,24 @@
               <h3 class="dish-title">Margherita Pizza</h3>
               <div class="dish-price">₹349</div>
             </div>
-
-            <p class="dish-description">
-              Classic tomato sauce, creamy mozzarella and fresh basil.
-            </p>
+            <p class="dish-description">Classic tomato sauce, creamy mozzarella and fresh basil.</p>
 
             <div class="dish-actions">
-              <button class="btn btn-primary" onclick="openNativeAR('pizza1')">
-                <span>✦</span> View in AR
-              </button>
-
-              <button class="btn btn-secondary" onclick="openCameraView('pizza1', 'Margherita Pizza')">
-                <span>◎</span> Camera View
-              </button>
+              <button class="btn btn-primary" onclick="openNativeAR('pizzaModel')">✦ View in AR</button>
+              <button class="btn btn-secondary" onclick="openCameraView('pizzaModel','Margherita Pizza')">◎ Camera View</button>
             </div>
-
             <div class="ar-hint">Rotate the 3D pizza with your finger.</div>
           </div>
         </article>
 
-        <!-- Farmhouse Pizza -->
+        <!-- Burger -->
         <article class="dish-card">
           <div class="dish-visual">
-            <div class="dish-tag">✦ Veggie special</div>
-
+            <div class="dish-tag">✦ Crowd favourite</div>
             <model-viewer
-              id="pizza2"
-              data-model="pizza.glb"
-              alt="3D model of a Farmhouse pizza"
+              id="burgerModel"
+              data-model="burger.glb"
+              alt="3D model of a classic burger"
               camera-controls
               auto-rotate
               rotation-per-second="15deg"
@@ -716,25 +587,16 @@
 
           <div class="dish-content">
             <div class="dish-title-row">
-              <h3 class="dish-title">Farmhouse Pizza</h3>
-              <div class="dish-price">₹429</div>
+              <h3 class="dish-title">Classic Burger</h3>
+              <div class="dish-price">₹249</div>
             </div>
-
-            <p class="dish-description">
-              A delicious mix of peppers, onions, mushrooms and cheese.
-            </p>
+            <p class="dish-description">A juicy patty, crisp lettuce, fresh tomato and our signature sauce.</p>
 
             <div class="dish-actions">
-              <button class="btn btn-primary" onclick="openNativeAR('pizza2')">
-                <span>✦</span> View in AR
-              </button>
-
-              <button class="btn btn-secondary" onclick="openCameraView('pizza2', 'Farmhouse Pizza')">
-                <span>◎</span> Camera View
-              </button>
+              <button class="btn btn-primary" onclick="openNativeAR('burgerModel')">✦ View in AR</button>
+              <button class="btn btn-secondary" onclick="openCameraView('burgerModel','Classic Burger')">◎ Camera View</button>
             </div>
-
-            <div class="ar-hint">Rotate the 3D pizza with your finger.</div>
+            <div class="ar-hint">Rotate the 3D burger with your finger.</div>
           </div>
         </article>
       </div>
@@ -747,30 +609,20 @@
   </main>
 
   <!-- Camera overlay -->
-  <section
-    id="cameraModal"
-    class="camera-modal"
-    role="dialog"
-    aria-modal="true"
-    aria-label="Camera pizza preview">
-
+  <section id="cameraModal" class="camera-modal" role="dialog" aria-modal="true" aria-label="Camera food preview">
     <header class="camera-topbar">
       <div>
-        <div class="camera-title" id="cameraTitle">Pizza preview</div>
+        <div class="camera-title" id="cameraTitle">Food preview</div>
         <div class="camera-subtitle">Camera experience</div>
       </div>
-
-      <button class="close-btn" onclick="closeCameraView()" aria-label="Close camera">
-        ×
-      </button>
+      <button class="close-btn" onclick="closeCameraView()" aria-label="Close camera">×</button>
     </header>
 
     <div class="camera-stage">
       <video id="cameraVideo" autoplay muted playsinline></video>
-
       <model-viewer
         id="cameraModel"
-        alt="3D pizza preview"
+        alt="3D food preview"
         camera-controls
         auto-rotate
         rotation-per-second="10deg"
@@ -779,19 +631,13 @@
         exposure="1"
         touch-action="none">
       </model-viewer>
-
-      <div class="camera-tip">
-        Drag to rotate · Pinch to zoom
-      </div>
+      <div class="camera-tip">Drag to rotate · Pinch to zoom</div>
     </div>
 
     <div class="camera-bottom">
       <div id="cameraError" class="camera-error"></div>
       <p>Move your phone to explore the preview.</p>
-
-      <button class="btn btn-primary" onclick="closeCameraView()">
-        Done viewing
-      </button>
+      <button class="btn btn-primary" onclick="closeCameraView()">Done viewing</button>
     </div>
   </section>
 
@@ -804,68 +650,52 @@
 
     let cameraStream = null;
 
-    // Try the available local GLB paths.
     async function loadModel(viewer) {
-      if (viewer.dataset.loaded === "true") return;
+      if (viewer.dataset.loaded === "true") return true;
 
       const paths = [
-        viewer.dataset.model || "pizza.glb",
-        "assets/pizza.glb",
-        "models/pizza.glb"
-      ];
+        viewer.dataset.model,
+        "assets/" + viewer.dataset.model,
+        "models/" + viewer.dataset.model
+      ].filter(Boolean);
 
       for (const path of [...new Set(paths)]) {
         try {
           const response = await fetch(path, { method: "HEAD" });
-
           if (response.ok) {
             viewer.src = path;
             viewer.dataset.loaded = "true";
-            return;
+            return true;
           }
         } catch (error) {
-          // Try the next path.
+          // Try the next location.
         }
       }
 
-      // Assign the default path so the browser can still attempt to load it.
       viewer.src = paths[0];
+      return false;
     }
 
     document.querySelectorAll(".dish-visual model-viewer").forEach(viewer => {
-      viewer.addEventListener("pointerdown", () => {
-        loadModel(viewer);
-      }, { once: true });
-
-      // Start loading when the menu is ready.
       loadModel(viewer);
     });
 
-    // Launch the device's supported native/WebXR AR experience.
     async function openNativeAR(id) {
       const viewer = document.getElementById(id);
-
       await loadModel(viewer);
 
-      if (typeof viewer.activateAR === "function" && viewer.canActivateAR) {
-        try {
+      try {
+        if (typeof viewer.activateAR === "function") {
           await viewer.activateAR();
-        } catch (error) {
-          console.warn("AR launch failed:", error);
+        } else {
+          alert("The 3D model is still loading. Please try again.");
         }
-      } else if (typeof viewer.activateAR === "function") {
-        // Some mobile browsers expose AR capability only after interaction.
-        try {
-          await viewer.activateAR();
-        } catch (error) {
-          alert("AR isn't available in this browser. Try Camera View or open this page in a supported mobile browser.");
-        }
-      } else {
-        alert("3D viewer is still loading. Please try again.");
+      } catch (error) {
+        console.error("AR launch failed:", error);
+        alert("AR could not launch. Try a supported mobile browser and make sure the model file is available.");
       }
     }
 
-    // Open the camera overlay and place the selected 3D model over the video.
     async function openCameraView(id, name) {
       const sourceViewer = document.getElementById(id);
 
@@ -876,32 +706,24 @@
       document.body.style.overflow = "hidden";
 
       await loadModel(sourceViewer);
-
       cameraModel.src = sourceViewer.currentSrc || sourceViewer.src;
 
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        showCameraError(
-          "Camera access isn't available here. Open this page over HTTPS and use a supported browser."
-        );
+        showCameraError("Camera access isn't available here. Open this page over HTTPS in a supported browser.");
         return;
       }
 
       try {
         cameraStream = await navigator.mediaDevices.getUserMedia({
           audio: false,
-          video: {
-            facingMode: { ideal: "environment" }
-          }
+          video: { facingMode: { ideal: "environment" } }
         });
 
         cameraVideo.srcObject = cameraStream;
         await cameraVideo.play();
       } catch (error) {
         console.error("Camera error:", error);
-
-        showCameraError(
-          "Couldn't access the camera. Allow camera permission in your browser settings and try again."
-        );
+        showCameraError("Couldn't access the camera. Allow camera permission in your browser settings and try again.");
       }
     }
 
@@ -922,11 +744,8 @@
       document.body.style.overflow = "";
     }
 
-    // Close with Escape on devices with a keyboard.
     document.addEventListener("keydown", event => {
-      if (event.key === "Escape") {
-        closeCameraView();
-      }
+      if (event.key === "Escape") closeCameraView();
     });
   </script>
 </body>
