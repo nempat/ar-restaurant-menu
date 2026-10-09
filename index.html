@@ -16,15 +16,13 @@
   <style>
     :root {
       --cream: #fffaf1;
-      --paper: #fff;
+      --paper: #ffffff;
       --red: #d94432;
       --red-dark: #b93225;
       --ink: #28251f;
       --muted: #827b70;
-      --green: #537b43;
-      --yellow: #f6d17d;
       --border: #eee6d9;
-      --shadow: 0 12px 35px rgba(66,44,18,.07);
+      --shadow: 0 12px 35px rgba(66, 44, 18, .07);
     }
 
     * { box-sizing: border-box; }
@@ -42,7 +40,10 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    button { font: inherit; -webkit-tap-highlight-color: transparent; }
+    button {
+      font: inherit;
+      -webkit-tap-highlight-color: transparent;
+    }
 
     button:focus-visible {
       outline: 3px solid #f3b84c;
@@ -55,6 +56,8 @@
       margin: auto;
       padding: 0 22px 45px;
     }
+
+    /* Header */
 
     .topbar {
       min-height: 76px;
@@ -121,13 +124,15 @@
       border-radius: 50%;
     }
 
+    /* Hero */
+
     .hero {
       padding: 46px 0 30px;
       text-align: center;
     }
 
     .eyebrow {
-      display: inline-flex;
+      display: inline-block;
       padding: 8px 13px;
       border-radius: 30px;
       background: #fff0d4;
@@ -157,6 +162,8 @@
       font-size: 15px;
       line-height: 1.7;
     }
+
+    /* Menu */
 
     .section-heading {
       display: flex;
@@ -204,7 +211,12 @@
       position: relative;
       height: 245px;
       overflow: hidden;
-      background: radial-gradient(ellipse at center, #fff0d4 0%, #fff8eb 58%, #fffdf8 100%);
+      background: radial-gradient(
+        ellipse at center,
+        #fff0d4 0%,
+        #fff8eb 58%,
+        #fffdf8 100%
+      );
     }
 
     .dish-visual model-viewer {
@@ -214,8 +226,6 @@
       background: transparent;
       --poster-color: transparent;
       --progress-bar-color: var(--red);
-      /* Pull the camera back to show a smaller model */
-      --camera-orbit: 0deg 75deg 130%;
     }
 
     .dish-tag {
@@ -323,7 +333,7 @@
 
     .footer strong { color: var(--ink); }
 
-    /* Full-screen mobile camera view */
+    /* Camera preview */
 
     .camera-modal {
       position: fixed;
@@ -447,6 +457,8 @@
       line-height: 1.5;
     }
 
+    /* Phone layout */
+
     @media (max-width: 600px) {
       .page { padding: 0 15px 30px; }
       .topbar { min-height: 68px; }
@@ -477,8 +489,8 @@
       .dish-visual { height: clamp(220px, 68vw, 310px); }
       .dish-content { padding: 17px; }
       .dish-title { font-size: 23px; }
-      .dish-description { min-height: auto; margin: 9px 0 15px; font-size: 13px; }
-      .btn { min-height: 49px; font-size: 13px; }
+      .dish-description { min-height: auto; margin: 9px 0 15px; }
+      .btn { min-height: 49px; }
       .footer { padding-top: 28px; }
     }
 
@@ -509,7 +521,11 @@
           <div class="brand-caption">Fresh from our oven</div>
         </div>
       </div>
-      <div class="open-label"><span class="open-dot"></span> Made with love</div>
+
+      <div class="open-label">
+        <span class="open-dot"></span>
+        Made with love
+      </div>
     </header>
 
     <section class="hero">
@@ -528,10 +544,12 @@
       </div>
 
       <div class="menu-grid">
-        <!-- Pizza -->
+
+        <!-- Margherita Pizza -->
         <article class="dish-card">
           <div class="dish-visual">
             <div class="dish-tag">✦ Classic favourite</div>
+
             <model-viewer
               id="pizzaModel"
               data-model="pizza.glb"
@@ -539,6 +557,7 @@
               camera-controls
               auto-rotate
               rotation-per-second="15deg"
+              camera-orbit="0deg 75deg 200%"
               shadow-intensity="1"
               exposure="1"
               ar
@@ -554,20 +573,30 @@
               <h3 class="dish-title">Margherita Pizza</h3>
               <div class="dish-price">₹349</div>
             </div>
-            <p class="dish-description">Classic tomato sauce, creamy mozzarella and fresh basil.</p>
+
+            <p class="dish-description">
+              Classic tomato sauce, creamy mozzarella and fresh basil.
+            </p>
 
             <div class="dish-actions">
-              <button class="btn btn-primary" onclick="openNativeAR('pizzaModel')">✦ View in AR</button>
-              <button class="btn btn-secondary" onclick="openCameraView('pizzaModel','Margherita Pizza')">◎ Camera View</button>
+              <button class="btn btn-primary" onclick="openNativeAR('pizzaModel')">
+                ✦ View in AR
+              </button>
+
+              <button class="btn btn-secondary" onclick="openCameraView('pizzaModel', 'Margherita Pizza')">
+                ◎ Camera View
+              </button>
             </div>
+
             <div class="ar-hint">Rotate the 3D pizza with your finger.</div>
           </div>
         </article>
 
-        <!-- Burger -->
+        <!-- Classic Burger -->
         <article class="dish-card">
           <div class="dish-visual">
             <div class="dish-tag">✦ Crowd favourite</div>
+
             <model-viewer
               id="burgerModel"
               data-model="burger.glb"
@@ -575,6 +604,7 @@
               camera-controls
               auto-rotate
               rotation-per-second="15deg"
+              camera-orbit="0deg 75deg 200%"
               shadow-intensity="1"
               exposure="1"
               ar
@@ -590,15 +620,25 @@
               <h3 class="dish-title">Classic Burger</h3>
               <div class="dish-price">₹249</div>
             </div>
-            <p class="dish-description">A juicy patty, crisp lettuce, fresh tomato and our signature sauce.</p>
+
+            <p class="dish-description">
+              A juicy patty, crisp lettuce, fresh tomato and our signature sauce.
+            </p>
 
             <div class="dish-actions">
-              <button class="btn btn-primary" onclick="openNativeAR('burgerModel')">✦ View in AR</button>
-              <button class="btn btn-secondary" onclick="openCameraView('burgerModel','Classic Burger')">◎ Camera View</button>
+              <button class="btn btn-primary" onclick="openNativeAR('burgerModel')">
+                ✦ View in AR
+              </button>
+
+              <button class="btn btn-secondary" onclick="openCameraView('burgerModel', 'Classic Burger')">
+                ◎ Camera View
+              </button>
             </div>
+
             <div class="ar-hint">Rotate the 3D burger with your finger.</div>
           </div>
         </article>
+
       </div>
     </section>
 
@@ -609,35 +649,49 @@
   </main>
 
   <!-- Camera overlay -->
-  <section id="cameraModal" class="camera-modal" role="dialog" aria-modal="true" aria-label="Camera food preview">
+  <section
+    id="cameraModal"
+    class="camera-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Camera food preview">
+
     <header class="camera-topbar">
       <div>
         <div class="camera-title" id="cameraTitle">Food preview</div>
         <div class="camera-subtitle">Camera experience</div>
       </div>
-      <button class="close-btn" onclick="closeCameraView()" aria-label="Close camera">×</button>
+
+      <button class="close-btn" onclick="closeCameraView()" aria-label="Close camera">
+        ×
+      </button>
     </header>
 
     <div class="camera-stage">
       <video id="cameraVideo" autoplay muted playsinline></video>
+
       <model-viewer
         id="cameraModel"
         alt="3D food preview"
         camera-controls
         auto-rotate
         rotation-per-second="10deg"
+        camera-orbit="0deg 75deg 200%"
         interaction-prompt="none"
         shadow-intensity="1"
         exposure="1"
         touch-action="none">
       </model-viewer>
+
       <div class="camera-tip">Drag to rotate · Pinch to zoom</div>
     </div>
 
     <div class="camera-bottom">
       <div id="cameraError" class="camera-error"></div>
       <p>Move your phone to explore the preview.</p>
-      <button class="btn btn-primary" onclick="closeCameraView()">Done viewing</button>
+      <button class="btn btn-primary" onclick="closeCameraView()">
+        Done viewing
+      </button>
     </div>
   </section>
 
@@ -653,25 +707,28 @@
     async function loadModel(viewer) {
       if (viewer.dataset.loaded === "true") return true;
 
+      const filename = viewer.dataset.model;
       const paths = [
-        viewer.dataset.model,
-        "assets/" + viewer.dataset.model,
-        "models/" + viewer.dataset.model
+        filename,
+        "assets/" + filename,
+        "models/" + filename
       ].filter(Boolean);
 
       for (const path of [...new Set(paths)]) {
         try {
           const response = await fetch(path, { method: "HEAD" });
+
           if (response.ok) {
             viewer.src = path;
             viewer.dataset.loaded = "true";
             return true;
           }
         } catch (error) {
-          // Try the next location.
+          // Continue to the next possible file location.
         }
       }
 
+      // Let the browser attempt the default path as a fallback.
       viewer.src = paths[0];
       return false;
     }
@@ -682,6 +739,7 @@
 
     async function openNativeAR(id) {
       const viewer = document.getElementById(id);
+
       await loadModel(viewer);
 
       try {
@@ -692,7 +750,7 @@
         }
       } catch (error) {
         console.error("AR launch failed:", error);
-        alert("AR could not launch. Try a supported mobile browser and make sure the model file is available.");
+        alert("AR could not launch. Check your model file and try a supported mobile browser.");
       }
     }
 
@@ -702,6 +760,7 @@
       cameraTitle.textContent = name;
       cameraError.style.display = "none";
       cameraError.textContent = "";
+
       cameraModal.classList.add("active");
       document.body.style.overflow = "hidden";
 
@@ -709,7 +768,9 @@
       cameraModel.src = sourceViewer.currentSrc || sourceViewer.src;
 
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        showCameraError("Camera access isn't available here. Open this page over HTTPS in a supported browser.");
+        showCameraError(
+          "Camera access isn't available here. Open this page over HTTPS in a supported browser."
+        );
         return;
       }
 
@@ -723,7 +784,10 @@
         await cameraVideo.play();
       } catch (error) {
         console.error("Camera error:", error);
-        showCameraError("Couldn't access the camera. Allow camera permission in your browser settings and try again.");
+
+        showCameraError(
+          "Couldn't access the camera. Allow camera permission in your browser settings and try again."
+        );
       }
     }
 
@@ -745,7 +809,9 @@
     }
 
     document.addEventListener("keydown", event => {
-      if (event.key === "Escape") closeCameraView();
+      if (event.key === "Escape") {
+        closeCameraView();
+      }
     });
   </script>
 </body>
