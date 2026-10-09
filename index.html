@@ -2,789 +2,932 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#171512">
-<title>Fiamma — Artisan Pizza</title>
-  
-<script type="module"
-src="https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js">
-</script>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
-
-<style>
-:root{
-  --bg:#171512;
-  --panel:#211e19;
-  --cream:#f4efe5;
-  --muted:#a9a092;
-  --gold:#d7b77a;
-  --line:#ffffff13;
-  --accent:#c75c38;
-}
-
-*{box-sizing:border-box}
-
-html{scroll-behavior:smooth}
-
-body{
-  margin:0;
-  font-family:'DM Sans',sans-serif;
-  background:var(--bg);
-  color:var(--cream);
-  -webkit-font-smoothing:antialiased;
-}
-
-button{font:inherit;cursor:pointer}
-
-button:focus-visible{
-  outline:2px solid var(--gold);
-  outline-offset:4px;
-}
-
-a{color:inherit;text-decoration:none}
-
-/* NAVIGATION */
-
-.nav{
-  max-width:1180px;
-  margin:auto;
-  padding:23px 28px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  border-bottom:1px solid var(--line);
-}
-
-.brand{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-.brand-mark{
-  width:39px;
-  height:39px;
-  display:grid;
-  place-items:center;
-  border:1px solid #d7b77a66;
-  border-radius:50%;
-  color:var(--gold);
-  font-size:22px;
-}
-
-.brand-name{
-  font-family:'Playfair Display',serif;
-  font-size:25px;
-  letter-spacing:1px;
-}
-
-.brand-sub{
-  display:block;
-  margin-top:1px;
-  color:var(--muted);
-  font-size:9px;
-  letter-spacing:3px;
-  text-transform:uppercase;
-}
-
-.nav-tag{
-  color:var(--gold);
-  font-size:11px;
-  letter-spacing:2px;
-  text-transform:uppercase;
-}
-
-/* HERO */
-
-.hero{
-  max-width:1180px;
-  margin:auto;
-  padding:74px 28px 46px;
-  display:grid;
-  grid-template-columns:1fr auto;
-  align-items:end;
-  gap:30px;
-}
-
-.eyebrow{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  color:var(--gold);
-  font-size:11px;
-  font-weight:600;
-  letter-spacing:3px;
-  text-transform:uppercase;
-}
-
-.eyebrow:before{
-  content:"";
-  width:28px;
-  height:1px;
-  background:var(--gold);
-}
-
-.hero h1{
-  margin:20px 0 14px;
-  font-family:'Playfair Display',serif;
-  font-size:clamp(43px,7vw,76px);
-  line-height:1.06;
-  font-weight:500;
-  letter-spacing:-1.8px;
-}
-
-.hero h1 em{
-  color:var(--gold);
-  font-weight:500;
-}
-
-.hero p{
-  max-width:510px;
-  margin:0;
-  color:var(--muted);
-  font-size:15px;
-  line-height:1.8;
-}
-
-.hero-side{
-  padding-bottom:6px;
-  text-align:right;
-}
-
-.hero-side strong{
-  display:block;
-  color:var(--gold);
-  font-family:'Playfair Display',serif;
-  font-size:27px;
-  font-weight:500;
-}
-
-.hero-side span{
-  display:block;
-  margin-top:7px;
-  color:var(--muted);
-  font-size:11px;
-  letter-spacing:1px;
-}
-
-/* MENU SECTION */
-
-.menu-section{
-  max-width:1180px;
-  margin:auto;
-  padding:0 28px 80px;
-}
-
-.section-heading{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px;
-  padding:22px 0;
-  border-top:1px solid var(--line);
-}
-
-.section-heading h2{
-  margin:0;
-  font-family:'Playfair Display',serif;
-  font-size:25px;
-  font-weight:500;
-}
-
-.section-heading span{
-  color:var(--muted);
-  font-size:12px;
-}
-
-/* PRODUCT GRID */
-
-#menu{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:25px;
-}
-
-.card{
-  min-width:0;
-  overflow:hidden;
-  background:var(--panel);
-  border:1px solid var(--line);
-  border-radius:13px;
-  transition:border-color .25s,transform .25s;
-}
-
-.card:hover{
-  border-color:#d7b77a55;
-  transform:translateY(-3px);
-}
-
-.product-visual{
-  position:relative;
-  overflow:hidden;
-  background:#28231c;
-}
-
-.card model-viewer{
-  display:block;
-  width:100%;
-  height:340px;
-  background:transparent;
-  --poster-color:transparent;
-}
-
-.product-index{
-  position:absolute;
-  top:17px;
-  left:17px;
-  z-index:2;
-  color:#e4d5ba;
-  font-size:10px;
-  letter-spacing:2px;
-}
-
-.product-label{
-  position:absolute;
-  top:15px;
-  right:15px;
-  z-index:2;
-  padding:7px 10px;
-  border:1px solid #d7b77a55;
-  border-radius:3px;
-  background:#171512b8;
-  color:var(--gold);
-  font-size:9px;
-  letter-spacing:1.4px;
-  text-transform:uppercase;
-  pointer-events:none;
-}
-
-.ar-btn{
-  position:absolute;
-  right:14px;
-  bottom:14px;
-  z-index:3;
-  padding:11px 14px;
-  border:1px solid #d7b77a77;
-  border-radius:5px;
-  background:#171512e8;
-  color:var(--cream);
-  font-size:11px;
-  font-weight:600;
-  transition:background .2s;
-}
-
-.ar-btn:hover{background:#343027}
-
-.product-info{
-  padding:23px;
-}
-
-.product-top{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
-}
-
-.product-info h3{
-  margin:0;
-  font-family:'Playfair Display',serif;
-  font-size:clamp(20px,2.5vw,27px);
-  font-weight:500;
-  line-height:1.25;
-}
-
-.price{
-  flex-shrink:0;
-  padding-top:3px;
-  color:var(--gold);
-  font-size:17px;
-  font-weight:600;
-}
-
-.description{
-  min-height:45px;
-  margin:12px 0 20px;
-  color:var(--muted);
-  font-size:12px;
-  line-height:1.8;
-}
-
-.product-bottom{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  padding-top:17px;
-  border-top:1px solid var(--line);
-}
-
-.ingredient-note{
-  color:#c5bba9;
-  font-size:10px;
-  letter-spacing:.6px;
-}
-
-.camopen{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  min-height:42px;
-  padding:0 15px;
-  border:1px solid var(--gold);
-  border-radius:5px;
-  background:var(--gold);
-  color:#211b12;
-  font-size:11px;
-  font-weight:700;
-  transition:background .2s,color .2s;
-}
-
-.camopen:hover{
-  background:transparent;
-  color:var(--gold);
-}
-
-.note{
-  padding:10px 20px;
-  color:#ff9b83;
-  font-size:12px;
-}
-
-/* FOOTER */
-
-.footer{
-  border-top:1px solid var(--line);
-}
-
-.footer-inner{
-  max-width:1180px;
-  margin:auto;
-  padding:24px 28px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-}
-
-.footer-brand{
-  font-family:'Playfair Display',serif;
-  color:var(--gold);
-  font-size:18px;
-}
-
-.footer p{
-  margin:0;
-  color:var(--muted);
-  font-size:11px;
-}
-
-/* CAMERA OVERLAY */
-
-#cam{
-  position:fixed;
-  inset:0;
-  z-index:99;
-  display:none;
-  overflow:hidden;
-  background:#080807;
-  touch-action:manipulation;
-}
-
-#camv{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-#camm{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  background:transparent;
-  --poster-color:transparent;
-}
-
-#camx{
-  position:absolute;
-  top:calc(18px + env(safe-area-inset-top));
-  right:18px;
-  z-index:5;
-  width:46px;
-  height:46px;
-  border:1px solid #ffffff45;
-  border-radius:50%;
-  background:#171512dc;
-  color:white;
-  font-size:19px;
-}
-
-.camera-heading{
-  position:absolute;
-  top:calc(23px + env(safe-area-inset-top));
-  left:20px;
-  z-index:5;
-  pointer-events:none;
-}
-
-.camera-heading small{
-  display:block;
-  margin-bottom:5px;
-  color:var(--gold);
-  font-size:9px;
-  letter-spacing:2px;
-  text-transform:uppercase;
-}
-
-.camera-heading strong{
-  font-family:'Playfair Display',serif;
-  font-size:19px;
-  font-weight:500;
-}
-
-#camtip{
-  position:absolute;
-  bottom:calc(24px + env(safe-area-inset-bottom));
-  left:15px;
-  right:15px;
-  z-index:5;
-  text-align:center;
-  color:white;
-  font-size:12px;
-  text-shadow:0 2px 8px #000;
-  pointer-events:none;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:680px){
-
-  .nav{
-    padding:18px 20px;
-  }
-
-  .brand-name{font-size:22px}
-
-  .nav-tag{
-    font-size:9px;
-    letter-spacing:1px;
-  }
-
-  .hero{
-    padding:53px 20px 34px;
-    grid-template-columns:1fr;
-    gap:22px;
-  }
-
-  .hero h1{
-    font-size:clamp(43px,11vw,64px);
-    letter-spacing:-1px;
-  }
-
-  .hero p{font-size:13px}
-
-  .hero-side{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    text-align:left;
-  }
-
-  .hero-side strong{
-    font-size:20px;
-  }
-
-  .hero-side span{
-    margin:0;
-    font-size:10px;
-  }
-
-  .menu-section{
-    padding:0 16px 50px;
-  }
-
-  .section-heading{
-    padding:19px 0;
-  }
-
-  .section-heading h2{font-size:22px}
-
-  #menu{
-    grid-template-columns:1fr;
-    gap:17px;
-  }
-
-  .card:hover{transform:none}
-
-  .card model-viewer{
-    height:300px;
-  }
-
-  .product-info{
-    padding:20px;
-  }
-
-  .product-info h3{font-size:25px}
-
-  .description{
-    min-height:0;
-    margin-bottom:18px;
-  }
-
-  .footer-inner{
-    padding:23px 20px;
-    align-items:flex-start;
-    flex-direction:column;
-  }
-}
-
-@media(min-width:681px) and (max-width:950px){
-  .card model-viewer{height:280px}
-  .product-info{padding:18px}
-  .product-bottom{align-items:flex-start;flex-direction:column}
-  .camopen{width:100%}
-}
-
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{
-    scroll-behavior:auto!important;
-    transition:none!important;
-  }
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#fffaf1" />
+
+  <title>Oven & Co. — AR Menu</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <script type="module"
+    src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js">
+  </script>
+
+  <style>
+    :root {
+      --cream: #fffaf1;
+      --paper: #ffffff;
+      --red: #d94432;
+      --red-dark: #b93225;
+      --ink: #28251f;
+      --muted: #827b70;
+      --green: #537b43;
+      --yellow: #f6d17d;
+      --border: #eee6d9;
+      --shadow: 0 12px 35px rgba(66, 44, 18, .07);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: "DM Sans", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button {
+      font: inherit;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus-visible {
+      outline: 3px solid #f3b84c;
+      outline-offset: 3px;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 22px 50px;
+    }
+
+    /* Header */
+
+    .topbar {
+      min-height: 76px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 42px;
+      display: grid;
+      place-items: center;
+      background: var(--red);
+      color: white;
+      border-radius: 14px;
+      font-size: 22px;
+      box-shadow: 0 5px 12px #d944322b;
+    }
+
+    .brand-name {
+      font-family: "Playfair Display", serif;
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+    }
+
+    .brand-caption {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+    }
+
+    .open-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 12px;
+      border: 1px solid #dce8d4;
+      border-radius: 30px;
+      background: #f2f8ed;
+      color: #456b37;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .open-dot {
+      width: 7px;
+      height: 7px;
+      background: #63a34c;
+      border-radius: 50%;
+    }
+
+    /* Hero */
+
+    .hero {
+      padding: 46px 0 30px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 13px;
+      border-radius: 30px;
+      background: #fff0d4;
+      color: #885b20;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.3px;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      margin: 18px 0 10px;
+      font-family: "Playfair Display", serif;
+      font-size: clamp(36px, 6vw, 64px);
+      font-weight: 800;
+      letter-spacing: -1.8px;
+      line-height: 1.08;
+    }
+
+    .hero h1 span {
+      color: var(--red);
+    }
+
+    .hero p {
+      max-width: 440px;
+      margin: 0 auto;
+      padding: 0 8px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 12px;
+      margin: 20px 0 17px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      font-family: "Playfair Display", serif;
+      font-size: 27px;
+      letter-spacing: -.5px;
+    }
+
+    .section-heading p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .dish-count {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    /* Menu cards */
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .dish-card {
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 23px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .dish-visual {
+      position: relative;
+      height: 245px;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 50% 55%, #fff2d6 0, #fff8eb 55%, #fffdf8 100%);
+    }
+
+    .dish-visual model-viewer {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background-color: transparent;
+      --poster-color: transparent;
+      --progress-bar-color: var(--red);
+      --progress-mask: transparent;
+    }
+
+    .dish-tag {
+      position: absolute;
+      z-index: 2;
+      top: 13px;
+      left: 13px;
+      padding: 7px 10px;
+      border: 1px solid #ffffffb5;
+      border-radius: 30px;
+      background: #ffffffdf;
+      color: #51483c;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .7px;
+      text-transform: uppercase;
+      backdrop-filter: blur(8px);
+    }
+
+    .dish-content {
+      padding: 19px;
+    }
+
+    .dish-title-row {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .dish-title {
+      margin: 0;
+      font-family: "Playfair Display", serif;
+      font-size: clamp(19px, 2.5vw, 25px);
+      line-height: 1.2;
+    }
+
+    .dish-price {
+      color: var(--red);
+      font-size: 20px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .dish-description {
+      min-height: 42px;
+      margin: 10px 0 16px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .dish-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+    }
+
+    .btn {
+      min-width: 0;
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 12px 10px;
+      border: 1px solid transparent;
+      border-radius: 13px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+    }
+
+    .btn:active {
+      transform: scale(.97);
+    }
+
+    .btn-primary {
+      background: var(--red);
+      color: white;
+      box-shadow: 0 5px 12px #d9443223;
+    }
+
+    .btn-primary:hover {
+      background: var(--red-dark);
+    }
+
+    .btn-secondary {
+      border-color: var(--border);
+      background: #fffdf9;
+      color: var(--ink);
+    }
+
+    .btn-secondary:hover {
+      background: #fff3e5;
+    }
+
+    .ar-hint {
+      margin-top: 11px;
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+    }
+
+    /* Footer */
+
+    .footer {
+      padding: 35px 10px 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    .footer strong {
+      color: var(--ink);
+    }
+
+    /* Camera overlay */
+
+    .camera-modal {
+      position: fixed;
+      z-index: 1000;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      background: #161612;
+      color: white;
+      overscroll-behavior: contain;
+    }
+
+    .camera-modal.active {
+      display: flex;
+    }
+
+    .camera-topbar {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: max(15px, env(safe-area-inset-top)) 16px 14px;
+      background: linear-gradient(#0009, transparent);
+    }
+
+    .camera-title {
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .camera-subtitle {
+      margin-top: 3px;
+      color: #ffffffb8;
+      font-size: 11px;
+    }
+
+    .close-btn {
+      width: 44px;
+      height: 44px;
+      flex: 0 0 44px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #ffffff40;
+      border-radius: 50%;
+      background: #ffffff20;
+      color: white;
+      font-size: 25px;
+      cursor: pointer;
+    }
+
+    .camera-stage {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      background: #222;
+      isolation: isolate;
+    }
+
+    #cameraVideo {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #222;
+    }
+
+    #cameraModel {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      --poster-color: transparent;
+      touch-action: pan-y;
+    }
+
+    .camera-tip {
+      position: absolute;
+      z-index: 2;
+      top: 14px;
+      left: 50%;
+      width: max-content;
+      max-width: calc(100% - 28px);
+      transform: translateX(-50%);
+      padding: 10px 14px;
+      border: 1px solid #ffffff35;
+      border-radius: 30px;
+      background: #171713a8;
+      color: white;
+      font-size: 12px;
+      text-align: center;
+      backdrop-filter: blur(12px);
+      pointer-events: none;
+    }
+
+    .camera-bottom {
+      position: relative;
+      z-index: 3;
+      padding: 15px 18px max(20px, env(safe-area-inset-bottom));
+      background: linear-gradient(transparent, #000b);
+      text-align: center;
+    }
+
+    .camera-bottom p {
+      margin: 0 0 12px;
+      color: #ffffffd0;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .camera-bottom .btn {
+      width: 100%;
+      max-width: 360px;
+      min-height: 52px;
+    }
+
+    .camera-error {
+      display: none;
+      margin: 0 0 12px;
+      color: #ffd8cf;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    /* Small phones */
+
+    @media (max-width: 600px) {
+      .page {
+        padding: 0 15px 30px;
+      }
+
+      .topbar {
+        min-height: 68px;
+      }
+
+      .brand-mark {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+        border-radius: 12px;
+      }
+
+      .brand-name {
+        font-size: 18px;
+      }
+
+      .brand-caption {
+        font-size: 9px;
+        letter-spacing: 1px;
+      }
+
+      .open-label {
+        gap: 6px;
+        padding: 8px 9px;
+        font-size: 10px;
+      }
+
+      .hero {
+        padding: 34px 0 22px;
+      }
+
+      .hero h1 {
+        margin-top: 15px;
+        font-size: clamp(35px, 10vw, 48px);
+        letter-spacing: -1.2px;
+      }
+
+      .hero p {
+        max-width: 330px;
+        font-size: 13px;
+      }
+
+      .section-heading {
+        margin-top: 18px;
+      }
+
+      .section-heading h2 {
+        font-size: 24px;
+      }
+
+      .menu-grid {
+        grid-template-columns: 1fr;
+        gap: 17px;
+      }
+
+      .dish-card {
+        border-radius: 20px;
+      }
+
+      .dish-visual {
+        height: clamp(220px, 68vw, 310px);
+      }
+
+      .dish-content {
+        padding: 17px;
+      }
+
+      .dish-title {
+        font-size: 23px;
+      }
+
+      .dish-price {
+        font-size: 20px;
+      }
+
+      .dish-description {
+        min-height: auto;
+        margin: 9px 0 15px;
+        font-size: 13px;
+      }
+
+      .btn {
+        min-height: 49px;
+        font-size: 13px;
+      }
+
+      .footer {
+        padding-top: 28px;
+      }
+    }
+
+    @media (max-width: 350px) {
+      .page {
+        padding-right: 11px;
+        padding-left: 11px;
+      }
+
+      .brand-name {
+        font-size: 16px;
+      }
+
+      .open-label {
+        font-size: 9px;
+      }
+
+      .dish-actions {
+        gap: 7px;
+      }
+
+      .btn {
+        padding: 11px 6px;
+        font-size: 12px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <main class="page">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">🍕</div>
+        <div>
+          <div class="brand-name">Oven & Co.</div>
+          <div class="brand-caption">Fresh from our oven</div>
+        </div>
+      </div>
 
-<nav class="nav">
-  <a href="#" class="brand" aria-label="Fiamma home">
-    <span class="brand-mark">✳</span>
-    <span>
-      <span class="brand-name">FIAMMA</span>
-      <span class="brand-sub">Artisan Pizza House</span>
-    </span>
-  </a>
-  <span class="nav-tag">Crafted with passion · Since 2020</span>
-</nav>
+      <div class="open-label">
+        <span class="open-dot"></span>
+        Made with love
+      </div>
+    </header>
 
-<header class="hero">
-  <div>
-    <div class="eyebrow">The art of Italian pizza</div>
-    <h1>A little Italy.<br><em>Right at your table.</em></h1>
-    <p>
-      Honest ingredients, beautiful flavours, and pizza made
-      for sharing. Explore our signature menu in three dimensions
-      and see your favourite up close.
-    </p>
-  </div>
+    <section class="hero">
+      <div class="eyebrow">✦ A little taste of Italy</div>
+      <h1>Good food.<br><span>Great moments.</span></h1>
+      <p>Explore our favourites and see your pizza in 3D before you order.</p>
+    </section>
 
-  <div class="hero-side">
-    <strong>Made to savour.</strong>
-    <span>FRESH INGREDIENTS · BIG FLAVOURS</span>
-  </div>
-</header>
+    <section aria-labelledby="menu-heading">
+      <div class="section-heading">
+        <div>
+          <h2 id="menu-heading">Our favourites</h2>
+          <p>Handcrafted, hot and delicious.</p>
+        </div>
+        <div class="dish-count">02 dishes</div>
+      </div>
 
-<main class="menu-section">
+      <div class="menu-grid">
+        <!-- Margherita Pizza -->
+        <article class="dish-card">
+          <div class="dish-visual">
+            <div class="dish-tag">✦ Classic favourite</div>
 
-  <div class="section-heading">
-    <h2>Our signature menu</h2>
-    <span>01 — 02 &nbsp; / &nbsp; Signature pizzas</span>
-  </div>
+            <model-viewer
+              id="pizza1"
+              data-model="pizza.glb"
+              alt="3D model of a Margherita pizza"
+              camera-controls
+              auto-rotate
+              rotation-per-second="15deg"
+              shadow-intensity="1"
+              exposure="1"
+              ar
+              ar-modes="webxr scene-viewer quick-look"
+              ar-scale="auto"
+              ar-placement="floor"
+              touch-action="pan-y">
+            </model-viewer>
+          </div>
 
-  <div id="menu"></div>
+          <div class="dish-content">
+            <div class="dish-title-row">
+              <h3 class="dish-title">Margherita Pizza</h3>
+              <div class="dish-price">₹349</div>
+            </div>
 
-</main>
+            <p class="dish-description">
+              Classic tomato sauce, creamy mozzarella and fresh basil.
+            </p>
 
-<footer class="footer">
-  <div class="footer-inner">
-    <span class="footer-brand">FIAMMA.</span>
-    <p>Good food. Good company. Always.</p>
-    <p>Made with care, served with love.</p>
-  </div>
-</footer>
+            <div class="dish-actions">
+              <button class="btn btn-primary" onclick="openNativeAR('pizza1')">
+                <span>✦</span> View in AR
+              </button>
 
-<!-- CAMERA VIEW -->
-<div id="cam">
+              <button class="btn btn-secondary" onclick="openCameraView('pizza1', 'Margherita Pizza')">
+                <span>◎</span> Camera View
+              </button>
+            </div>
 
-  <video id="camv" autoplay playsinline muted></video>
+            <div class="ar-hint">Rotate the 3D pizza with your finger.</div>
+          </div>
+        </article>
 
-  <model-viewer
-    id="camm"
-    camera-controls
-    auto-rotate
-    interaction-prompt="none"
-    shadow-intensity="1"
-    touch-action="none">
-  </model-viewer>
+        <!-- Farmhouse Pizza -->
+        <article class="dish-card">
+          <div class="dish-visual">
+            <div class="dish-tag">✦ Veggie special</div>
 
-  <div class="camera-heading">
-    <small>Experience it in your space</small>
-    <strong id="camTitle">Your pizza, up close.</strong>
-  </div>
+            <model-viewer
+              id="pizza2"
+              data-model="pizza.glb"
+              alt="3D model of a Farmhouse pizza"
+              camera-controls
+              auto-rotate
+              rotation-per-second="15deg"
+              shadow-intensity="1"
+              exposure="1"
+              ar
+              ar-modes="webxr scene-viewer quick-look"
+              ar-scale="auto"
+              ar-placement="floor"
+              touch-action="pan-y">
+            </model-viewer>
+          </div>
 
-  <button id="camx" aria-label="Close camera">✕</button>
+          <div class="dish-content">
+            <div class="dish-title-row">
+              <h3 class="dish-title">Farmhouse Pizza</h3>
+              <div class="dish-price">₹429</div>
+            </div>
 
-  <div id="camtip">Drag to rotate · Pinch to resize</div>
+            <p class="dish-description">
+              A delicious mix of peppers, onions, mushrooms and cheese.
+            </p>
 
-</div>
+            <div class="dish-actions">
+              <button class="btn btn-primary" onclick="openNativeAR('pizza2')">
+                <span>✦</span> View in AR
+              </button>
 
-<script>
-// ===== EDIT YOUR MENU HERE =====
-const ITEMS = [
-  {
-    name:"Margherita Pizza",
-    price:"₹349",
-    desc:"Tomato, mozzarella, fresh basil.",
-    label:"The Classic",
-    index:"01"
-  },
-  {
-    name:"Farmhouse Pizza",
-    price:"₹429",
-    desc:"Loaded with veggies and cheese.",
-    label:"Garden Fresh",
-    index:"02"
-  }
-];
+              <button class="btn btn-secondary" onclick="openCameraView('pizza2', 'Farmhouse Pizza')">
+                <span>◎</span> Camera View
+              </button>
+            </div>
 
-const PATHS = [
-  'pizza.glb',
-  'assets/pizza.glb',
-  'models/pizza.glb'
-];
-// ================================
+            <div class="ar-hint">Rotate the 3D pizza with your finger.</div>
+          </div>
+        </article>
+      </div>
+    </section>
 
-document.getElementById('menu').innerHTML = ITEMS.map((i,index) => `
-  <article class="card">
+    <footer class="footer">
+      <strong>Oven & Co.</strong><br>
+      Made fresh. Served with happiness. ❤️
+    </footer>
+  </main>
 
-    <div class="product-visual">
+  <!-- Camera overlay -->
+  <section
+    id="cameraModal"
+    class="camera-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Camera pizza preview">
 
-      <span class="product-index">FIAMMA / ${i.index}</span>
-      <span class="product-label">${i.label}</span>
+    <header class="camera-topbar">
+      <div>
+        <div class="camera-title" id="cameraTitle">Pizza preview</div>
+        <div class="camera-subtitle">Camera experience</div>
+      </div>
+
+      <button class="close-btn" onclick="closeCameraView()" aria-label="Close camera">
+        ×
+      </button>
+    </header>
+
+    <div class="camera-stage">
+      <video id="cameraVideo" autoplay muted playsinline></video>
 
       <model-viewer
-        src="${PATHS[0]}"
-        alt="${i.name}"
-        ar
-        ar-modes="webxr scene-viewer quick-look"
-        ar-scale="auto"
-        ar-placement="floor"
+        id="cameraModel"
+        alt="3D pizza preview"
         camera-controls
         auto-rotate
+        rotation-per-second="10deg"
+        interaction-prompt="none"
         shadow-intensity="1"
-        touch-action="pan-y">
-
-        <button slot="ar-button" class="ar-btn">
-          ◈ &nbsp; Place in AR
-        </button>
-
+        exposure="1"
+        touch-action="none">
       </model-viewer>
+
+      <div class="camera-tip">
+        Drag to rotate · Pinch to zoom
+      </div>
     </div>
 
-    <div class="note" style="display:none"></div>
+    <div class="camera-bottom">
+      <div id="cameraError" class="camera-error"></div>
+      <p>Move your phone to explore the preview.</p>
 
-    <div class="product-info">
-
-      <div class="product-top">
-        <h3>${i.name}</h3>
-        <span class="price">${i.price}</span>
-      </div>
-
-      <p class="description">${i.desc}</p>
-
-      <div class="product-bottom">
-        <span class="ingredient-note">SIGNATURE SELECTION</span>
-        <button class="camopen">
-          <span aria-hidden="true">◎</span>
-          View in your space
-        </button>
-      </div>
-
+      <button class="btn btn-primary" onclick="closeCameraView()">
+        Done viewing
+      </button>
     </div>
+  </section>
 
-  </article>
-`).join('');
+  <script>
+    const cameraModal = document.getElementById("cameraModal");
+    const cameraVideo = document.getElementById("cameraVideo");
+    const cameraModel = document.getElementById("cameraModel");
+    const cameraTitle = document.getElementById("cameraTitle");
+    const cameraError = document.getElementById("cameraError");
 
-document.querySelectorAll('.card').forEach((card,index) => {
-  const mv = card.querySelector('model-viewer');
-  let n = 1;
+    let cameraStream = null;
 
-  mv.addEventListener('error', () => {
-    if (n < PATHS.length) {
-      mv.src = PATHS[n++];
-      return;
+    // Try the available local GLB paths.
+    async function loadModel(viewer) {
+      if (viewer.dataset.loaded === "true") return;
+
+      const paths = [
+        viewer.dataset.model || "pizza.glb",
+        "assets/pizza.glb",
+        "models/pizza.glb"
+      ];
+
+      for (const path of [...new Set(paths)]) {
+        try {
+          const response = await fetch(path, { method: "HEAD" });
+
+          if (response.ok) {
+            viewer.src = path;
+            viewer.dataset.loaded = "true";
+            return;
+          }
+        } catch (error) {
+          // Try the next path.
+        }
+      }
+
+      // Assign the default path so the browser can still attempt to load it.
+      viewer.src = paths[0];
     }
 
-    const note = card.querySelector('.note');
-    note.style.display = 'block';
-    note.textContent = 'Pizza model not found. Check your GLB file path.';
-  });
+    document.querySelectorAll(".dish-visual model-viewer").forEach(viewer => {
+      viewer.addEventListener("pointerdown", () => {
+        loadModel(viewer);
+      }, { once: true });
 
-  card.querySelector('.camopen').addEventListener('click', () => {
-    openCam(mv.src, ITEMS[index].name);
-  });
-});
-
-// ---- Camera view: original mechanism preserved ----
-const cam = document.getElementById('cam');
-const camv = document.getElementById('camv');
-const camm = document.getElementById('camm');
-const camTitle = document.getElementById('camTitle');
-
-let stream = null;
-
-async function openCam(src, name) {
-  try {
-    if (!navigator.mediaDevices?.getUserMedia) {
-      throw new Error('Camera API unavailable. Use HTTPS in a supported browser.');
-    }
-
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' } },
-      audio: false
+      // Start loading when the menu is ready.
+      loadModel(viewer);
     });
 
-    camv.srcObject = stream;
-    camm.src = src;
-    camTitle.textContent = name;
-    cam.style.display = 'block';
+    // Launch the device's supported native/WebXR AR experience.
+    async function openNativeAR(id) {
+      const viewer = document.getElementById(id);
 
-    await camv.play().catch(() => {});
-  } catch (e) {
-    console.error(e);
+      await loadModel(viewer);
 
-    if (stream) {
-      stream.getTracks().forEach(t => t.stop());
-      stream = null;
+      if (typeof viewer.activateAR === "function" && viewer.canActivateAR) {
+        try {
+          await viewer.activateAR();
+        } catch (error) {
+          console.warn("AR launch failed:", error);
+        }
+      } else if (typeof viewer.activateAR === "function") {
+        // Some mobile browsers expose AR capability only after interaction.
+        try {
+          await viewer.activateAR();
+        } catch (error) {
+          alert("AR isn't available in this browser. Try Camera View or open this page in a supported mobile browser.");
+        }
+      } else {
+        alert("3D viewer is still loading. Please try again.");
+      }
     }
 
-    alert(
-      'Camera could not start. Please allow camera permission ' +
-      'for this site and make sure you opened it over HTTPS.'
-    );
-  }
-}
+    // Open the camera overlay and place the selected 3D model over the video.
+    async function openCameraView(id, name) {
+      const sourceViewer = document.getElementById(id);
 
-function closeCam() {
-  if (stream) stream.getTracks().forEach(t => t.stop());
+      cameraTitle.textContent = name;
+      cameraError.style.display = "none";
+      cameraError.textContent = "";
+      cameraModal.classList.add("active");
+      document.body.style.overflow = "hidden";
 
-  stream = null;
-  camv.srcObject = null;
-  cam.style.display = 'none';
-}
+      await loadModel(sourceViewer);
 
-document.getElementById('camx').addEventListener('click', closeCam);
+      cameraModel.src = sourceViewer.currentSrc || sourceViewer.src;
 
-window.addEventListener('pagehide', closeCam);
-</script>
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showCameraError(
+          "Camera access isn't available here. Open this page over HTTPS and use a supported browser."
+        );
+        return;
+      }
 
+      try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            facingMode: { ideal: "environment" }
+          }
+        });
+
+        cameraVideo.srcObject = cameraStream;
+        await cameraVideo.play();
+      } catch (error) {
+        console.error("Camera error:", error);
+
+        showCameraError(
+          "Couldn't access the camera. Allow camera permission in your browser settings and try again."
+        );
+      }
+    }
+
+    function showCameraError(message) {
+      cameraError.textContent = message;
+      cameraError.style.display = "block";
+    }
+
+    function closeCameraView() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+      }
+
+      cameraVideo.pause();
+      cameraVideo.srcObject = null;
+      cameraModal.classList.remove("active");
+      document.body.style.overflow = "";
+    }
+
+    // Close with Escape on devices with a keyboard.
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        closeCameraView();
+      }
+    });
+  </script>
 </body>
 </html>
