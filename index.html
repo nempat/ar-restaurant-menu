@@ -4,8 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#fffaf1">
-  <title>Oven & Co. — AR Menu</title>
+  <meta name="theme-color" content="#14231d">
+  <title>Oven & Co. — Crafted for the Moment</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -496,6 +496,188 @@
         transition: none !important;
       }
     }
+
+    /* Premium café redesign */
+    :root {
+      --cream: #f5f0e7;
+      --paper: #fffdf8;
+      --red: #9a633f;
+      --red-dark: #74452c;
+      --ink: #202820;
+      --muted: #77796e;
+      --green: #294b3a;
+      --yellow: #e7c88f;
+      --border: #e2dbce;
+      --shadow: 0 20px 55px rgba(31,42,31,.09);
+    }
+    body { background: var(--cream); }
+    .page { max-width: 1320px; padding: 0 34px 60px; }
+    .topbar { min-height: 92px; border-bottom-color: #dcd4c6; }
+    .brand-mark { background: var(--green); border-radius: 50%; box-shadow: none; }
+    .brand-name { font-size: 24px; letter-spacing: -.8px; }
+    .brand-caption { letter-spacing: 2px; }
+    .open-label { background: transparent; color: var(--green); border-color: #c8d1c4; border-radius: 3px; letter-spacing: .7px; text-transform: uppercase; font-size: 10px; }
+    .open-dot { background: #6e8d61; }
+    .hero {
+      min-height: 510px; margin: 24px 0 55px; padding: 70px 8%; text-align: left;
+      display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+      position: relative; overflow: hidden; border-radius: 5px; color: #fff;
+      background: linear-gradient(90deg, rgba(20,31,23,.91) 0%, rgba(20,31,23,.72) 48%, rgba(20,31,23,.12) 100%),
+      url('https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&w=2000&q=85') center 52%/cover;
+    }
+    .hero:after { content: 'EST. WITH CARE'; position: absolute; right: 25px; bottom: 22px; font-size: 9px; letter-spacing: 3px; color: #ffffffb8; }
+    .eyebrow { background: transparent; border: 1px solid #ffffff80; border-radius: 2px; color: #ead5b0; padding: 10px 13px; letter-spacing: 2px; }
+    .hero h1 { max-width: 720px; margin: 22px 0 18px; font-size: clamp(48px, 7.3vw, 92px); line-height: .99; letter-spacing: -2.8px; font-weight: 600; }
+    .hero h1 span { color: #dfbd8b; }
+    .hero p { max-width: 470px; margin: 0; color: #f1eee6; font-size: 16px; line-height: 1.9; }
+    .hero:before { content: 'DISCOVER OUR MENU  ↗'; display: inline-block; position: absolute; bottom: 28px; left: 8%; font-size: 10px; letter-spacing: 2px; color: #f2dfc0; }
+    .section-heading { margin: 0 0 24px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+    .section-heading h2 { font-size: clamp(30px, 4vw, 42px); font-weight: 600; }
+    .section-heading p { letter-spacing: .2px; }
+    .dish-count { letter-spacing: 1.5px; text-transform: uppercase; font-size: 10px; }
+    .menu-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px; }
+    .dish-card { border: 0; border-radius: 4px; box-shadow: 0 12px 34px rgba(34,42,31,.06); }
+    .dish-visual { height: 300px; background: radial-gradient(ellipse at center, #f0e5d3 0%, #e6dccb 100%); }
+    .dish-visual model-viewer { --camera-orbit: 0deg 75deg 115%; }
+    .dish-tag { top: 16px; left: 16px; border-radius: 2px; background: #fdfaf2e8; color: var(--green); letter-spacing: 1.2px; }
+    .dish-content { padding: 25px; }
+    .dish-title { font-weight: 600; }
+    .dish-price { color: var(--green); font-size: 19px; }
+    .dish-description { font-size: 14px; line-height: 1.8; }
+    .btn { border-radius: 2px; min-height: 50px; letter-spacing: .3px; }
+    .btn-primary { background: var(--green); box-shadow: none; }
+    .btn-primary:hover { background: #1b3528; }
+    .btn-secondary { background: transparent; border-color: #d8d0c3; }
+    .btn-secondary:hover { background: #f2eadc; }
+    .ar-hint { letter-spacing: .2px; }
+    .footer { margin-top: 48px; padding: 35px 10px 0; border-top: 1px solid var(--border); letter-spacing: .3px; }
+    .footer strong { font-family: 'Playfair Display', serif; font-size: 19px; }
+    @media (max-width: 700px) {
+      .page { padding: 0 15px 35px; }
+      .topbar { min-height: 72px; }
+      .brand-name { font-size: 20px; }
+      .hero { min-height: 470px; margin: 14px 0 42px; padding: 50px 25px 85px; background-position: 58% center; }
+      .hero h1 { font-size: clamp(46px, 12vw, 65px); letter-spacing: -1.8px; }
+      .hero p { font-size: 14px; }
+      .hero:before { left: 25px; bottom: 25px; }
+      .hero:after { right: 14px; bottom: 15px; font-size: 7px; }
+      .section-heading h2 { font-size: 30px; }
+      .menu-grid { grid-template-columns: 1fr; gap: 19px; }
+      .dish-visual { height: clamp(240px, 70vw, 330px); }
+      .dish-content { padding: 20px; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+
+    /* Signature café experience upgrade */
+    :root { --forest:#18352b; --forest2:#254638; --gold:#c7a66a; --cream:#f6f2e9; --ink:#1e2923; --muted:#777b70; --border:#e3dfd3; --red:#a85d3d; --red-dark:#87462e; }
+    body { background:#f6f2e9; }
+    .page { max-width:1320px; padding:0 34px 64px; }
+    .topbar { min-height:88px; border-bottom-color:#dcd8cc; }
+    .brand-mark { background:var(--forest); border-radius:50%; box-shadow:none; }
+    .brand-name { font-size:25px; letter-spacing:-.8px; }
+    .brand-caption { letter-spacing:2px; font-size:9px; }
+    .nav-links { display:flex; align-items:center; gap:28px; margin-left:auto; margin-right:26px; }
+    .nav-links a { text-decoration:none; color:#46534a; font-size:12px; font-weight:700; letter-spacing:.4px; transition:color .2s; }
+    .nav-links a:hover { color:var(--red); }
+    .top-cta { border:0; background:var(--forest); color:white; border-radius:3px; padding:14px 19px; text-decoration:none; font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase; white-space:nowrap; }
+    .open-label { border:0; border-radius:3px; background:#e5ebdf; color:#35513e; }
+    .hero { position:relative; min-height:570px; margin:24px 0 50px; padding:76px 7%; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; text-align:left; overflow:hidden; color:white; background:linear-gradient(90deg,rgba(13,30,23,.88) 0%,rgba(13,30,23,.65) 45%,rgba(13,30,23,.08) 100%),url('https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&w=2000&q=85') center 52%/cover; }
+    .hero:after { content:'EST. WITH LOVE · SERVED WITH SOUL'; position:absolute; right:28px; bottom:28px; writing-mode:vertical-rl; letter-spacing:3px; font-size:9px; color:#ffffffbd; }
+    .hero .eyebrow { background:transparent; color:#e6c995; padding:0; letter-spacing:2.4px; font-size:10px; }
+    .hero h1 { max-width:720px; margin:24px 0 18px; font-size:clamp(48px,7.5vw,96px); line-height:.99; letter-spacing:-3px; font-weight:600; }
+    .hero h1 span { color:#e4c28b; }
+    .hero p { max-width:470px; margin:0; padding:0; color:#f3f0e8; font-size:15px; line-height:1.9; }
+    .hero-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:30px; }
+    .hero-button { display:inline-flex; align-items:center; justify-content:center; padding:16px 22px; min-height:50px; text-decoration:none; text-transform:uppercase; letter-spacing:1.2px; font-size:10px; font-weight:800; border:1px solid #e4c28b; background:#e4c28b; color:#17281f; }
+    .hero-button.secondary { background:transparent; color:white; border-color:#ffffff85; }
+    .intro-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); margin:0 0 74px; padding:23px 0; }
+    .intro-item { display:flex; align-items:center; justify-content:center; gap:12px; padding:4px 16px; text-align:left; border-right:1px solid var(--border); }
+    .intro-item:last-child { border-right:0; }
+    .intro-icon { color:var(--red); font-size:22px; }
+    .intro-item strong { display:block; font-family:'Playfair Display',serif; font-size:16px; font-weight:700; }
+    .intro-item small { display:block; color:var(--muted); margin-top:4px; font-size:10px; letter-spacing:.4px; }
+    .section-heading { margin:0 0 25px; align-items:end; }
+    .section-heading h2 { font-size:clamp(30px,4vw,46px); font-weight:600; letter-spacing:-1px; }
+    .section-heading p { font-size:13px; }
+    .dish-count { font-size:10px; letter-spacing:1.4px; }
+    .menu-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:25px; }
+    .dish-card { border-radius:3px; border:1px solid #e5e0d5; box-shadow:0 18px 40px #253a2a0b; background:#fffdf8; transition:transform .3s,box-shadow .3s; }
+    .dish-card:hover { transform:translateY(-5px); box-shadow:0 24px 50px #253a2a16; }
+    .dish-visual { height:300px; background:#ece7dc; }
+    .dish-visual model-viewer { --camera-orbit:0deg 75deg 115%; }
+    .dish-tag { top:16px; left:16px; border-radius:2px; font-size:9px; letter-spacing:1.3px; }
+    .dish-content { padding:24px; }
+    .dish-title { font-weight:600; }
+    .dish-price { color:var(--red); font-family:'Playfair Display',serif; font-size:23px; }
+    .dish-description { font-size:13px; }
+    .btn { border-radius:2px; text-transform:uppercase; letter-spacing:.7px; font-size:10px; }
+    .btn-primary { background:var(--forest); box-shadow:none; }
+    .btn-primary:hover { background:#2c4c3c; }
+    .btn-secondary { background:transparent; border-color:#d8d7ca; }
+    .ar-hint { letter-spacing:.3px; }
+    .story-section { display:grid; grid-template-columns:1.05fr .95fr; gap:70px; align-items:center; margin:100px 0; }
+    .story-image { min-height:480px; position:relative; background:#ddd url('https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=1200&q=85') center/cover; }
+    .story-image:after { content:'A MOMENT TO YOURSELF'; position:absolute; bottom:20px; left:20px; padding:12px 15px; color:white; background:#19372bdb; letter-spacing:2px; font-size:9px; }
+    .eyebrow-text { color:var(--red); text-transform:uppercase; letter-spacing:2.5px; font-size:10px; font-weight:800; }
+    .story-copy h2 { margin:15px 0 20px; font:600 clamp(34px,4vw,52px)/1.08 'Playfair Display',serif; letter-spacing:-1px; }
+    .story-copy p { color:#73786f; font-size:14px; line-height:1.95; }
+    .text-link { display:inline-flex; margin-top:18px; padding-bottom:8px; color:var(--forest); text-decoration:none; border-bottom:1px solid var(--gold); font-size:11px; font-weight:800; letter-spacing:1.3px; text-transform:uppercase; }
+    .gallery-section { margin:90px 0; }
+    .gallery-grid { display:grid; grid-template-columns:1.2fr .8fr .8fr; gap:14px; margin-top:25px; }
+    .gallery-photo { min-height:245px; background-size:cover; background-position:center; position:relative; overflow:hidden; }
+    .gallery-photo:first-child { min-height:340px; }
+    .gallery-photo:after { content:''; position:absolute; inset:0; background:linear-gradient(transparent 55%,#10251b80); }
+    .gallery-caption { position:absolute; z-index:1; bottom:17px; left:18px; color:white; font-family:'Playfair Display',serif; font-size:19px; }
+    .review-section { margin:95px 0; padding:60px 7%; background:#e9e9dd; text-align:center; }
+    .review-stars { color:#a86b35; letter-spacing:5px; font-size:16px; }
+    .review-quote { max-width:760px; margin:20px auto; font:italic 600 clamp(23px,3vw,35px)/1.4 'Playfair Display',serif; color:#26372d; }
+    .review-credit { font-size:10px; text-transform:uppercase; letter-spacing:2px; color:#667166; }
+    .visit-section { display:grid; grid-template-columns:1fr 1fr; background:var(--forest); color:#f7f3e9; margin:80px 0 0; }
+    .visit-copy { padding:54px 10%; }
+    .visit-copy h2 { font:600 clamp(32px,4vw,46px)/1.1 'Playfair Display',serif; margin:12px 0 20px; }
+    .visit-copy p { color:#d0d9cf; font-size:13px; line-height:1.9; }
+    .visit-detail { margin-top:25px; display:grid; gap:14px; font-size:12px; color:#f2eee4; }
+    .visit-detail span { color:#d6bd8b; margin-right:10px; }
+    .visit-photo { min-height:390px; background:url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=85') center/cover; }
+    .visit-copy .hero-button { margin-top:25px; }
+    .footer { padding:35px 10px 0; letter-spacing:.2px; }
+    .footer strong { font:600 23px 'Playfair Display',serif; }
+    .floating-book { position:fixed; z-index:20; right:22px; bottom:22px; display:flex; align-items:center; gap:9px; padding:15px 19px; background:#18352b; color:white; box-shadow:0 8px 28px #0d201b40; text-decoration:none; text-transform:uppercase; letter-spacing:1px; font-size:10px; font-weight:800; }
+    .reveal { opacity:0; transform:translateY(22px); transition:opacity .7s ease,transform .7s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+    @media(max-width:760px) {
+      .page { padding:0 16px 35px; }
+      .topbar { min-height:72px; flex-wrap:wrap; padding:12px 0; }
+      .nav-links { display:none; }
+      .top-cta { padding:12px; font-size:9px; }
+      .open-label { display:none; }
+      .hero { min-height:520px; margin:14px 0 32px; padding:48px 24px; background-position:58% center; }
+      .hero h1 { font-size:clamp(43px,12vw,68px); letter-spacing:-1.8px; }
+      .hero p { font-size:13px; }
+      .hero:after { right:12px; bottom:12px; font-size:7px; }
+      .intro-strip { margin-bottom:55px; padding:14px 0; }
+      .intro-item { padding:5px 7px; gap:5px; flex-direction:column; text-align:center; }
+      .intro-item strong { font-size:12px; }
+      .intro-item small { font-size:8px; line-height:1.4; }
+      .intro-icon { font-size:18px; }
+      .menu-grid { grid-template-columns:1fr; gap:18px; }
+      .dish-visual { height:clamp(230px,68vw,320px); }
+      .dish-content { padding:19px; }
+      .story-section { grid-template-columns:1fr; gap:28px; margin:65px 0; }
+      .story-image { min-height:340px; }
+      .story-copy h2 { font-size:38px; }
+      .gallery-section,.review-section { margin:65px 0; }
+      .gallery-grid { grid-template-columns:1fr 1fr; gap:9px; }
+      .gallery-photo,.gallery-photo:first-child { min-height:190px; }
+      .gallery-photo:first-child { grid-column:span 2; }
+      .review-section { padding:42px 20px; }
+      .visit-section { grid-template-columns:1fr; margin-top:55px; }
+      .visit-copy { padding:38px 25px; }
+      .visit-photo { min-height:260px; grid-row:1; }
+      .floating-book { right:12px; bottom:12px; padding:14px 16px; }
+    }
+    @media(prefers-reduced-motion:reduce) { .reveal { opacity:1; transform:none; transition:none; } }
+
   </style>
 </head>
 
@@ -503,28 +685,33 @@
   <main class="page">
     <header class="topbar">
       <div class="brand">
-        <div class="brand-mark" aria-hidden="true">🍕</div>
-        <div>
-          <div class="brand-name">Oven & Co.</div>
-          <div class="brand-caption">Fresh from our oven</div>
-        </div>
+        <div class="brand-mark" aria-hidden="true">✳</div>
+        <div><div class="brand-name">Oven & Co.</div><div class="brand-caption">Coffee · Kitchen · Community</div></div>
       </div>
-      <div class="open-label"><span class="open-dot"></span> Made with love</div>
+      <nav class="nav-links" aria-label="Main navigation"><a href="#menu">THE MENU</a><a href="#story">OUR STORY</a><a href="#gallery">THE SPACE</a><a href="#visit">FIND US</a></nav>
+      <a class="top-cta" href="#visit">Plan a visit ↗</a>
     </header>
 
-    <section class="hero">
-      <div class="eyebrow">✦ A little taste of Italy</div>
-      <h1>Good food.<br><span>Great moments.</span></h1>
-      <p>Explore our favourites and see your food in 3D before you order.</p>
+    <section class="hero" aria-label="Welcome to Oven and Co.">
+      <div class="eyebrow">Your neighbourhood hideaway · Hyderabad</div>
+      <h1>Make room<br>for <span>the good.</span></h1>
+      <p>Beautiful coffee, honest ingredients and plates made for sharing. Come for a quick cup, stay for the feeling.</p>
+      <div class="hero-actions"><a class="hero-button" href="#menu">Explore the menu &nbsp; ↘</a><a class="hero-button secondary" href="#story">A little about us</a></div>
     </section>
 
-    <section aria-labelledby="menu-heading">
+    <section class="intro-strip" aria-label="Our promise">
+      <div class="intro-item"><span class="intro-icon">✳</span><div><strong>Made with intention</strong><small>Thoughtful ingredients, every day</small></div></div>
+      <div class="intro-item"><span class="intro-icon">☕</span><div><strong>Good coffee, no rush</strong><small>Your pause in a busy day</small></div></div>
+      <div class="intro-item"><span class="intro-icon">♡</span><div><strong>Room for everyone</strong><small>Come as you are, stay awhile</small></div></div>
+    </section>
+
+    <section id="menu" aria-labelledby="menu-heading" class="reveal">
       <div class="section-heading">
         <div>
-          <h2 id="menu-heading">Our favourites</h2>
-          <p>Handcrafted, hot and delicious.</p>
+          <h2 id="menu-heading">A taste of our table</h2>
+          <p>Made with care. Best enjoyed slowly.</p>
         </div>
-        <div class="dish-count">02 dishes</div>
+        <div class="dish-count">SIGNATURE SELECTION · 02</div>
       </div>
 
       <div class="menu-grid">
@@ -602,11 +789,38 @@
       </div>
     </section>
 
+    <section id="story" class="story-section reveal">
+      <div class="story-image" role="img" aria-label="Warm coffee being prepared in a cafe"></div>
+      <div class="story-copy"><div class="eyebrow-text">More than a coffee stop</div><h2>A slower kind<br>of everyday.</h2><p>We believe the best moments are rarely planned. They're the extra ten minutes over coffee, the bite you insist your friend tries, and the familiar table that somehow always feels like yours.</p><p>Oven & Co. is imagined as a neighbourhood space for good food, thoughtful coffee and conversations that don't need a clock.</p><a class="text-link" href="#visit">Come find your corner &nbsp; ↗</a></div>
+    </section>
+
+    <section id="gallery" class="gallery-section reveal">
+      <div class="section-heading"><div><div class="eyebrow-text">A seat is waiting</div><h2>A little look around</h2><p>Sunlit tables, slow sips and something fresh from the kitchen.</p></div><div class="dish-count">THE OVEN & CO. FEELING</div></div>
+      <div class="gallery-grid">
+        <div class="gallery-photo" style="background-image:url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=85')"><span class="gallery-caption">Come on in</span></div>
+        <div class="gallery-photo" style="background-image:url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=85')"><span class="gallery-caption">Coffee rituals</span></div>
+        <div class="gallery-photo" style="background-image:url('https://images.unsplash.com/photo-1501338989804-7f4f1e4f4f4b?auto=format&fit=crop&w=900&q=85')"><span class="gallery-caption">Stay awhile</span></div>
+      </div>
+    </section>
+
+    <section class="review-section reveal" aria-label="Cafe philosophy">
+      <div class="review-stars">✦ ✦ ✦ ✦ ✦</div>
+      <p class="review-quote">“The best part of the day is sometimes the part where you decide to slow down.”</p>
+      <div class="review-credit">A little reminder from our table to yours</div>
+    </section>
+
+    <section id="visit" class="visit-section reveal">
+      <div class="visit-copy"><div class="eyebrow-text" style="color:#dfc18b">Your table, your time</div><h2>Let's make it<br>a coffee date.</h2><p>Drop in for your favourite cup, bring a friend for lunch, or make us your new weekend ritual.</p><div class="visit-detail"><div><span>↗</span> Hyderabad, Telangana</div><div><span>◷</span> Opening hours — please check with us</div><div><span>♡</span> Walk-ins welcome</div></div><a class="hero-button" href="https://www.google.com/maps/search/?api=1&query=Oven+and+Co+Cafe+Hyderabad">Get directions ↗</a></div>
+      <div class="visit-photo" role="img" aria-label="Inviting cafe interior"></div>
+    </section>
+
     <footer class="footer">
       <strong>Oven & Co.</strong><br>
-      Made fresh. Served with happiness. ❤️
+      Coffee, comfort & a little room to breathe.<br><span style="font-size:10px;letter-spacing:1px;text-transform:uppercase">Made for the moments in between · Hyderabad</span>
     </footer>
   </main>
+
+  <a class="floating-book" href="#visit">Plan your visit <span>↗</span></a>
 
   <!-- Camera overlay -->
   <section id="cameraModal" class="camera-modal" role="dialog" aria-modal="true" aria-label="Camera food preview">
@@ -642,6 +856,15 @@
   </section>
 
   <script>
+    // Gentle scroll reveals; content remains visible if IntersectionObserver is unavailable.
+    const revealItems = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      const revealObserver = new IntersectionObserver(entries => entries.forEach(entry => {
+        if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); }
+      }), { threshold: 0.12 });
+      revealItems.forEach(item => revealObserver.observe(item));
+    } else { revealItems.forEach(item => item.classList.add('visible')); }
+
     const cameraModal = document.getElementById("cameraModal");
     const cameraVideo = document.getElementById("cameraVideo");
     const cameraModel = document.getElementById("cameraModel");
