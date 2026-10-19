@@ -1,975 +1,255 @@
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#14231d">
-  <title>Oven & Co. — Crafted for the Moment</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
-
-  <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
-
-  <style>
-    :root {
-      --cream: #fffaf1;
-      --paper: #fff;
-      --red: #d94432;
-      --red-dark: #b93225;
-      --ink: #28251f;
-      --muted: #827b70;
-      --green: #537b43;
-      --yellow: #f6d17d;
-      --border: #eee6d9;
-      --shadow: 0 12px 35px rgba(66,44,18,.07);
-    }
-
-    * { box-sizing: border-box; }
-
-    html {
-      scroll-behavior: smooth;
-      -webkit-text-size-adjust: 100%;
-    }
-
-    body {
-      margin: 0;
-      background: var(--cream);
-      color: var(--ink);
-      font-family: "DM Sans", sans-serif;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    button { font: inherit; -webkit-tap-highlight-color: transparent; }
-
-    button:focus-visible {
-      outline: 3px solid #f3b84c;
-      outline-offset: 3px;
-    }
-
-    .page {
-      width: 100%;
-      max-width: 1120px;
-      margin: auto;
-      padding: 0 22px 45px;
-    }
-
-    .topbar {
-      min-height: 76px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-    }
-
-    .brand-mark {
-      width: 42px;
-      height: 42px;
-      flex: 0 0 42px;
-      display: grid;
-      place-items: center;
-      background: var(--red);
-      color: white;
-      border-radius: 14px;
-      font-size: 22px;
-      box-shadow: 0 5px 12px #d944322b;
-    }
-
-    .brand-name {
-      font-family: "Playfair Display", serif;
-      font-size: 21px;
-      font-weight: 800;
-      letter-spacing: -.5px;
-    }
-
-    .brand-caption {
-      margin-top: 2px;
-      color: var(--muted);
-      font-size: 11px;
-      letter-spacing: 1.4px;
-      text-transform: uppercase;
-    }
-
-    .open-label {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 9px 12px;
-      border: 1px solid #dce8d4;
-      border-radius: 30px;
-      background: #f2f8ed;
-      color: #456b37;
-      font-size: 12px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .open-dot {
-      width: 7px;
-      height: 7px;
-      background: #63a34c;
-      border-radius: 50%;
-    }
-
-    .hero {
-      padding: 46px 0 30px;
-      text-align: center;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      padding: 8px 13px;
-      border-radius: 30px;
-      background: #fff0d4;
-      color: #885b20;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 1.3px;
-      text-transform: uppercase;
-    }
-
-    .hero h1 {
-      margin: 18px 0 10px;
-      font-family: "Playfair Display", serif;
-      font-size: clamp(36px, 6vw, 64px);
-      font-weight: 800;
-      letter-spacing: -1.8px;
-      line-height: 1.08;
-    }
-
-    .hero h1 span { color: var(--red); }
-
-    .hero p {
-      max-width: 440px;
-      margin: auto;
-      padding: 0 8px;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.7;
-    }
-
-    .section-heading {
-      display: flex;
-      justify-content: space-between;
-      align-items: end;
-      gap: 12px;
-      margin: 20px 0 17px;
-    }
-
-    .section-heading h2 {
-      margin: 0;
-      font-family: "Playfair Display", serif;
-      font-size: 27px;
-      letter-spacing: -.5px;
-    }
-
-    .section-heading p {
-      margin: 5px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .dish-count {
-      color: var(--muted);
-      font-size: 12px;
-      white-space: nowrap;
-    }
-
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 22px;
-    }
-
-    .dish-card {
-      min-width: 0;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      border-radius: 23px;
-      background: var(--paper);
-      box-shadow: var(--shadow);
-    }
-
-    .dish-visual {
-      position: relative;
-      height: 245px;
-      overflow: hidden;
-      background: radial-gradient(ellipse at center, #fff0d4 0%, #fff8eb 58%, #fffdf8 100%);
-    }
-
-    .dish-visual model-viewer {
-      display: block;
-      width: 100%;
-      height: 100%;
-      background: transparent;
-      --poster-color: transparent;
-      --progress-bar-color: var(--red);
-      /* Pull the camera back to show a smaller model */
-      --camera-orbit: 0deg 75deg 130%;
-    }
-
-    .dish-tag {
-      position: absolute;
-      z-index: 2;
-      top: 13px;
-      left: 13px;
-      padding: 7px 10px;
-      border: 1px solid #ffffffb5;
-      border-radius: 30px;
-      background: #ffffffdf;
-      color: #51483c;
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: .7px;
-      text-transform: uppercase;
-      backdrop-filter: blur(8px);
-    }
-
-    .dish-content { padding: 19px; }
-
-    .dish-title-row {
-      display: flex;
-      align-items: start;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .dish-title {
-      margin: 0;
-      font-family: "Playfair Display", serif;
-      font-size: clamp(19px, 2.5vw, 25px);
-      line-height: 1.2;
-    }
-
-    .dish-price {
-      color: var(--red);
-      font-size: 20px;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    .dish-description {
-      min-height: 42px;
-      margin: 10px 0 16px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.65;
-    }
-
-    .dish-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 9px;
-    }
-
-    .btn {
-      min-width: 0;
-      min-height: 48px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      padding: 12px 10px;
-      border: 1px solid transparent;
-      border-radius: 13px;
-      font-size: 13px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: background .2s, transform .2s;
-    }
-
-    .btn:active { transform: scale(.97); }
-
-    .btn-primary {
-      background: var(--red);
-      color: white;
-      box-shadow: 0 5px 12px #d9443223;
-    }
-
-    .btn-primary:hover { background: var(--red-dark); }
-
-    .btn-secondary {
-      border-color: var(--border);
-      background: #fffdf9;
-      color: var(--ink);
-    }
-
-    .btn-secondary:hover { background: #fff3e5; }
-
-    .ar-hint {
-      margin-top: 11px;
-      color: var(--muted);
-      font-size: 11px;
-      text-align: center;
-    }
-
-    .footer {
-      padding: 35px 10px 0;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.7;
-      text-align: center;
-    }
-
-    .footer strong { color: var(--ink); }
-
-    /* Full-screen mobile camera view */
-
-    .camera-modal {
-      position: fixed;
-      z-index: 1000;
-      inset: 0;
-      display: none;
-      flex-direction: column;
-      background: #161612;
-      color: white;
-      overscroll-behavior: contain;
-    }
-
-    .camera-modal.active { display: flex; }
-
-    .camera-topbar {
-      position: relative;
-      z-index: 3;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: max(15px, env(safe-area-inset-top)) 16px 14px;
-      background: linear-gradient(#0009, transparent);
-    }
-
-    .camera-title { font-size: 15px; font-weight: 800; }
-
-    .camera-subtitle {
-      margin-top: 3px;
-      color: #ffffffb8;
-      font-size: 11px;
-    }
-
-    .close-btn {
-      width: 44px;
-      height: 44px;
-      flex: 0 0 44px;
-      display: grid;
-      place-items: center;
-      border: 1px solid #ffffff40;
-      border-radius: 50%;
-      background: #ffffff20;
-      color: white;
-      font-size: 25px;
-      cursor: pointer;
-    }
-
-    .camera-stage {
-      position: relative;
-      flex: 1;
-      min-height: 0;
-      overflow: hidden;
-      background: #222;
-      isolation: isolate;
-    }
-
-    #cameraVideo {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      background: #222;
-    }
-
-    #cameraModel {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      background: transparent;
-      --poster-color: transparent;
-      touch-action: none;
-    }
-
-    .camera-tip {
-      position: absolute;
-      z-index: 2;
-      top: 14px;
-      left: 50%;
-      width: max-content;
-      max-width: calc(100% - 28px);
-      transform: translateX(-50%);
-      padding: 10px 14px;
-      border: 1px solid #ffffff35;
-      border-radius: 30px;
-      background: #171713a8;
-      color: white;
-      font-size: 12px;
-      text-align: center;
-      backdrop-filter: blur(12px);
-      pointer-events: none;
-    }
-
-    .camera-bottom {
-      position: relative;
-      z-index: 3;
-      padding: 15px 18px max(20px, env(safe-area-inset-bottom));
-      background: linear-gradient(transparent, #000b);
-      text-align: center;
-    }
-
-    .camera-bottom p {
-      margin: 0 0 12px;
-      color: #ffffffd0;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .camera-bottom .btn {
-      width: 100%;
-      max-width: 360px;
-      min-height: 52px;
-    }
-
-    .camera-error {
-      display: none;
-      margin: 0 0 12px;
-      color: #ffd8cf;
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    @media (max-width: 600px) {
-      .page { padding: 0 15px 30px; }
-      .topbar { min-height: 68px; }
-
-      .brand-mark {
-        width: 38px;
-        height: 38px;
-        flex-basis: 38px;
-        border-radius: 12px;
-      }
-
-      .brand-name { font-size: 18px; }
-      .brand-caption { font-size: 9px; letter-spacing: 1px; }
-      .open-label { gap: 6px; padding: 8px 9px; font-size: 10px; }
-      .hero { padding: 34px 0 22px; }
-
-      .hero h1 {
-        margin-top: 15px;
-        font-size: clamp(35px, 10vw, 48px);
-        letter-spacing: -1.2px;
-      }
-
-      .hero p { max-width: 330px; font-size: 13px; }
-      .section-heading { margin-top: 18px; }
-      .section-heading h2 { font-size: 24px; }
-      .menu-grid { grid-template-columns: 1fr; gap: 17px; }
-      .dish-card { border-radius: 20px; }
-      .dish-visual { height: clamp(220px, 68vw, 310px); }
-      .dish-content { padding: 17px; }
-      .dish-title { font-size: 23px; }
-      .dish-description { min-height: auto; margin: 9px 0 15px; font-size: 13px; }
-      .btn { min-height: 49px; font-size: 13px; }
-      .footer { padding-top: 28px; }
-    }
-
-    @media (max-width: 350px) {
-      .page { padding-right: 11px; padding-left: 11px; }
-      .brand-name { font-size: 16px; }
-      .open-label { font-size: 9px; }
-      .dish-actions { gap: 7px; }
-      .btn { padding: 11px 6px; font-size: 12px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        scroll-behavior: auto !important;
-        transition: none !important;
-      }
-    }
-
-    /* Premium café redesign */
-    :root {
-      --cream: #f5f0e7;
-      --paper: #fffdf8;
-      --red: #9a633f;
-      --red-dark: #74452c;
-      --ink: #202820;
-      --muted: #77796e;
-      --green: #294b3a;
-      --yellow: #e7c88f;
-      --border: #e2dbce;
-      --shadow: 0 20px 55px rgba(31,42,31,.09);
-    }
-    body { background: var(--cream); }
-    .page { max-width: 1320px; padding: 0 34px 60px; }
-    .topbar { min-height: 92px; border-bottom-color: #dcd4c6; }
-    .brand-mark { background: var(--green); border-radius: 50%; box-shadow: none; }
-    .brand-name { font-size: 24px; letter-spacing: -.8px; }
-    .brand-caption { letter-spacing: 2px; }
-    .open-label { background: transparent; color: var(--green); border-color: #c8d1c4; border-radius: 3px; letter-spacing: .7px; text-transform: uppercase; font-size: 10px; }
-    .open-dot { background: #6e8d61; }
-    .hero {
-      min-height: 510px; margin: 24px 0 55px; padding: 70px 8%; text-align: left;
-      display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
-      position: relative; overflow: hidden; border-radius: 5px; color: #fff;
-      background: linear-gradient(90deg, rgba(20,31,23,.91) 0%, rgba(20,31,23,.72) 48%, rgba(20,31,23,.12) 100%),
-      url('https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&w=2000&q=85') center 52%/cover;
-    }
-    .hero:after { content: 'EST. WITH CARE'; position: absolute; right: 25px; bottom: 22px; font-size: 9px; letter-spacing: 3px; color: #ffffffb8; }
-    .eyebrow { background: transparent; border: 1px solid #ffffff80; border-radius: 2px; color: #ead5b0; padding: 10px 13px; letter-spacing: 2px; }
-    .hero h1 { max-width: 720px; margin: 22px 0 18px; font-size: clamp(48px, 7.3vw, 92px); line-height: .99; letter-spacing: -2.8px; font-weight: 600; }
-    .hero h1 span { color: #dfbd8b; }
-    .hero p { max-width: 470px; margin: 0; color: #f1eee6; font-size: 16px; line-height: 1.9; }
-    .hero:before { content: 'DISCOVER OUR MENU  ↗'; display: inline-block; position: absolute; bottom: 28px; left: 8%; font-size: 10px; letter-spacing: 2px; color: #f2dfc0; }
-    .section-heading { margin: 0 0 24px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
-    .section-heading h2 { font-size: clamp(30px, 4vw, 42px); font-weight: 600; }
-    .section-heading p { letter-spacing: .2px; }
-    .dish-count { letter-spacing: 1.5px; text-transform: uppercase; font-size: 10px; }
-    .menu-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px; }
-    .dish-card { border: 0; border-radius: 4px; box-shadow: 0 12px 34px rgba(34,42,31,.06); }
-    .dish-visual { height: 300px; background: radial-gradient(ellipse at center, #f0e5d3 0%, #e6dccb 100%); }
-    .dish-visual model-viewer { --camera-orbit: 0deg 75deg 115%; }
-    .dish-tag { top: 16px; left: 16px; border-radius: 2px; background: #fdfaf2e8; color: var(--green); letter-spacing: 1.2px; }
-    .dish-content { padding: 25px; }
-    .dish-title { font-weight: 600; }
-    .dish-price { color: var(--green); font-size: 19px; }
-    .dish-description { font-size: 14px; line-height: 1.8; }
-    .btn { border-radius: 2px; min-height: 50px; letter-spacing: .3px; }
-    .btn-primary { background: var(--green); box-shadow: none; }
-    .btn-primary:hover { background: #1b3528; }
-    .btn-secondary { background: transparent; border-color: #d8d0c3; }
-    .btn-secondary:hover { background: #f2eadc; }
-    .ar-hint { letter-spacing: .2px; }
-    .footer { margin-top: 48px; padding: 35px 10px 0; border-top: 1px solid var(--border); letter-spacing: .3px; }
-    .footer strong { font-family: 'Playfair Display', serif; font-size: 19px; }
-    @media (max-width: 700px) {
-      .page { padding: 0 15px 35px; }
-      .topbar { min-height: 72px; }
-      .brand-name { font-size: 20px; }
-      .hero { min-height: 470px; margin: 14px 0 42px; padding: 50px 25px 85px; background-position: 58% center; }
-      .hero h1 { font-size: clamp(46px, 12vw, 65px); letter-spacing: -1.8px; }
-      .hero p { font-size: 14px; }
-      .hero:before { left: 25px; bottom: 25px; }
-      .hero:after { right: 14px; bottom: 15px; font-size: 7px; }
-      .section-heading h2 { font-size: 30px; }
-      .menu-grid { grid-template-columns: 1fr; gap: 19px; }
-      .dish-visual { height: clamp(240px, 70vw, 330px); }
-      .dish-content { padding: 20px; }
-    }
-    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
-
-    /* Signature café experience upgrade */
-    :root { --forest:#18352b; --forest2:#254638; --gold:#c7a66a; --cream:#f6f2e9; --ink:#1e2923; --muted:#777b70; --border:#e3dfd3; --red:#a85d3d; --red-dark:#87462e; }
-    body { background:#f6f2e9; }
-    .page { max-width:1320px; padding:0 34px 64px; }
-    .topbar { min-height:88px; border-bottom-color:#dcd8cc; }
-    .brand-mark { background:var(--forest); border-radius:50%; box-shadow:none; }
-    .brand-name { font-size:25px; letter-spacing:-.8px; }
-    .brand-caption { letter-spacing:2px; font-size:9px; }
-    .nav-links { display:flex; align-items:center; gap:28px; margin-left:auto; margin-right:26px; }
-    .nav-links a { text-decoration:none; color:#46534a; font-size:12px; font-weight:700; letter-spacing:.4px; transition:color .2s; }
-    .nav-links a:hover { color:var(--red); }
-    .top-cta { border:0; background:var(--forest); color:white; border-radius:3px; padding:14px 19px; text-decoration:none; font-size:11px; font-weight:800; letter-spacing:1px; text-transform:uppercase; white-space:nowrap; }
-    .open-label { border:0; border-radius:3px; background:#e5ebdf; color:#35513e; }
-    .hero { position:relative; min-height:570px; margin:24px 0 50px; padding:76px 7%; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; text-align:left; overflow:hidden; color:white; background:linear-gradient(90deg,rgba(13,30,23,.88) 0%,rgba(13,30,23,.65) 45%,rgba(13,30,23,.08) 100%),url('https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&w=2000&q=85') center 52%/cover; }
-    .hero:after { content:'EST. WITH LOVE · SERVED WITH SOUL'; position:absolute; right:28px; bottom:28px; writing-mode:vertical-rl; letter-spacing:3px; font-size:9px; color:#ffffffbd; }
-    .hero .eyebrow { background:transparent; color:#e6c995; padding:0; letter-spacing:2.4px; font-size:10px; }
-    .hero h1 { max-width:720px; margin:24px 0 18px; font-size:clamp(48px,7.5vw,96px); line-height:.99; letter-spacing:-3px; font-weight:600; }
-    .hero h1 span { color:#e4c28b; }
-    .hero p { max-width:470px; margin:0; padding:0; color:#f3f0e8; font-size:15px; line-height:1.9; }
-    .hero-actions { display:flex; flex-wrap:wrap; gap:12px; margin-top:30px; }
-    .hero-button { display:inline-flex; align-items:center; justify-content:center; padding:16px 22px; min-height:50px; text-decoration:none; text-transform:uppercase; letter-spacing:1.2px; font-size:10px; font-weight:800; border:1px solid #e4c28b; background:#e4c28b; color:#17281f; }
-    .hero-button.secondary { background:transparent; color:white; border-color:#ffffff85; }
-    .intro-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); margin:0 0 74px; padding:23px 0; }
-    .intro-item { display:flex; align-items:center; justify-content:center; gap:12px; padding:4px 16px; text-align:left; border-right:1px solid var(--border); }
-    .intro-item:last-child { border-right:0; }
-    .intro-icon { color:var(--red); font-size:22px; }
-    .intro-item strong { display:block; font-family:'Playfair Display',serif; font-size:16px; font-weight:700; }
-    .intro-item small { display:block; color:var(--muted); margin-top:4px; font-size:10px; letter-spacing:.4px; }
-    .section-heading { margin:0 0 25px; align-items:end; }
-    .section-heading h2 { font-size:clamp(30px,4vw,46px); font-weight:600; letter-spacing:-1px; }
-    .section-heading p { font-size:13px; }
-    .dish-count { font-size:10px; letter-spacing:1.4px; }
-    .menu-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:25px; }
-    .dish-card { border-radius:3px; border:1px solid #e5e0d5; box-shadow:0 18px 40px #253a2a0b; background:#fffdf8; transition:transform .3s,box-shadow .3s; }
-    .dish-card:hover { transform:translateY(-5px); box-shadow:0 24px 50px #253a2a16; }
-    .dish-visual { height:300px; background:#ece7dc; }
-    .dish-visual model-viewer { --camera-orbit:0deg 75deg 115%; }
-    .dish-tag { top:16px; left:16px; border-radius:2px; font-size:9px; letter-spacing:1.3px; }
-    .dish-content { padding:24px; }
-    .dish-title { font-weight:600; }
-    .dish-price { color:var(--red); font-family:'Playfair Display',serif; font-size:23px; }
-    .dish-description { font-size:13px; }
-    .btn { border-radius:2px; text-transform:uppercase; letter-spacing:.7px; font-size:10px; }
-    .btn-primary { background:var(--forest); box-shadow:none; }
-    .btn-primary:hover { background:#2c4c3c; }
-    .btn-secondary { background:transparent; border-color:#d8d7ca; }
-    .ar-hint { letter-spacing:.3px; }
-    .story-section { display:grid; grid-template-columns:1.05fr .95fr; gap:70px; align-items:center; margin:100px 0; }
-    .story-image { min-height:480px; position:relative; background:#ddd url('https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=1200&q=85') center/cover; }
-    .story-image:after { content:'A MOMENT TO YOURSELF'; position:absolute; bottom:20px; left:20px; padding:12px 15px; color:white; background:#19372bdb; letter-spacing:2px; font-size:9px; }
-    .eyebrow-text { color:var(--red); text-transform:uppercase; letter-spacing:2.5px; font-size:10px; font-weight:800; }
-    .story-copy h2 { margin:15px 0 20px; font:600 clamp(34px,4vw,52px)/1.08 'Playfair Display',serif; letter-spacing:-1px; }
-    .story-copy p { color:#73786f; font-size:14px; line-height:1.95; }
-    .text-link { display:inline-flex; margin-top:18px; padding-bottom:8px; color:var(--forest); text-decoration:none; border-bottom:1px solid var(--gold); font-size:11px; font-weight:800; letter-spacing:1.3px; text-transform:uppercase; }
-    .gallery-section { margin:90px 0; }
-    .gallery-grid { display:grid; grid-template-columns:1.2fr .8fr .8fr; gap:14px; margin-top:25px; }
-    .gallery-photo { min-height:245px; background-size:cover; background-position:center; position:relative; overflow:hidden; }
-    .gallery-photo:first-child { min-height:340px; }
-    .gallery-photo:after { content:''; position:absolute; inset:0; background:linear-gradient(transparent 55%,#10251b80); }
-    .gallery-caption { position:absolute; z-index:1; bottom:17px; left:18px; color:white; font-family:'Playfair Display',serif; font-size:19px; }
-    .review-section { margin:95px 0; padding:60px 7%; background:#e9e9dd; text-align:center; }
-    .review-stars { color:#a86b35; letter-spacing:5px; font-size:16px; }
-    .review-quote { max-width:760px; margin:20px auto; font:italic 600 clamp(23px,3vw,35px)/1.4 'Playfair Display',serif; color:#26372d; }
-    .review-credit { font-size:10px; text-transform:uppercase; letter-spacing:2px; color:#667166; }
-    .visit-section { display:grid; grid-template-columns:1fr 1fr; background:var(--forest); color:#f7f3e9; margin:80px 0 0; }
-    .visit-copy { padding:54px 10%; }
-    .visit-copy h2 { font:600 clamp(32px,4vw,46px)/1.1 'Playfair Display',serif; margin:12px 0 20px; }
-    .visit-copy p { color:#d0d9cf; font-size:13px; line-height:1.9; }
-    .visit-detail { margin-top:25px; display:grid; gap:14px; font-size:12px; color:#f2eee4; }
-    .visit-detail span { color:#d6bd8b; margin-right:10px; }
-    .visit-photo { min-height:390px; background:url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=85') center/cover; }
-    .visit-copy .hero-button { margin-top:25px; }
-    .footer { padding:35px 10px 0; letter-spacing:.2px; }
-    .footer strong { font:600 23px 'Playfair Display',serif; }
-    .floating-book { position:fixed; z-index:20; right:22px; bottom:22px; display:flex; align-items:center; gap:9px; padding:15px 19px; background:#18352b; color:white; box-shadow:0 8px 28px #0d201b40; text-decoration:none; text-transform:uppercase; letter-spacing:1px; font-size:10px; font-weight:800; }
-    .reveal { opacity:0; transform:translateY(22px); transition:opacity .7s ease,transform .7s ease; }
-    .reveal.visible { opacity:1; transform:translateY(0); }
-    @media(max-width:760px) {
-      .page { padding:0 16px 35px; }
-      .topbar { min-height:72px; flex-wrap:wrap; padding:12px 0; }
-      .nav-links { display:none; }
-      .top-cta { padding:12px; font-size:9px; }
-      .open-label { display:none; }
-      .hero { min-height:520px; margin:14px 0 32px; padding:48px 24px; background-position:58% center; }
-      .hero h1 { font-size:clamp(43px,12vw,68px); letter-spacing:-1.8px; }
-      .hero p { font-size:13px; }
-      .hero:after { right:12px; bottom:12px; font-size:7px; }
-      .intro-strip { margin-bottom:55px; padding:14px 0; }
-      .intro-item { padding:5px 7px; gap:5px; flex-direction:column; text-align:center; }
-      .intro-item strong { font-size:12px; }
-      .intro-item small { font-size:8px; line-height:1.4; }
-      .intro-icon { font-size:18px; }
-      .menu-grid { grid-template-columns:1fr; gap:18px; }
-      .dish-visual { height:clamp(230px,68vw,320px); }
-      .dish-content { padding:19px; }
-      .story-section { grid-template-columns:1fr; gap:28px; margin:65px 0; }
-      .story-image { min-height:340px; }
-      .story-copy h2 { font-size:38px; }
-      .gallery-section,.review-section { margin:65px 0; }
-      .gallery-grid { grid-template-columns:1fr 1fr; gap:9px; }
-      .gallery-photo,.gallery-photo:first-child { min-height:190px; }
-      .gallery-photo:first-child { grid-column:span 2; }
-      .review-section { padding:42px 20px; }
-      .visit-section { grid-template-columns:1fr; margin-top:55px; }
-      .visit-copy { padding:38px 25px; }
-      .visit-photo { min-height:260px; grid-row:1; }
-      .floating-book { right:12px; bottom:12px; padding:14px 16px; }
-    }
-    @media(prefers-reduced-motion:reduce) { .reveal { opacity:1; transform:none; transition:none; } }
-
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#103e3c">
+<meta name="description" content="Caffè Jubilee — coffee, comfort food and good company in Jubilee Hills, Hyderabad.">
+<title>Caffè Jubilee — A Little Pause in the City</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--g:#103e3c;--g2:#175451;--mint:#b8e1d7;--cream:#f7f3eb;--paper:#fffdf8;--ink:#1c2927;--muted:#6e7b76;--gold:#d7ad62;--line:#d9ded5;--shadow:0 24px 70px #1028251f}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:90px}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif}
+a{color:inherit;text-decoration:none}
+.announce{background:var(--g);color:#f8f5ed;text-align:center;padding:10px;font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.announce b{color:var(--mint)}
+header{height:82px;display:flex;align-items:center;justify-content:space-between;padding:0 6vw;position:sticky;top:0;z-index:9;background:#f7f3ebed;backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:11px}
+.mark{width:43px;height:43px;border:1px solid var(--g);border-radius:50%;display:grid;place-items:center;color:var(--g);font:italic 19px 'Playfair Display'}
+.brandname{font:24px 'Playfair Display';letter-spacing:-.04em}
+.sub{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.nav{display:flex;align-items:center;gap:27px;font-size:12px;font-weight:700}
+.nav a:hover{color:#9a783e}
+.nav .cta{background:var(--g);color:white;padding:13px 18px}
+.hamb{display:none;border:0;background:none;font-size:26px;color:var(--g)}
+.hero{padding:28px 3vw 48px}
+.hero-in{min-height:610px;position:relative;overflow:hidden;border-radius:4px;display:flex;align-items:center;color:white;background:linear-gradient(90deg,#123b38 0%,#123b38ed 27%,#123b3870 58%,#123b3820 100%),url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1800&q=85') center/cover}
+.hero-copy{padding:65px 8%;max-width:730px;position:relative}
+.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.23em;color:var(--mint);font-weight:700}
+.eyebrow:before{content:'✳';color:var(--gold);margin-right:12px}
+h1,h2,h3,p{margin-top:0}
+h1{font:500 clamp(52px,7vw,91px)/.98 'Playfair Display';letter-spacing:-.055em;margin:23px 0}
+h1 em{color:var(--mint);font-weight:400}
+.hero p{max-width:420px;font-size:14px;line-height:1.9;color:#e0e9e4}
+.buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:15px 20px;font-size:11px;font-weight:700;border:1px solid transparent;transition:.2s}
+.btn:hover{transform:translateY(-2px)}
+.light{background:var(--cream);color:var(--g)}
+.outline{border-color:#ffffff8a;color:white}
+.rating{position:absolute;right:4%;bottom:5%;padding:17px 21px;background:#103e3ccc;border:1px solid #ffffff66;display:flex;gap:12px;align-items:center;backdrop-filter:blur(10px)}
+.rating .star{font-size:24px;color:var(--gold)}
+.rating small{display:block;color:#dbe7e0;font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+.rating strong{font:23px 'Playfair Display'}
+.ticker{display:flex;justify-content:center;gap:30px;flex-wrap:wrap;padding:21px 12px;border-bottom:1px solid var(--line);font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--g);font-weight:700}
+.ticker span:before{content:'✳';color:var(--gold);margin-right:9px}
+.section{padding:95px 7vw}
+.head{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-bottom:36px}
+.kicker{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#9a783e;font-weight:700;margin-bottom:13px}
+.section h2{font:500 clamp(37px,4.3vw,57px)/1.04 'Playfair Display';letter-spacing:-.045em;margin:0}
+.head p{max-width:360px;color:var(--muted);font-size:13px;line-height:1.8;margin:0}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:21px}
+.card{background:var(--paper);border:1px solid var(--line);transition:.25s;overflow:hidden}
+.card:hover{transform:translateY(-5px);box-shadow:var(--shadow)}
+.photo{height:245px;position:relative}
+.photo img{width:100%;height:100%;object-fit:cover;transition:.4s}
+.card:hover .photo img{transform:scale(1.04)}
+.tag{position:absolute;top:14px;left:14px;background:var(--cream);color:var(--g);padding:8px 10px;font-size:9px;text-transform:uppercase;letter-spacing:.12em;font-weight:700}
+.cardbody{padding:22px}
+.titlerow{display:flex;justify-content:space-between;gap:10px}
+.card h3{font:24px 'Playfair Display';font-weight:500;margin-bottom:8px}
+.price{font-size:13px;font-weight:700;color:#9a783e;white-space:nowrap}
+.card p{font-size:12px;line-height:1.7;color:var(--muted);margin-bottom:17px}
+.cardfoot{border-top:1px solid var(--line);padding-top:13px;display:flex;justify-content:space-between;gap:10px;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.cardfoot b{color:var(--g)}
+.fine{text-align:center;font-size:10px;color:var(--muted);margin:24px 0 0}
+.story{background:#e9e6db;display:grid;grid-template-columns:1fr 1fr;gap:8vw;align-items:center}
+.storyimg{position:relative;min-height:500px}
+.storyimg img{width:86%;height:470px;object-fit:cover}
+.stamp{position:absolute;right:0;bottom:0;width:155px;height:155px;border:7px solid #e9e6db;border-radius:50%;background:var(--g);color:white;display:grid;place-items:center;text-align:center;font:21px/1.25 'Playfair Display';transform:rotate(7deg)}
+.storycopy p{font-size:13px;line-height:1.95;color:#65716b;max-width:470px;margin:22px 0}
+.points{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:28px 0}
+.point{border-top:1px solid #103e3c33;padding-top:13px}
+.point strong{display:block;font:20px 'Playfair Display'}
+.point span{font-size:11px;color:var(--muted)}
+.green{background:var(--g);color:white}
+.gallerygrid{display:grid;grid-template-columns:1.15fr .85fr 1fr;grid-template-rows:220px 220px;gap:13px}
+.tile{overflow:hidden}
+.tile img{width:100%;height:100%;object-fit:cover;transition:.4s}
+.tile:hover img{transform:scale(1.04)}
+.tall{grid-row:span 2}
+.reviews{background:#f0ece3}
+.summary{display:flex;align-items:center;gap:13px}
+.score{font:50px 'Playfair Display';color:var(--g)}
+.summary p{font-size:11px;line-height:1.7;color:var(--muted);margin:0}
+.stars{color:#b58a3e;letter-spacing:.12em}
+.reviewgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.review{padding:27px;background:var(--paper);border:1px solid var(--line)}
+.review blockquote{font:21px/1.45 'Playfair Display';margin:17px 0 23px}
+.review small{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.visit{padding:0 3vw 48px}
+.visitin{display:grid;grid-template-columns:1fr 1fr;background:var(--g);color:white}
+.visitcopy{padding:60px 9%;align-self:center}
+.visitcopy h2{font:500 clamp(38px,4vw,54px)/1.05 'Playfair Display';margin:18px 0}
+.visitcopy p{font-size:13px;line-height:1.8;color:#c8d8d1;max-width:390px}
+.details{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:25px 0}
+.label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--mint);margin-bottom:8px}
+.value{font-size:11px;line-height:1.8}
+.map{min-height:430px;background:linear-gradient(#103e3c12,#103e3c33),url('https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&w=1000&q=85') center/cover;display:grid;place-items:center}
+.mapcard{background:var(--paper);color:var(--g);padding:26px;text-align:center;box-shadow:var(--shadow);max-width:285px}
+.mapcard strong{display:block;font:25px 'Playfair Display';margin:8px}
+.mapcard p{font-size:11px;line-height:1.6;color:var(--muted)}
+.mapcard a{font-size:10px;font-weight:700;border-bottom:1px solid var(--gold);padding-bottom:4px}
+.footer{background:#0b302e;color:#eaf0eb;padding:42px 7vw 22px}
+.footertop{display:flex;justify-content:space-between;gap:25px;align-items:center;padding-bottom:30px;border-bottom:1px solid #ffffff26}
+.footer .mark{border-color:var(--mint);color:var(--mint)}
+.footer .sub{color:#9cb8af}
+.links{display:flex;gap:20px;flex-wrap:wrap;font-size:11px;color:#cfddd6}
+.bottom{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;padding-top:20px;font-size:10px;color:#9cb8af}
+.wa{position:fixed;right:20px;bottom:20px;background:#1fae70;color:white;padding:14px 19px;border-radius:50px;box-shadow:0 10px 30px #0002;font-size:12px;font-weight:700;z-index:8}
+@media(max-width:850px){
+header{height:70px;padding:0 5vw}
+.nav{gap:15px}
+.nav a:not(.cta){display:none}
+.hamb{display:block}
+.hero{padding:15px 3vw 32px}
+.hero-in{min-height:650px;background-position:60% center}
+.hero-copy{padding:55px 7% 130px}
+.rating{left:7%;right:auto;bottom:4%}
+.section{padding:72px 6vw}
+.head{display:block}
+.head p{margin-top:17px}
+.cards{grid-template-columns:repeat(2,1fr)}
+.story{grid-template-columns:1fr;gap:35px}
+.storyimg{min-height:430px}
+.storyimg img{height:410px}
+.gallerygrid{grid-template-columns:1fr 1fr;grid-template-rows:190px 190px 190px}
+.tall{grid-row:span 2}
+.reviewgrid{grid-template-columns:1fr}
+.visitin{grid-template-columns:1fr}
+.map{min-height:320px}
+.footertop{align-items:flex-start;flex-direction:column}
+}
+@media(max-width:520px){
+.announce{font-size:8px}
+.brandname{font-size:21px}
+.mark{width:38px;height:38px}
+.nav .cta{padding:11px;font-size:10px}
+.hero-in{min-height:680px}
+.hero-copy{padding:45px 7% 135px}
+h1{font-size:56px}
+.hero p{font-size:13px}
+.ticker{gap:12px;font-size:8px}
+.section{padding:62px 5vw}
+.section h2{font-size:39px}
+.cards{grid-template-columns:1fr}
+.photo{height:245px}
+.storyimg{min-height:340px}
+.storyimg img{height:320px;width:90%}
+.stamp{width:125px;height:125px;font-size:16px;border-width:6px}
+.gallerygrid{gap:8px;grid-template-rows:150px 150px 150px}
+.details{gap:12px}
+.visitcopy{padding:45px 7%}
+.footer{padding:35px 6vw 20px}
+.links{gap:14px}
+.wa{right:12px;bottom:12px;padding:12px 15px}
+}
+</style>
 </head>
-
 <body>
-  <main class="page">
-    <header class="topbar">
-      <div class="brand">
-        <div class="brand-mark" aria-hidden="true">✳</div>
-        <div><div class="brand-name">Oven & Co.</div><div class="brand-caption">Coffee · Kitchen · Community</div></div>
-      </div>
-      <nav class="nav-links" aria-label="Main navigation"><a href="#menu">THE MENU</a><a href="#story">OUR STORY</a><a href="#gallery">THE SPACE</a><a href="#visit">FIND US</a></nav>
-      <a class="top-cta" href="#visit">Plan a visit ↗</a>
-    </header>
-
-    <section class="hero" aria-label="Welcome to Oven and Co.">
-      <div class="eyebrow">Your neighbourhood hideaway · Hyderabad</div>
-      <h1>Make room<br>for <span>the good.</span></h1>
-      <p>Beautiful coffee, honest ingredients and plates made for sharing. Come for a quick cup, stay for the feeling.</p>
-      <div class="hero-actions"><a class="hero-button" href="#menu">Explore the menu &nbsp; ↘</a><a class="hero-button secondary" href="#story">A little about us</a></div>
-    </section>
-
-    <section class="intro-strip" aria-label="Our promise">
-      <div class="intro-item"><span class="intro-icon">✳</span><div><strong>Made with intention</strong><small>Thoughtful ingredients, every day</small></div></div>
-      <div class="intro-item"><span class="intro-icon">☕</span><div><strong>Good coffee, no rush</strong><small>Your pause in a busy day</small></div></div>
-      <div class="intro-item"><span class="intro-icon">♡</span><div><strong>Room for everyone</strong><small>Come as you are, stay awhile</small></div></div>
-    </section>
-
-    <section id="menu" aria-labelledby="menu-heading" class="reveal">
-      <div class="section-heading">
-        <div>
-          <h2 id="menu-heading">A taste of our table</h2>
-          <p>Made with care. Best enjoyed slowly.</p>
-        </div>
-        <div class="dish-count">SIGNATURE SELECTION · 02</div>
-      </div>
-
-      <div class="menu-grid">
-        <!-- Pizza -->
-        <article class="dish-card">
-          <div class="dish-visual">
-            <div class="dish-tag">✦ Classic favourite</div>
-            <model-viewer
-              id="pizzaModel"
-              data-model="pizza.glb"
-              alt="3D model of a Margherita pizza"
-              camera-controls
-              auto-rotate
-              rotation-per-second="15deg"
-              shadow-intensity="1"
-              exposure="1"
-              ar
-              ar-modes="webxr scene-viewer quick-look"
-              ar-scale="auto"
-              ar-placement="floor"
-              touch-action="pan-y">
-            </model-viewer>
-          </div>
-
-          <div class="dish-content">
-            <div class="dish-title-row">
-              <h3 class="dish-title">Margherita Pizza</h3>
-              <div class="dish-price">₹349</div>
-            </div>
-            <p class="dish-description">Classic tomato sauce, creamy mozzarella and fresh basil.</p>
-
-            <div class="dish-actions">
-              <button class="btn btn-primary" onclick="openNativeAR('pizzaModel')">✦ View in AR</button>
-              <button class="btn btn-secondary" onclick="openCameraView('pizzaModel','Margherita Pizza')">◎ Camera View</button>
-            </div>
-            <div class="ar-hint">Rotate the 3D pizza with your finger.</div>
-          </div>
-        </article>
-
-        <!-- Burger -->
-        <article class="dish-card">
-          <div class="dish-visual">
-            <div class="dish-tag">✦ Crowd favourite</div>
-            <model-viewer
-              id="burgerModel"
-              data-model="burger.glb"
-              alt="3D model of a classic burger"
-              camera-controls
-              auto-rotate
-              rotation-per-second="15deg"
-              shadow-intensity="1"
-              exposure="1"
-              ar
-              ar-modes="webxr scene-viewer quick-look"
-              ar-scale="auto"
-              ar-placement="floor"
-              touch-action="pan-y">
-            </model-viewer>
-          </div>
-
-          <div class="dish-content">
-            <div class="dish-title-row">
-              <h3 class="dish-title">Classic Burger</h3>
-              <div class="dish-price">₹249</div>
-            </div>
-            <p class="dish-description">A juicy patty, crisp lettuce, fresh tomato and our signature sauce.</p>
-
-            <div class="dish-actions">
-              <button class="btn btn-primary" onclick="openNativeAR('burgerModel')">✦ View in AR</button>
-              <button class="btn btn-secondary" onclick="openCameraView('burgerModel','Classic Burger')">◎ Camera View</button>
-            </div>
-            <div class="ar-hint">Rotate the 3D burger with your finger.</div>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section id="story" class="story-section reveal">
-      <div class="story-image" role="img" aria-label="Warm coffee being prepared in a cafe"></div>
-      <div class="story-copy"><div class="eyebrow-text">More than a coffee stop</div><h2>A slower kind<br>of everyday.</h2><p>We believe the best moments are rarely planned. They're the extra ten minutes over coffee, the bite you insist your friend tries, and the familiar table that somehow always feels like yours.</p><p>Oven & Co. is imagined as a neighbourhood space for good food, thoughtful coffee and conversations that don't need a clock.</p><a class="text-link" href="#visit">Come find your corner &nbsp; ↗</a></div>
-    </section>
-
-    <section id="gallery" class="gallery-section reveal">
-      <div class="section-heading"><div><div class="eyebrow-text">A seat is waiting</div><h2>A little look around</h2><p>Sunlit tables, slow sips and something fresh from the kitchen.</p></div><div class="dish-count">THE OVEN & CO. FEELING</div></div>
-      <div class="gallery-grid">
-        <div class="gallery-photo" style="background-image:url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1200&q=85')"><span class="gallery-caption">Come on in</span></div>
-        <div class="gallery-photo" style="background-image:url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=900&q=85')"><span class="gallery-caption">Coffee rituals</span></div>
-        <div class="gallery-photo" style="background-image:url('https://images.unsplash.com/photo-1501338989804-7f4f1e4f4f4b?auto=format&fit=crop&w=900&q=85')"><span class="gallery-caption">Stay awhile</span></div>
-      </div>
-    </section>
-
-    <section class="review-section reveal" aria-label="Cafe philosophy">
-      <div class="review-stars">✦ ✦ ✦ ✦ ✦</div>
-      <p class="review-quote">“The best part of the day is sometimes the part where you decide to slow down.”</p>
-      <div class="review-credit">A little reminder from our table to yours</div>
-    </section>
-
-    <section id="visit" class="visit-section reveal">
-      <div class="visit-copy"><div class="eyebrow-text" style="color:#dfc18b">Your table, your time</div><h2>Let's make it<br>a coffee date.</h2><p>Drop in for your favourite cup, bring a friend for lunch, or make us your new weekend ritual.</p><div class="visit-detail"><div><span>↗</span> Hyderabad, Telangana</div><div><span>◷</span> Opening hours — please check with us</div><div><span>♡</span> Walk-ins welcome</div></div><a class="hero-button" href="https://www.google.com/maps/search/?api=1&query=Oven+and+Co+Cafe+Hyderabad">Get directions ↗</a></div>
-      <div class="visit-photo" role="img" aria-label="Inviting cafe interior"></div>
-    </section>
-
-    <footer class="footer">
-      <strong>Oven & Co.</strong><br>
-      Coffee, comfort & a little room to breathe.<br><span style="font-size:10px;letter-spacing:1px;text-transform:uppercase">Made for the moments in between · Hyderabad</span>
-    </footer>
-  </main>
-
-  <a class="floating-book" href="#visit">Plan your visit <span>↗</span></a>
-
-  <!-- Camera overlay -->
-  <section id="cameraModal" class="camera-modal" role="dialog" aria-modal="true" aria-label="Camera food preview">
-    <header class="camera-topbar">
-      <div>
-        <div class="camera-title" id="cameraTitle">Food preview</div>
-        <div class="camera-subtitle">Camera experience</div>
-      </div>
-      <button class="close-btn" onclick="closeCameraView()" aria-label="Close camera">×</button>
-    </header>
-
-    <div class="camera-stage">
-      <video id="cameraVideo" autoplay muted playsinline></video>
-      <model-viewer
-        id="cameraModel"
-        alt="3D food preview"
-        camera-controls
-        auto-rotate
-        rotation-per-second="10deg"
-        interaction-prompt="none"
-        shadow-intensity="1"
-        exposure="1"
-        touch-action="none">
-      </model-viewer>
-      <div class="camera-tip">Drag to rotate · Pinch to zoom</div>
-    </div>
-
-    <div class="camera-bottom">
-      <div id="cameraError" class="camera-error"></div>
-      <p>Move your phone to explore the preview.</p>
-      <button class="btn btn-primary" onclick="closeCameraView()">Done viewing</button>
-    </div>
-  </section>
-
-  <script>
-    // Gentle scroll reveals; content remains visible if IntersectionObserver is unavailable.
-    const revealItems = document.querySelectorAll('.reveal');
-    if ('IntersectionObserver' in window) {
-      const revealObserver = new IntersectionObserver(entries => entries.forEach(entry => {
-        if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); }
-      }), { threshold: 0.12 });
-      revealItems.forEach(item => revealObserver.observe(item));
-    } else { revealItems.forEach(item => item.classList.add('visible')); }
-
-    const cameraModal = document.getElementById("cameraModal");
-    const cameraVideo = document.getElementById("cameraVideo");
-    const cameraModel = document.getElementById("cameraModel");
-    const cameraTitle = document.getElementById("cameraTitle");
-    const cameraError = document.getElementById("cameraError");
-
-    let cameraStream = null;
-
-    async function loadModel(viewer) {
-      if (viewer.dataset.loaded === "true") return true;
-
-      const paths = [
-        viewer.dataset.model,
-        "assets/" + viewer.dataset.model,
-        "models/" + viewer.dataset.model
-      ].filter(Boolean);
-
-      for (const path of [...new Set(paths)]) {
-        try {
-          const response = await fetch(path, { method: "HEAD" });
-          if (response.ok) {
-            viewer.src = path;
-            viewer.dataset.loaded = "true";
-            return true;
-          }
-        } catch (error) {
-          // Try the next location.
-        }
-      }
-
-      viewer.src = paths[0];
-      return false;
-    }
-
-    document.querySelectorAll(".dish-visual model-viewer").forEach(viewer => {
-      loadModel(viewer);
-    });
-
-    async function openNativeAR(id) {
-      const viewer = document.getElementById(id);
-      await loadModel(viewer);
-
-      try {
-        if (typeof viewer.activateAR === "function") {
-          await viewer.activateAR();
-        } else {
-          alert("The 3D model is still loading. Please try again.");
-        }
-      } catch (error) {
-        console.error("AR launch failed:", error);
-        alert("AR could not launch. Try a supported mobile browser and make sure the model file is available.");
-      }
-    }
-
-    async function openCameraView(id, name) {
-      const sourceViewer = document.getElementById(id);
-
-      cameraTitle.textContent = name;
-      cameraError.style.display = "none";
-      cameraError.textContent = "";
-      cameraModal.classList.add("active");
-      document.body.style.overflow = "hidden";
-
-      await loadModel(sourceViewer);
-      cameraModel.src = sourceViewer.currentSrc || sourceViewer.src;
-
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        showCameraError("Camera access isn't available here. Open this page over HTTPS in a supported browser.");
-        return;
-      }
-
-      try {
-        cameraStream = await navigator.mediaDevices.getUserMedia({
-          audio: false,
-          video: { facingMode: { ideal: "environment" } }
-        });
-
-        cameraVideo.srcObject = cameraStream;
-        await cameraVideo.play();
-      } catch (error) {
-        console.error("Camera error:", error);
-        showCameraError("Couldn't access the camera. Allow camera permission in your browser settings and try again.");
-      }
-    }
-
-    function showCameraError(message) {
-      cameraError.textContent = message;
-      cameraError.style.display = "block";
-    }
-
-    function closeCameraView() {
-      if (cameraStream) {
-        cameraStream.getTracks().forEach(track => track.stop());
-        cameraStream = null;
-      }
-
-      cameraVideo.pause();
-      cameraVideo.srcObject = null;
-      cameraModal.classList.remove("active");
-      document.body.style.overflow = "";
-    }
-
-    document.addEventListener("keydown", event => {
-      if (event.key === "Escape") closeCameraView();
-    });
-  </script>
+<div class="announce">Jubilee Hills, Hyderabad <b>✦</b> Coffee, comfort & good company</div>
+<header>
+<a class="brand" href="#home"><div class="mark">CJ</div><div><div class="brandname">Caffè Jubilee</div><div class="sub">A little pause in the city</div></div></a>
+<nav class="nav" id="nav">
+<a href="#menu">Our menu</a><a href="#story">Our story</a><a href="#gallery">The café</a><a href="#visit">Find us</a>
+<a class="cta" href="https://www.google.com/maps/search/?api=1&query=Caffe+Jubilee+Road+No+51+Jubilee+Hills+Hyderabad">Plan your visit ↗</a>
+</nav>
+<button class="hamb" id="hamb" aria-label="Open navigation">☰</button>
+</header>
+<main>
+<section class="hero" id="home">
+<div class="hero-in">
+<div class="hero-copy">
+<div class="eyebrow">Your neighbourhood café</div>
+<h1>Good coffee.<br><em>Better moments.</em></h1>
+<p>From the first sip to the last little bite, settle into a space made for slow mornings, long conversations and the simple joy of something delicious.</p>
+<div class="buttons"><a class="btn light" href="#menu">Explore the menu ↗</a><a class="btn outline" href="#visit">Come say hello</a></div>
+</div>
+<div class="rating"><div class="star">✳</div><div><small>Loved in Jubilee Hills</small><strong>4.4 <span style="font:12px 'DM Sans';color:#d7ad62">★★★★★</span></strong><small>143 Google reviews · as shown on Maps</small></div></div>
+</div>
+</section>
+<div class="ticker"><span>Hand-crafted coffee</span><span>Comfort food</span><span>Made for lingering</span><span>Jubilee Hills</span></div>
+<section class="section" id="menu">
+<div class="head"><div><div class="kicker">A few favourites</div><h2>Little things to<br>look forward to.</h2></div><p>Whether you're here for your daily coffee ritual or a table full of treats, there's always something worth slowing down for.</p></div>
+<div class="cards">
+<article class="card"><div class="photo"><img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=85" alt="Freshly prepared cappuccino"><span class="tag">Coffee ritual</span></div><div class="cardbody"><div class="titlerow"><h3>Velvet Cappuccino</h3><span class="price">₹180*</span></div><p>Rich espresso, silky steamed milk and a soft cloud of foam.</p><div class="cardfoot"><span>Warm · Smooth · Classic</span><b>01 / Coffee</b></div></div></article>
+<article class="card"><div class="photo"><img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=85" alt="Chocolate cake dessert"><span class="tag">Something sweet</span></div><div class="cardbody"><div class="titlerow"><h3>Chocolate Indulgence</h3><span class="price">₹260*</span></div><p>A rich, chocolatey treat for the days that call for a little extra.</p><div class="cardfoot"><span>Decadent · Comforting</span><b>02 / Dessert</b></div></div></article>
+<article class="card"><div class="photo"><img src="https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=900&q=85" alt="Freshly baked pizza"><span class="tag">Made to share</span></div><div class="cardbody"><div class="titlerow"><h3>Oven-Fresh Pizza</h3><span class="price">₹350*</span></div><p>Golden crust, generous toppings and the kind of slice you remember.</p><div class="cardfoot"><span>Savoury · Fresh · Fulfilling</span><b>03 / Kitchen</b></div></div></article>
+</div>
+<p class="fine">*Illustrative items and prices only. Replace with Caffè Jubilee's confirmed menu before publishing.</p>
+</section>
+<section class="section story" id="story">
+<div class="storyimg"><img src="https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&w=1000&q=85" alt="Warm café interior and coffee bar"><div class="stamp">Stay a little.<br>Feel a lot.</div></div>
+<div class="storycopy"><div class="kicker">The Caffè Jubilee feeling</div><h2>A cosy corner<br>in a busy city.</h2><p>Some places are made for more than coffee. They're for catching up with your favourite people, taking a well-earned breather, or turning an ordinary afternoon into a small occasion.</p><p>Find your favourite seat, order something lovely, and let the day take its time. That's the kind of café moment we believe in.</p><div class="points"><div class="point"><strong>Good company</strong><span>Meet, talk and reconnect</span></div><div class="point"><strong>Lovely little treats</strong><span>Something for every craving</span></div></div><a class="btn green" href="#visit">Make time for a visit ↗</a></div>
+</section>
+<section class="section" id="gallery">
+<div class="head"><div><div class="kicker">A look around</div><h2>Your next favourite<br>little escape.</h2></div><p>Blue velvet seats, warm light and a coffee worth sitting down for. Come see what your next café break could look like.</p></div>
+<div class="gallerygrid">
+<div class="tile tall"><img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1000&q=85" alt="Stylish café seating and counter"></div>
+<div class="tile"><img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=700&q=85" alt="Coffee being prepared"></div>
+<div class="tile"><img src="https://images.unsplash.com/photo-1493857671505-72967e2e2760?auto=format&fit=crop&w=700&q=85" alt="Coffee shop table and pastries"></div>
+<div class="tile"><img src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=700&q=85" alt="Inviting café interior"></div>
+<div class="tile"><img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=700&q=85" alt="Barista making coffee"></div>
+</div>
+</section>
+<section class="section reviews">
+<div class="head"><div><div class="kicker">Kind words, good memories</div><h2>A little love<br>from our visitors.</h2></div><div class="summary"><div class="score">4.4</div><p><span class="stars">★★★★★</span><br>Google rating shown in your screenshot<br>143 reviews</p></div></div>
+<div class="reviewgrid">
+<article class="review"><div class="stars">★★★★★</div><blockquote>“A peaceful escape from the traffic and noise of the city.”</blockquote><small>Visitor highlight · paraphrased</small></article>
+<article class="review"><div class="stars">★★★★★</div><blockquote>“A lovely place to slow down, settle in and enjoy a treat.”</blockquote><small>Illustrative café copy</small></article>
+<article class="review"><div class="stars">★★★★★</div><blockquote>“The chocolate-covered strawberries are worth a mention.”</blockquote><small>Visitor highlight · based on Maps summary</small></article>
+</div>
+<p class="fine">Review snippets are paraphrased or illustrative, not direct customer quotations.</p>
+</section>
+<section class="visit" id="visit">
+<div class="visitin">
+<div class="visitcopy">
+<div class="eyebrow">Drop by for a little pause</div><h2>Your table is<br>waiting (almost).</h2>
+<p>Meet us at Caffè Jubilee for coffee, comfort food and good company in the heart of Jubilee Hills.</p>
+<div class="details">
+<div><div class="label">Find us</div><div class="value">Ground Floor, Convention Centre,<br>Road No. 51, Silent Valley Hills,<br>Jubilee Hills, Hyderabad 500033</div></div>
+<div><div class="label">Call the café</div><div class="value"><a href="tel:09515715311">095157 15311</a><br>Maps listing says closes at 11 PM*</div></div>
+</div>
+<div class="buttons"><a class="btn light" href="https://www.google.com/maps/search/?api=1&query=Caffe+Jubilee+Ground+Floor+Convention+Centre+Road+No+51+Jubilee+Hills+Hyderabad">Get directions ↗</a><a class="btn outline" href="tel:09515715311">Call us</a></div>
+<p style="font-size:10px;margin-top:17px">*Check current opening hours before visiting.</p>
+</div>
+<div class="map"><div class="mapcard"><div style="font-size:24px">⌖</div><strong>Caffè Jubilee</strong><p>Ground Floor, Convention Centre<br>Jubilee Hills, Hyderabad</p><a href="https://www.google.com/maps/search/?api=1&query=Caffe+Jubilee+Road+No+51+Jubilee+Hills+Hyderabad">OPEN IN GOOGLE MAPS ↗</a></div></div>
+</div>
+</section>
+</main>
+<footer class="footer">
+<div class="footertop"><a class="brand" href="#home"><div class="mark">CJ</div><div><div class="brandname">Caffè Jubilee</div><div class="sub">A little pause in the city</div></div></a><div class="links"><a href="#menu">Menu</a><a href="#story">Our story</a><a href="#gallery">Gallery</a><a href="#visit">Visit us</a><a href="tel:09515715311">Call the café</a></div></div>
+<div class="bottom"><span>© <span id="year"></span> Caffè Jubilee. Made for good moments.</span><span>Jubilee Hills · Hyderabad, India</span></div>
+</footer>
+<a class="wa" href="https://wa.me/919515715311?text=Hi%20Caff%C3%A8%20Jubilee%2C%20I%27d%20like%20to%20know%20more.">◉ &nbsp; WhatsApp us</a>
+<script>
+document.getElementById('year').textContent=new Date().getFullYear();
+const nav=document.getElementById('nav'),hamb=document.getElementById('hamb');
+hamb.addEventListener('click',()=>{
+let open=nav.classList.toggle('open');
+nav.style.cssText=open?'display:flex;position:absolute;top:70px;left:0;right:0;padding:22px 6vw;background:var(--cream);flex-direction:column;align-items:stretch;box-shadow:0 15px 30px #0001':'';
+nav.querySelectorAll('a:not(.cta)').forEach(a=>a.style.display=open?'block':'')
+});
+nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{
+if(innerWidth<=850){
+nav.classList.remove('open');
+nav.removeAttribute('style');
+nav.querySelectorAll('a:not(.cta)').forEach(x=>x.style.display='')
+}
+}));
+</script>
 </body>
 </html>
